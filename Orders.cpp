@@ -5,8 +5,15 @@ using namespace std;
 // Base Order Class constructor
 Order::Order()
 {
+
 	std::cout << "Created Order base" << std::endl;
 
+}
+
+// Base Order Class deconstructor
+Order::~Order()
+{
+	std::cout << "Deconstructor Order base" << std::endl;
 }
 
 // OrdersList class 
@@ -21,6 +28,9 @@ void OrdersList::move()
 
 }
 
+/*
+	Override stream insertion operator
+*/
 ostream& operator<<(ostream& os, const Order& order)
 {
 
@@ -48,15 +58,18 @@ Deploy::Deploy()
 	this->type = "Deploy";
 }
 
-void Deploy::validate()
+bool Deploy::validate()
 {
 	std::cout << "validate Deploy order\n";
+	return true;
 }
 
 void Deploy::execute()
 {
-	this->validate();
-	std::cout << "execute Deploy order\n";
+	if (this->validate())
+	{
+		std::cout << "execute Deploy order\n";
+	}	
 }
 
 // Advance class constructor
@@ -67,16 +80,22 @@ Advance::Advance()
 	this->type = "Advance";
 }
 
-void Advance::validate()
+bool Advance::validate()
 {
 	std::cout << "validate Advance order\n";
+	return true;
 }
 
 void Advance::execute()
 {
-	this->validate();
-	std::cout << "execute Advance order\n";
+	if (this->validate())
+	{
+		std::cout << "execute Advance order\n";
+	}
+	
 }
+
+
 
 
 

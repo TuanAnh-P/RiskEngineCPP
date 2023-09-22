@@ -3,7 +3,7 @@
 
 int main()
 {
-	Deploy order;
+	testOrdersLists();
 	
 	return 0;
 }
