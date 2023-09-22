@@ -9,7 +9,7 @@
 void testOrdersLists();
 
 /*
-	Order abstract base class defintion
+	Order abstract base class definition
 */
 class Order
 {
@@ -28,7 +28,7 @@ protected:
 };
 
 /*
-	OrdersList base class defintion contains the list of Orders to be executed
+	OrdersList base class definition contains the list of Orders to be executed
 */
 class OrdersList
 {
@@ -37,18 +37,17 @@ public:
 	void move();
 	std::vector<Order*> orders;
 
-private: 
 	
 
 };
 
 /*
-	Deploy order class defintion
+	Deploy order class definition. Put a certain number of army units on a target territory
 */
 class Deploy : public Order
 {
 public:
-	Deploy();
+	Deploy(int numOfArmyUnits);
 	
 	bool validate();
 	void execute();
@@ -56,7 +55,8 @@ public:
 };
 
 /*
-	Advance order class defintion
+	Advance order class definition. Move a certain number of army units from one territory (source territory) to another territory (target
+territory)
 */
 class Advance : public Order
 {
@@ -69,7 +69,9 @@ public:
 };
 
 /*
-	Bomb order class defintion
+	Bomb order class definition. Destroy half of the army units located on a target territory. This order can only be issued if a player
+has the bomb card in their hand. 
+
 */
 class Bomb : public Order
 {
@@ -82,7 +84,8 @@ public:
 };
 
 /*
-	Blockade order class defintion
+	Blockade order class definition. Triple the number of army units on a target territory and make it a neutral territory. This order can
+only be issued if a player has the blockade card in their hand.
 */
 class Blockade : public Order
 {
@@ -95,7 +98,8 @@ public:
 };
 
 /*
-	Airlift order class defintion
+	Airlift order class definition. Advance a certain number of army units from one from one territory (source territory) to another
+territory (target territory). This order can only be issued if a player has the airlift card in their hand.
 */
 class Airlift : public Order
 {
@@ -108,7 +112,8 @@ public:
 };
 
 /*
-	Negotiate order class defintion
+	Negotiate order class definition. Prevent attacks between the current player and another target player until the end of the turn. This
+order can only be issued if a player has the diplomacy card in their hand.
 */
 class Negotiate : public Order
 {
