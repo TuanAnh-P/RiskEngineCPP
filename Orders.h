@@ -9,6 +9,13 @@
 void testOrdersLists();
 
 /*
+	Debugging Free functions 
+
+*/
+
+
+
+/*
 	Order abstract base class definition
 */
 class Order
@@ -33,8 +40,8 @@ protected:
 class OrdersList
 {
 public:
-	void remove();
-	void move();
+	void remove(Order &order);
+	void move(Order& order);
 	std::vector<Order*> orders;
 
 	

@@ -6,7 +6,7 @@ using namespace std;
 Order::Order()
 {
 
-	std::cout << "Created Order base" << std::endl;
+	
 
 }
 
@@ -18,14 +18,21 @@ Order::~Order()
 
 // OrdersList class 
 
-void OrdersList::remove()
+/*
+	Delete the order from the list of Orders 
+*/
+void OrdersList::remove(Order &order)
 {
-	
+	std::cout << "remove " << order << endl;
 }
 
-void OrdersList::move()
+/*
+	Move the order in the list of Orders 
+*/
+void OrdersList::move(Order& order)
 {
 
+	std::cout << "move " << order << endl;
 }
 
 /*
@@ -42,6 +49,22 @@ ostream& operator<<(ostream& os, const Order& order)
 	{
 		os << order.type << " - Advance armies to the terrorities\n";
 	}
+	else if (order.type == "Bomb")
+	{
+		os << order.type << " - Bomb target terrority\n";
+	}
+	else if (order.type == "Blockade")
+	{
+		os << order.type << " - Blockade target terrority\n";
+	}
+	else if (order.type == "Airlift")
+	{
+		os << order.type << " - Airlift armies to the terrorities\n";
+	}
+	else if (order.type == "Negotiate")
+	{
+		os << order.type << " - Negotiate with target player\n";
+	}
 	else
 	{
 		os << "Invalid order!";
@@ -50,20 +73,28 @@ ostream& operator<<(ostream& os, const Order& order)
 	return os;
 }
 
-// Deploy class constructor
-
+// Deploy class
+/*
+	Deploy class constructor. Parameters include number of armies to move, source territory, and target terroritory
+*/
 Deploy::Deploy(int numOfArmyUnits)
 {
 	std::cout << "Created Deploy order" << std::endl;
 	this->type = "Deploy";
 }
 
+/*
+	Deploy validate checks if source territory and target territory.
+*/
 bool Deploy::validate()
 {
 	std::cout << "validate Deploy order\n";
 	return true;
 }
 
+/*
+	Executes Deploy order and begins attack from source territory to target territory
+*/
 void Deploy::execute()
 {
 	if (this->validate())
