@@ -8,11 +8,6 @@
 */
 void testOrdersLists();
 
-/*
-	Debugging Free functions 
-
-*/
-
 
 
 /*
@@ -40,7 +35,7 @@ protected:
 class OrdersList
 {
 public:
-	void remove(Order &order);
+	void remove(Order* order);
 	void move(Order& order);
 	std::vector<Order*> orders;
 

@@ -21,9 +21,24 @@ Order::~Order()
 /*
 	Delete the order from the list of Orders 
 */
-void OrdersList::remove(Order &order)
+void OrdersList::remove(Order* order)
 {
-	std::cout << "remove " << order << endl;
+	if (this->orders.empty())
+	{
+		std::cout << "Order List is empty! " << endl;
+		return;
+	}
+
+	for (int i = 0; i < this->orders.size(); i++)
+	{
+		if (this->orders[i] == order)
+		{
+			this->orders.erase(this->orders.begin() + i);
+			return;
+		}
+	}
+
+	std::cout << "Order is not in the Orders List " << endl;
 }
 
 /*
@@ -36,7 +51,7 @@ void OrdersList::move(Order& order)
 }
 
 /*
-	Override stream insertion operator
+	Override stream insertion operator. Prints the order description when passed dwda
 */
 ostream& operator<<(ostream& os, const Order& order)
 {

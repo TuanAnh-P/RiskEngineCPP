@@ -15,13 +15,17 @@ void testOrdersLists()
 
 	OrdersList* ordersList = new OrdersList;
 
-	ordersList->remove(*deploy_order);
-
-
 	ordersList->orders.push_back(deploy_order);
 	ordersList->orders.push_back(advance_order);
 	ordersList->orders.push_back(bomb_order);
 
+	// Test remove method 
+
+	ordersList->remove(deploy_order);
+	ordersList->remove(advance_order);
+	ordersList->remove(bomb_order);
+
+	// Display order list
 	for (int i = 0; i < ordersList->orders.size(); i++)
 	{
 		std::cout << i << " - " << *ordersList->orders[i];
@@ -30,8 +34,5 @@ void testOrdersLists()
 	
 }
 
-void viewAllOrdersInList(OrdersList* orderList)
-{
-	
-}
+
 
