@@ -1,28 +1,38 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <iostream>
 #include <vector>
-// #include <Territory.h>
-// #include <Card.h>
-// #include <OrdersList.h>
-
-using namespace std;
+#include <string>
+#include "Territory.h"
+#include "Order.h"
+#include "Card.h"
 
 class Player {
-
 public:
-    Player(string &playerName, vector<&Territory> territoriesList, vector<&Card> handOfCards, OrdersList &ordersList);
-    void issueOrder();
-    vector<Territory*> toDefend();
-    vector<Territory*> toAttack();
+    Player(const std::string& playerName);
+
+    // Methods to manage territories
+    void addTerritory(Territory* territory);
+    bool removeTerritory(Territory* territory);
+    const std::vector<Territory*>& getTerritories() const;
+
+    // Methods to manage cards
+    void addCard(Card* card);
+    bool removeCard(Card* card);
+    const std::vector<Card*>& getCards() const;
+
+    // Methods for issuing orders
+    void issueOrder(Order* order);
+
+    // Methods to decide which territories to defend and attack
+    std::vector<Territory*> toDefend();
+    std::vector<Territory*> toAttack();
 
 private:
-    string *playerName;
-    vector<Territory*> territoriesList;
-    vector<Card*> handOfCards;
-    OrdersList *ordersList;
-
+    std::string playerName;
+    std::vector<Territory*> territories;
+    std::vector<Card*> cards;
+    std::vector<Order*> orders;
 };
 
-#endif PLAYER_H
+#endif

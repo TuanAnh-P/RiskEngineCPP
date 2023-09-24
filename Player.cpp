@@ -1,24 +1,55 @@
 #include "Player.h"
 
-// Constructor implementation
-Player::Player(string &playerName, vector<&Territory> territoriesList, vector<&Card> handOfCards, OrdersList &ordersList) {
-    this->playerName = &playerName;
-    this->territoriesList = territoriesList;
-    this->handOfCards = handOfCards;
-    this->ordersList = &ordersList;
+Player::Player(const std::string& playerName) : playerName(playerName) {}
+
+void Player::addTerritory(Territory* territory) {
+    territories.push_back(territory);
 }
 
-void Player::issueOrder() {
-    
+bool Player::removeTerritory(Territory* territory) {
+    for (int i = 0; i < territories.size(); ++i) {
+        if (territories[i] == territory) {
+            territories.erase(territories.begin() + i);
+            return true; // Territory successfully removed
+        }
+    }
+    return false; // Territory not found
 }
 
-vector<Territory*> Player::toDefend() {
-    vector<Territory*> territoriesToDefend;
-    return territoriesToDefend;
+const std::vector<Territory*>& Player::getTerritories() const {
+    return territories;
 }
 
-vector<Territory*> Player::toAttack() {
-    vector<Territory*> territoriesToAttack;
-    return territoriesToAttack;
+void Player::addCard(Card* card) {
+    cards.push_back(card);
 }
 
+bool Player::removeCard(Card* card) {
+    for (int i = 0; i < cards.size(); ++i) {
+        if (cards[i] == card) {
+            cards.erase(cards.begin() + i);
+            return true; // Territory successfully removed
+        }
+    }
+    return false; // Territory not found
+}
+
+const std::vector<Card*>& Player::getCards() const {
+    return cards;
+}
+
+void Player::issueOrder(Order* order) {
+    orders.push_back(order);
+}
+
+std::vector<Territory*> Player::toDefend() {
+    // Return an arbitrary list of territories
+    std::vector<Territory*> defendTerritories;
+    return defendTerritories;
+}
+
+std::vector<Territory*> Player::toAttack() {
+    // Return an arbitrary list of territories
+    std::vector<Territory*> attackTerritories;
+    return attackTerritories;
+}
