@@ -1,3 +1,5 @@
 .vscode/
 GameEngine
 GameEngine.dSYM
+.DS_Store
+Game Engine.DS_Store
