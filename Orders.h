@@ -23,8 +23,8 @@ public:
 
 protected:
 	std::string type = "Invalid";
-	virtual bool validate() = 0;
-	virtual void execute() = 0;
+	virtual bool validate();
+	virtual void execute();
 
 	
 };
@@ -36,7 +36,7 @@ class OrdersList
 {
 public:
 	void remove(Order* order);
-	void move(Order& order);
+	void move(Order* order, const int target_index);
 	std::vector<Order*> orders;
 
 	

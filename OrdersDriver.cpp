@@ -19,18 +19,34 @@ void testOrdersLists()
 	ordersList->orders.push_back(advance_order);
 	ordersList->orders.push_back(bomb_order);
 
-	// Test remove method 
+	std::cout << "---- BEFORE MOVE ----\n";
 
-	ordersList->remove(deploy_order);
-	ordersList->remove(advance_order);
-	ordersList->remove(bomb_order);
-
-	// Display order list
 	for (int i = 0; i < ordersList->orders.size(); i++)
 	{
 		std::cout << i << " - " << *ordersList->orders[i];
 	}
 
+	std::cout << "---- AFTER MOVE ----\n";
+	ordersList->move(deploy_order, 2);
+	ordersList->move(advance_order, 1);
+
+	
+
+	//ordersList->remove(deploy_order);
+	//delete deploy_order;
+	//deploy_order = NULL; // resolve dangling pointer
+
+	//ordersList->remove(advance_order);
+
+
+
+	// Display Order list
+	for (int i = 0; i < ordersList->orders.size(); i++)
+	{
+		std::cout << i << " - " << *ordersList->orders[i];
+	}
+
+	
 	
 }
 

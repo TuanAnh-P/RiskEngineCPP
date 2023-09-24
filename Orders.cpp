@@ -13,7 +13,17 @@ Order::Order()
 // Base Order Class deconstructor
 Order::~Order()
 {
+	// Debugging
 	std::cout << "Deconstructor Order base" << std::endl;
+}
+
+bool Order::validate()
+{
+	return true;
+}
+void Order::execute()
+{
+	return;
 }
 
 // OrdersList class 
@@ -42,12 +52,46 @@ void OrdersList::remove(Order* order)
 }
 
 /*
-	Move the order in the list of Orders 
+	Move the order in the list of Orders. 
+	-> Move to top
+	-> Move up
+	-> Move down 
+	-> Move to bottom
 */
-void OrdersList::move(Order& order)
+void OrdersList::move(Order* order, const int target_index)
 {
+	// Check empty array
+	if (this->orders.empty())
+	{
+		std::cout << "Order List is empty! " << endl;
+		return;
+	}
 
-	std::cout << "move " << order << endl;
+	// Check if the array has one element
+	else if (this->orders.size() < 2)
+	{
+		std::cout << "Order List only has one element! " << endl;
+		return;
+	}
+
+	// Check if target index is out of bound of the array
+	else if (target_index > this->orders.size())
+	{
+		std::cout << "Index target is out of bounds of the OrdersList " << endl;
+		return;
+	}
+
+	// Swap target index element 
+
+	for (int i = 0; i < this->orders.size(); i++)
+	{
+		if (this->orders[i] == order)
+		{
+			this->orders.erase(this->orders.begin() + i);
+			this->orders.insert(this->orders.begin() + target_index, order);
+			return;
+		}
+	}
 }
 
 /*
