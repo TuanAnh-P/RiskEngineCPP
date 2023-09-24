@@ -1,82 +1,117 @@
-
-#pragma once 
+#pragma once
 
 #include <map>
 #include <string>
+#include <assert.h>
 
 using namespace std;
 
-class State 
+namespace warzone
 {
+
+    template <typename T>
+    class GameEngine;
+
+    template <typename T>
+    class GameState
+    {
     protected:
         string _name;
-        GameEngine& _gameEngine;
+        T _gameStateID;
+        GameEngine<T>& _gameEngine;
 
     public:
-
-        explicit State(GameEngine& gameEngine,
-            std::string name = "default")
-            : _name(name)
-            , _gameEngine(gameEngine)
+        explicit GameState(GameEngine<T> &gameEngine,
+                           T gameStateId,
+                           string name = "default")
+            : _name(name),
+              _gameStateID(gameStateId),
+              _gameEngine(gameEngine)
         {
         }
 
-        virtual ~State() {}
+        virtual ~GameState() {}
+
         virtual void enter()
         {
         }
+
         virtual void exit()
         {
         }
+
         virtual void update()
         {
         }
-};
+    };
 
-class GameEngine {
+    template <typename T>
+    class GameEngine
+    {
 
     protected:
-        // All states of the game
-        std::map<string, std::unique_ptr<State>> _states;
-        // The current state.
-        State* _currentState;
+        // All GameStates of the game
+        map<T, std::unique_ptr<GameState<T> > > _gameStates;
+        // The current GameState.
+        GameState<T> *_currentGameState;
 
-    public: 
-        GameEngine() : _currentState(nullptr) 
+    public:
+        GameEngine() : _currentGameState(nullptr)
         {
         }
 
-        State& getCurrentState()
+        GameState<T> &getGameState(T gameStateID)
         {
-            return *_currentState;
+            return *_gameStates[gameStateID];
+        }
+
+        // Get current GameState
+        GameState<T> &getCurrentGameState()
+        {
+            return *_currentGameState;
+        }
+
+        // Add a new GameState to the game engine
+        template <class S>
+        GameState<T> &add(T gameStateID)
+        {
+            static_assert(not is_same<GameState<T>, S>());
+            _gameStates[gameStateID] = make_unique<S>(*this);
+            return *_gameStates[gameStateID];
+        }
+
+        void setCurrentGameState(T gameStateID)
+        {
+            GameState<T> *gameState = &getGameState(gameStateID);
+            setCurrentGameState(gameState);
+        }
+
+        void update()
+        {
+            if (_currentGameState != nullptr)
+            {
+                _currentGameState->update();
+            }
         }
 
     protected:
-        void setCurrentState(State* state)
+        void setCurrentGameState(GameState<T>* gameState)
         {
-            if (_currentState == state)
+            if (_currentGameState == gameState)
             {
                 return;
             }
 
-            if (_currentState != nullptr)
+            if (_currentGameState != nullptr)
             {
-                _currentState->exit();
+                _currentGameState->exit();
             }
 
-            _currentState = state;
-            if (_currentState != nullptr)
+            _currentGameState = gameState;
+            if (_currentGameState != nullptr)
             {
-                _currentState->enter();
+                _currentGameState->enter();
             }
         }
-}; 
-
-
-
-
-
-
-
-
-
+    };
+}
