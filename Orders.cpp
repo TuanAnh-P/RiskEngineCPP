@@ -52,11 +52,7 @@ void OrdersList::remove(Order* order)
 }
 
 /*
-	Move the order in the list of Orders. 
-	-> Move to top
-	-> Move up
-	-> Move down 
-	-> Move to bottom
+	Move the order in the list of Orders. Takes Order ptr and target index within the OrdersList array
 */
 void OrdersList::move(Order* order, const int target_index)
 {
