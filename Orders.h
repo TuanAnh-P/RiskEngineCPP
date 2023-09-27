@@ -18,7 +18,7 @@ class Order
 public:
 	Order();
 	~Order();
-	friend std::ostream& operator<< (std::ostream& os, const Order& order);
+	friend std::ostream& operator<< (std::ostream& os, Order& order);
 	
 
 protected:
@@ -35,11 +35,11 @@ protected:
 class OrdersList
 {
 public:
-	void remove(Order* order);
-	void move(Order* order, const int target_index);
+	OrdersList();
+	~OrdersList();
+	void remove(Order& order);
+	void move(Order& order, const int target_index);
 	std::vector<Order*> orders;
-
-	
 
 };
 

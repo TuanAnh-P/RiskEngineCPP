@@ -3,35 +3,28 @@
 using namespace std;
 
 // Base Order Class constructor
-Order::Order()
-{
+Order::Order() {};
 
-	
-
-}
 
 // Base Order Class deconstructor
-Order::~Order()
-{
-	// Debugging
-	std::cout << "Deconstructor Order base" << std::endl;
-}
+Order::~Order() {};
 
-bool Order::validate()
-{
-	return true;
-}
-void Order::execute()
-{
-	return;
-}
+
+bool Order::validate() {return true;}
+void Order::execute() {return;}
 
 // OrdersList class 
+
+// Base OrderList Class constructor
+OrdersList::OrdersList() {};
+
+// Base OrderList Class deconstructor
+OrdersList::~OrdersList() {};
 
 /*
 	Delete the order from the list of Orders 
 */
-void OrdersList::remove(Order* order)
+void OrdersList::remove(Order& order)
 {
 	if (this->orders.empty())
 	{
@@ -41,7 +34,7 @@ void OrdersList::remove(Order* order)
 
 	for (int i = 0; i < this->orders.size(); i++)
 	{
-		if (this->orders[i] == order)
+		if (this->orders[i] == &order)
 		{
 			this->orders.erase(this->orders.begin() + i);
 			return;
@@ -54,7 +47,7 @@ void OrdersList::remove(Order* order)
 /*
 	Move the order in the list of Orders. Takes Order ptr and target index within the OrdersList array
 */
-void OrdersList::move(Order* order, const int target_index)
+void OrdersList::move(Order& order, const int target_index)
 {
 	// Check empty array
 	if (this->orders.empty())
@@ -81,10 +74,10 @@ void OrdersList::move(Order* order, const int target_index)
 
 	for (int i = 0; i < this->orders.size(); i++)
 	{
-		if (this->orders[i] == order)
+		if (this->orders[i] == &order)
 		{
 			this->orders.erase(this->orders.begin() + i);
-			this->orders.insert(this->orders.begin() + target_index, order);
+			this->orders.insert(this->orders.begin() + target_index, &order);
 			return;
 		}
 	}
@@ -93,7 +86,7 @@ void OrdersList::move(Order* order, const int target_index)
 /*
 	Override stream insertion operator. Prints the order description when passed dwda
 */
-ostream& operator<<(ostream& os, const Order& order)
+ostream& operator<<(ostream& os, Order& order)
 {
 
 	if (order.type == "Deploy")
