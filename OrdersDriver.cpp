@@ -43,6 +43,59 @@ void testOrdersLists()
 	// Display Order list
 	ordersList->print();
 
+	LOG("---- Validate \ Execute Orders ----");
+
+	for(Order* order : ordersList->orders)
+	{
+		if (order->type == "Advance")
+		{
+			Advance* advance = dynamic_cast<Advance*>(order);
+			advance->execute();
+		}
+
+		else if (order->type == "Deploy")
+		{
+			Deploy* temp = dynamic_cast<Deploy*>(order);
+			temp->execute();
+		}
+
+
+		else if (order->type == "Bomb")
+		{
+			Bomb* temp = dynamic_cast<Bomb*>(order);
+			temp->execute();
+		}
+
+		else if (order->type == "Bomb")
+		{
+			Bomb* temp = dynamic_cast<Bomb*>(order);
+			temp->execute();
+		}
+
+		else if (order->type == "Blockade")
+		{
+			Blockade* temp = dynamic_cast<Blockade*>(order);
+			temp->execute();
+		}
+
+		else if (order->type == "Airlift")
+		{
+			Airlift* temp = dynamic_cast<Airlift*>(order);
+			temp->execute();
+		}
+
+		else if (order->type == "Negotiate")
+		{
+			Negotiate* temp = dynamic_cast<Negotiate*>(order);
+			temp->execute();
+		}
+
+		else
+		{
+			std::cout << "Invalid Order!! Cannot validate / execute!" << std::endl;
+		}
+	}
+
 
 
 	

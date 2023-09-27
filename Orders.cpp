@@ -12,7 +12,8 @@ Order::~Order()
 	cout << "Order deconstructor was called!" << endl;
 };
 
-bool Order::validate() {return true;}
+bool Order::validate() { return true; }
+
 void Order::execute() {return;}
 
 // OrdersList class 
@@ -110,6 +111,10 @@ void OrdersList::print()
 	std::cout << "\n";
 }
 
+void OrdersList::validate(Order& order)
+{
+	
+}
 
 /*
 	Override stream insertion operator. Prints the order description when passed dwda

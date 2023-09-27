@@ -17,10 +17,9 @@ public:
 	Order();
 	~Order();
 	friend std::ostream& operator<< (std::ostream& os, Order& order);
-	
+	std::string type = "Invalid";
 
 protected:
-	std::string type = "Invalid";
 	virtual bool validate();
 	virtual void execute();
 
@@ -38,6 +37,7 @@ public:
 	void remove(Order& order);
 	void move(Order& order, const int target_index);
 	void print();
+	void validate(Order& order);
 	std::vector<Order*> orders;
 
 };
