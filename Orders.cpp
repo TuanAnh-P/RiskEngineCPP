@@ -7,8 +7,10 @@ Order::Order() {};
 
 
 // Base Order Class deconstructor
-Order::~Order() {};
-
+Order::~Order() 
+{
+	cout << "Order deconstructor was called!" << endl;
+};
 
 bool Order::validate() {return true;}
 void Order::execute() {return;}
@@ -70,6 +72,13 @@ void OrdersList::move(Order& order, const int target_index)
 		return;
 	}
 
+	// Check if target index is the array size then just insert
+	else if (target_index == this->orders.size())
+	{
+		this->orders.insert(this->orders.begin() + target_index, &order);
+		return;
+	}
+
 	// Swap target index element 
 
 	for (int i = 0; i < this->orders.size(); i++)
@@ -82,6 +91,25 @@ void OrdersList::move(Order& order, const int target_index)
 		}
 	}
 }
+
+void OrdersList::print()
+{
+	int n = this->orders.size();
+
+	if (this->orders.empty())
+	{
+		std::cout << "Order List is empty! " << endl;
+		return;
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		std::cout << i << " - " << *this->orders[i];
+	}
+
+	std::cout << "\n";
+}
+
 
 /*
 	Override stream insertion operator. Prints the order description when passed dwda

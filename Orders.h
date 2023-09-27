@@ -8,8 +8,6 @@
 */
 void testOrdersLists();
 
-
-
 /*
 	Order abstract base class definition
 */
@@ -39,6 +37,7 @@ public:
 	~OrdersList();
 	void remove(Order& order);
 	void move(Order& order, const int target_index);
+	void print();
 	std::vector<Order*> orders;
 
 };
