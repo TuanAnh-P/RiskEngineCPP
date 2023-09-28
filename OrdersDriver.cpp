@@ -22,7 +22,6 @@ void testOrdersLists()
 	ordersList->orders.push_back(blockade_order);
 	ordersList->orders.push_back(airlift_order);
 	ordersList->orders.push_back(negotiate_order);
-
 	
 
 	LOG("Start Test\n ----BEFORE MOVE----");
@@ -59,7 +58,6 @@ void testOrdersLists()
 			temp->execute();
 		}
 
-
 		else if (order->type == "Bomb")
 		{
 			Bomb* temp = dynamic_cast<Bomb*>(order);
@@ -95,9 +93,6 @@ void testOrdersLists()
 			std::cout << "Invalid Order!! Cannot validate / execute!" << std::endl;
 		}
 	}
-
-
-
 	
 }
 
