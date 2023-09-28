@@ -1,13 +1,17 @@
 #pragma once
 
+#include <memory>
 #include <map>
 #include <string>
 #include <assert.h>
 
-using namespace std;
+using std::string;
+using std::cout;
+using std::endl;
 
 namespace warzone
 {
+    void printStateEnterMessage();
 
     template <typename T>
     class GameEngine;
@@ -23,24 +27,22 @@ namespace warzone
     public:
         explicit GameState(GameEngine<T> &gameEngine,
                            T gameStateId,
-                           string name = "default")
+                           string name)
             : _name(name),
               _gameStateID(gameStateId),
               _gameEngine(gameEngine)
         {
         }
 
-        virtual ~GameState() {}
-
         virtual void enter()
         {
         }
 
-        virtual void exit()
+        virtual void update()
         {
         }
 
-        virtual void update()
+        virtual void exit()
         {
         }
     };
@@ -51,7 +53,7 @@ namespace warzone
 
     protected:
         // All GameStates of the game
-        map<T, std::unique_ptr<GameState<T> > > _gameStates;
+        std::map<T, std::unique_ptr<GameState<T> > > _gameStates;
         // The current GameState.
         GameState<T> *_currentGameState;
 
@@ -75,8 +77,8 @@ namespace warzone
         template <class S>
         GameState<T> &add(T gameStateID)
         {
-            static_assert(not is_same<GameState<T>, S>());
-            _gameStates[gameStateID] = make_unique<S>(*this);
+            // static_assert(not std::is_same<GameState<T>, S>());
+            _gameStates[gameStateID] = std::unique_ptr<S>(new S(*this));
             return *_gameStates[gameStateID];
         }
 
