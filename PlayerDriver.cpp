@@ -1,6 +1,9 @@
+// PlayerDriver.cpp
+
 #include "Player.h"
 
-int main() {
+// Define the testPlayers function to demonstrate player object features
+void testPlayers() {
     // Create a player with the name "Player 1"
     Player player("Player 1");
 
@@ -24,18 +27,24 @@ int main() {
 
     // Access and test the player's hand
     const Hand& playerHand = player.getHand();
-    playerHand.print();
+    playerHand.print(); // Assuming a print() function in the Hand class
 
     // Access and test the player's orders list
     const OrdersList& playerOrders = player.getOrdersList();
-    playerOrders.print();
+    playerOrders.print(); // Assuming a print() function in the OrdersList class
 
     // Clean up manually by deleting territories to prevent memory leaks
     delete territory1;
     delete territory2;
+}
+
+int main() {
+    // Call the testPlayers function to demonstrate player object features
+    testPlayers();
 
     return 0;
 }
+
 
 
 
