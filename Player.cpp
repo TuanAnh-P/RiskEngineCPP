@@ -60,7 +60,7 @@ void Player::issueOrder(const std::string& orderType) {
 
     // Create an Order object based on the orderType
     if (orderType == "Deploy") {
-        newOrder = new Deploy(new int(5)); // Example with parameters
+        newOrder = new Deploy(*new int(5)); // Example with parameters
     }
     else if (orderType == "Advance") {
         newOrder = new Advance();

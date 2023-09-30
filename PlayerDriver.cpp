@@ -18,19 +18,33 @@ void testPlayers() {
     // Get the territories to defend (initially, it returns all owned territories)
     std::vector<Territory*> territoriesToDefend = player.toDefend();
 
+    // Display the territories to defend
+    std::cout << "Territories to Defend: ";
+    for (const Territory* territory : territoriesToDefend) {
+        std::cout << territory.getName() << "\t";
+    }
+    std::cout << std::endl;
+
     // Get the territories to attack (initially, it returns an empty list)
     std::vector<Territory*> territoriesToAttack = player.toAttack();
+
+    // Display the territories to attack
+    std::cout << "Territories to Attack: ";
+    for (const Territory* territory : territoriesToAttack) {
+        std::cout << territory.getName() << "\t";
+    }
+    std::cout << std::endl;
 
     // Issue some orders
     player.issueOrder("Deploy");   // Example: Deploy troops to a territory
     player.issueOrder("Advance");  // Example: Advance troops to a neighboring territory
 
     // Access and test the player's hand
-    const Hand& playerHand = player.getHand();
+    Hand& playerHand = player.getHand();
     playerHand.print(); // Assuming a print() function in the Hand class
 
     // Access and test the player's orders list
-    const OrdersList& playerOrders = player.getOrdersList();
+    OrdersList playerOrders = player.getOrdersList();
     playerOrders.print(); // Assuming a print() function in the OrdersList class
 
     // Clean up manually by deleting territories to prevent memory leaks
