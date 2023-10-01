@@ -3,13 +3,13 @@
 #include <memory>
 #include "GameEngine.h"
 
-using namespace warzone;
-
 using std::cout;
 using std::cin;
 using std::endl;
-
 using std::string;
+using namespace warzone; 
+
+namespace warzone{
 
 enum GameStateType
 {
@@ -30,7 +30,16 @@ void printStateEnterMessage(string stateName){
 
 void printInvalidCommandError(){
     cout << "Please enter a valid command..." << endl;
-}
+};
+
+string getUserCommand(){
+  cout <<  "\nPlease enter command: "; 
+
+  string command;
+  cin >> command;
+
+  return command; 
+};
 
 class StartState : public GameState<GameStateType>
 {
@@ -49,8 +58,7 @@ public:
 
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if (input == "loadmap")
         {
@@ -77,11 +85,9 @@ public:
         printStateEnterMessage(_name);
     }
 
-
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if (input == "loadmap")
         {
@@ -114,13 +120,10 @@ public:
 
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
-        if(input == "addplayer"){
-           cout << "Remaining in the " <<  _name << " State" << endl;
-        } else if (input == "validatemap") {
-            _gameEngine.setCurrentGameState(MAP_VALIDATED);
+        if (input == "addplayer") {
+            _gameEngine.setCurrentGameState(PLAYERS_ADDED);
         } else {
             cout << "Please enter a valid command..." << endl;
         }
@@ -143,8 +146,7 @@ public:
 
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if(input == "addplayer"){
            cout << "Remaining in the " <<  _name << " State" << endl;
@@ -172,8 +174,7 @@ public:
 
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if(input == "issueorder"){
            _gameEngine.setCurrentGameState(ISSUE_ORDERS);
@@ -199,8 +200,7 @@ public:
 
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if(input == "issueorder"){
            cout << "Remaining in the " <<  _name << " State" << endl;
@@ -228,8 +228,7 @@ public:
 
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if(input == "execorder"){
            cout << "Remaining in the " <<  _name << " State" << endl;
@@ -254,10 +253,13 @@ public:
     {
     }
 
+    void enter() {
+        printStateEnterMessage(_name);
+    }
+
     void update()
     {
-        string input;
-        cin >> input;
+        string input =  getUserCommand();
 
         if (input == "play") {
             _gameEngine.setCurrentGameState(START);
@@ -266,10 +268,6 @@ public:
         } else {
             printInvalidCommandError();
         }
-    }
-
-    void exit() {
-        cout << "The game has finished. Thanks for playing :)" << endl;
     }
 };
 
@@ -283,23 +281,11 @@ public:
     {
     }
 
-    void update()
-    {
-        string input;
-        cin >> input;
-
-        if (input == "play") {
-            _gameEngine.setCurrentGameState(START);
-        } else if (input == "end") {
-            _gameEngine.setCurrentGameState(END);
-        } else {
-            printInvalidCommandError();
-        }
-    }
-
-    void exit() {
+    void enter() {
         cout << "The game has finished. Thanks for playing :)" << endl;
     }
+};
+
 };
 
 int main()
@@ -311,18 +297,17 @@ int main()
     GameState<GameStateType> &startState = game->add<StartState>(START);
     GameState<GameStateType> &mapLoadedState = game->add<MapLoadedState>(MAP_LOADED);
     GameState<GameStateType> &mapValidatedState = game->add<MapValidatedState>(MAP_VALIDATED);
-    GameState<GameStateType> &playersAddedState = game->add<MapValidatedState>(PLAYERS_ADDED);
-    GameState<GameStateType> &assignReinforcementState = game->add<MapValidatedState>(ASSIGN_REINFORCEMENT);
-    GameState<GameStateType> &issueOrdersState = game->add<MapValidatedState>(ISSUE_ORDERS);
-    GameState<GameStateType> &executeOrders = game->add<MapValidatedState>(EXECUTE_ORDERS);
-    GameState<GameStateType> &winState = game->add<WinState>(MAP_VALIDATED);
+    GameState<GameStateType> &playersAddedState = game->add<PlayersAddedState>(PLAYERS_ADDED);
+    GameState<GameStateType> &assignReinforcementState = game->add<AssignReinforcementState>(ASSIGN_REINFORCEMENT);
+    GameState<GameStateType> &issueOrdersState = game->add<IssueOrdersState>(ISSUE_ORDERS);
+    GameState<GameStateType> &executeOrders = game->add<ExecuteOrdersState>(EXECUTE_ORDERS);
+    GameState<GameStateType> &winState = game->add<WinState>(WIN);
     GameState<GameStateType> &endState = game->add<EndState>(END);
 
 
     game->setCurrentGameState(START);
 
-    bool done = false;
-    while (!done)
+    while ((game->getCurrentGameState()).getGameStateId() != END)
     {
         game->update();
     }

@@ -12,6 +12,8 @@ using std::endl;
 namespace warzone
 {
     void printStateEnterMessage();
+    void printInvalidCommandError();
+    string getUserCommand();
 
     template <typename T>
     class GameEngine;
@@ -34,17 +36,13 @@ namespace warzone
         {
         }
 
-        virtual void enter()
-        {
+        T getGameStateId(){
+            return _gameStateID;
         }
 
-        virtual void update()
-        {
-        }
+        virtual void enter() {}
 
-        virtual void exit()
-        {
-        }
+        virtual void update() {}
     };
 
     template <typename T>
@@ -77,7 +75,6 @@ namespace warzone
         template <class S>
         GameState<T> &add(T gameStateID)
         {
-            // static_assert(not std::is_same<GameState<T>, S>());
             _gameStates[gameStateID] = std::unique_ptr<S>(new S(*this));
             return *_gameStates[gameStateID];
         }
@@ -104,10 +101,10 @@ namespace warzone
                 return;
             }
 
-            if (_currentGameState != nullptr)
-            {
-                _currentGameState->exit();
-            }
+            // if (_currentGameState != nullptr)
+            // {
+            //     _currentGameState->exit();
+            // }
 
             _currentGameState = gameState;
             if (_currentGameState != nullptr)
