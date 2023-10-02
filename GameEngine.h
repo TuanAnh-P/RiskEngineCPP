@@ -5,6 +5,7 @@
 #include <string>
 
 using std::string;
+using std::ostream;
 
 namespace warzone
 {
@@ -32,8 +33,9 @@ namespace warzone
         string _name;
         GameStateType _gameStateID;
         GameEngine &_gameEngine;
-
     public:
+        friend ostream & operator << (ostream &out, GameState &state);
+
         explicit GameState(GameEngine &gameEngine,
                            GameStateType gameStateId,
                            string name);
@@ -58,6 +60,8 @@ namespace warzone
 
     public:
         GameEngine();
+
+        friend ostream & operator << (ostream &out, GameEngine &gameEngine);
 
         // Get game state instance by ID
         GameState &getGameState(GameStateType gameStateID);

@@ -7,6 +7,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
+using std::ostream;
 using namespace warzone;
 
 namespace warzone
@@ -30,6 +31,13 @@ namespace warzone
     GameState::GameState(GameEngine &gameEngine, GameStateType gameStateId, string name):
         _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
     
+    ostream & operator << (ostream &out, GameState &state)
+    {
+        out << state._name << endl;
+        return out;
+    }
+
+
     void GameState::enter(){
         cout << "\n\tEntered the " << _name << " State" << endl;
     }
@@ -40,6 +48,12 @@ namespace warzone
 
     // Implementation of the GameState class methods
     GameEngine::GameEngine() : _currentGameState(nullptr) {};
+
+    ostream & operator << (ostream &out, GameEngine &engine)
+    {
+        out << "current state" << engine._currentGameState->getGameStateId() << endl;
+        return out;
+    }
 
     GameState& GameEngine::getGameState(GameStateType gameStateID){
         return *_gameStates[gameStateID];
