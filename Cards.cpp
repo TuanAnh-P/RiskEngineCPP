@@ -1,17 +1,15 @@
-// Cards.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 #include "Cards.h"
-#include "Orders.cpp"
+#include "Orders.h"
 #include <cstdlib>
 
 //---------------------------------------------------CARD---------------------------------------------------------------------------
-// Constructor
+// Constructor (shallow on purpose)
 Card::Card(CardType type, Deck* deck) : type(type), deck(deck) {}
 
-// Copy constructor
+// Copy constructor (shallow on purpose)
 Card::Card(Card& other) : type(other.type), deck(other.deck) {}
 
-// Assignment operator
+// Assignment operator (shallow on purpose)
 Card& Card::operator=(Card& other) {
     if (this != &other) {
         type = other.type;
@@ -50,55 +48,50 @@ std::ostream& operator<<(std::ostream& os, Card& card) {
     return os;
 }
 
-//void Card::play(Hand& hand, int index, OrdersList& ordersList) {
-void Card::play(Hand& hand, int index) {
-    // Check if the index is valid
+// Creates order and adds it to orderlist. Card is then put back into the deck.
+void Card::play(Hand& hand, int index, OrdersList& ordersList) {
     if (index >= 0 && index < hand.cards.size()) {
         
-        Card* playedCard = hand.cards[index];
+        Card* playedCard = hand.cards[index];//put card back in deck before removing from hand from 
 
         if (deck != nullptr) {
             deck->cards.push_back(playedCard);
         }
 
 
-
-        /*
-        Order* newOrder = nullptr;
-        switch (playedCard->getType()) {
+        switch (playedCard->getType()) {//create order and put into orderlist
         case CardType::Bomb:
-            newOrder = new Bomb();
-            ordersList.move(newOrder, ordersList.orders.size() - 1);
+            Bomb* newOrder = new Bomb();
+            ordersList.orders.push_back(newOrder);
             break;
         case CardType::Reinforcement:
             //newOrder = new Reinforcement();
-            //ordersList.move(newOrder, ordersList.orders.size() - 1);
+            //ordersList.orders.push_back(newOrder);
             break;
         case CardType::Blockade:
-            newOrder = new Blockade();
-            ordersList.move(newOrder, ordersList.orders.size() - 1);
+            Blockade* newOrder = new Blockade();
+            ordersList.orders.push_back(newOrder);
             break;
         case CardType::Airlift:
-            newOrder = new Airlift();
-            ordersList.move(newOrder, ordersList.orders.size() - 1);
+            Airlift* newOrder = new Airlift();
+            ordersList.orders.push_back(newOrder);
             break;
         case CardType::Diplomacy:
             //newOrder = new Diplomacy();
-            //ordersList.move(newOrder, ordersList.orders.size() - 1);
+            //ordersList.orders.push_back(newOrder);
             break;
         default:
             
             break;
         }
+
+
         std::cout << *playedCard << " was played." << std::endl;
-        */
-        std::cout << *playedCard << " was played." << std::endl;
 
 
 
-
-        hand.cards[index] = nullptr;
         delete hand.cards[index];
+        hand.cards[index] = nullptr;
 
         hand.cards.erase(hand.cards.begin() + index);
 
@@ -112,9 +105,9 @@ void Card::play(Hand& hand, int index) {
 // Constructor
 Deck::Deck() {
     for (int i = 0; i < 20; i++) {
-        CardType randomType = static_cast<CardType>(rand() % static_cast<int>(CardType::Diplomacy) + 1); // Generate a random CardType
-        Card* newCard = new Card(randomType, this); // Create a new Card with random type and the current deck pointer
-        cards.push_back(newCard); // Add the new card to the deck
+        CardType randomType = static_cast<CardType>(rand() % static_cast<int>(CardType::Diplomacy) + 1); // random CardType
+        Card* newCard = new Card(randomType, this); // create the card
+        cards.push_back(newCard); // add card to deck
     }
 }
 
@@ -128,17 +121,17 @@ Deck::Deck(Deck& other) {
 // Assignment operator
 Deck& Deck::operator=(Deck & other) {
     if (this == &other) {
-        return *this; // Self-assignment, no need to do anything
+        return *this;
     }
 
-    // Clear the current cards
+    // Clear cards
     for (Card* card : cards) {
         card = NULL;
         delete card;
     }
     cards.clear();
 
-    // Perform a deep copy of the cards
+    // Deep copy of the cards
     for (Card* card : other.cards) {
         this->cards.push_back(new Card(*card));
     }
@@ -155,15 +148,16 @@ std::ostream& operator<<(std::ostream& os, Deck& deck) {
     return os;
 }
 
+// Put card from deck to hand
 void Deck::draw(Hand& hand) {
-    if (cards.empty()) {
+    if (cards.empty()) {//deck is empty
         std::cout << "Deck is empty" << std::endl;
         return;
     }
     Card* drawn = new Card(*cards.front());
-    hand.cards.push_back(drawn);
-    cards[0] = NULL;
+    hand.cards.push_back(drawn);//add card to hand before removing from deck
     delete cards[0];
+    cards[0] = NULL;
     cards.erase(cards.begin());
 }
 
@@ -175,9 +169,7 @@ Hand::Hand() {
 
 // Copy Constructor
 Hand::Hand(Hand& other) {
-    // Copy the contents of 'other' to this 'Hand'
     for (Card* card : other.cards) {
-        // Assuming Card has a copy constructor, if not, you might need to implement it.
         this->cards.push_back(new Card(*card));
     }
 }
@@ -185,17 +177,17 @@ Hand::Hand(Hand& other) {
 // Assignment operator
 Hand& Hand::operator=(Hand& other) {
     if (this == &other) {
-        return *this; // Self-assignment, no need to do anything
+        return *this;
     }
 
-    // Clear the current contents of this 'Hand'
+    // Clear hand cards
     for (Card* card : cards) {
         card = NULL;
         delete card;
     }
     cards.clear();
 
-    // Copy the contents of 'other' to this 'Hand'
+    // Deep copy
     for (Card* card : other.cards) {
         this->cards.push_back(new Card(*card));
     }
@@ -207,73 +199,7 @@ Hand& Hand::operator=(Hand& other) {
 std::ostream& operator<<(std::ostream& os, Hand& hand) {
     os << "Hand Contents: \n";
     for (Card* card : hand.cards) {
-        os << *card << std::endl; // Assuming Card has an overload for the << operator
+        os << *card << std::endl;
     }
     return os;
-}
-
-//------------------------------------------------------------------------------------------------------------------------------
-void testCards() {
-    Deck* deck1 = new Deck();
-    Hand* hand1 = new Hand();
-    //OrdersList* ordersList1 = new OrdersList();
-
-    int deckSize = deck1->cards.size();
-    std::cout << "Deck size: " << deckSize << std::endl;
-
-    int handSize1 = hand1->cards.size();
-    std::cout << "Hand size: " << handSize1 << std::endl;
-
-    /*
-    int orderListSize = ordersList1->orders.size();
-    std::cout << "OrdersList size: " << orderListSize << std::endl;
-    */
-
-    for (int i = 0; i < 7; i++) {
-        deck1->draw(*hand1);
-    }
-
-    deckSize = deck1->cards.size();
-    std::cout << "Deck size: " << deckSize << std::endl;
-
-    handSize1 = hand1->cards.size();
-    std::cout << "Hand size: " << handSize1 << std::endl;
-
-    for (int i = 0; i < 7; i++) {
-        //hand1->cards[0]->play(*hand1, 0, *ordersList1);
-        hand1->cards[0]->play(*hand1, 0);
-    }
-
-    deckSize = deck1->cards.size();
-    std::cout << "Deck size: " << deckSize << std::endl;
-
-    handSize1 = hand1->cards.size();
-    std::cout << "Hand size: " << handSize1 << std::endl;
-
-    for (Card* card : deck1->cards) {
-        delete card;
-    }
-    deck1->cards.clear();
-
-    for (Card* card : hand1->cards) {
-        delete card;
-    }
-    hand1->cards.clear();
-
-    /*
-    for (Order* order : ordersList1->orders) {
-        delete order;
-    }
-    ordersList1->orders.clear();
-    */
-
-    delete deck1;
-    delete hand1;
-    //delete ordersList1;
-}
-
-
-int main()
-{
-    testCards();
 }
