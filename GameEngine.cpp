@@ -3,62 +3,94 @@
 #include <memory>
 #include "GameEngine.h"
 
-using std::cout;
 using std::cin;
+using std::cout;
 using std::endl;
 using std::string;
-using namespace warzone; 
+using namespace warzone;
 
-namespace warzone{
-
-enum GameStateType
+namespace warzone
 {
-    START,
-    MAP_LOADED,
-    MAP_VALIDATED,
-    PLAYERS_ADDED,
-    ASSIGN_REINFORCEMENT,
-    ISSUE_ORDERS,
-    EXECUTE_ORDERS,
-    WIN,
-    END
-};
-
-void printStateEnterMessage(string stateName){
-    cout << "Entered the " << stateName << " State" << endl;
-};
-
-void printInvalidCommandError(){
-    cout << "Please enter a valid command..." << endl;
-};
-
-string getUserCommand(){
-  cout <<  "\nPlease enter command: "; 
-
-  string command;
-  cin >> command;
-
-  return command; 
-};
-
-class StartState : public GameState<GameStateType>
-{
-public:
-    StartState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   START,
-                                   "Start")
+    void printInvalidCommandError()
     {
-        
+        cout << "Please enter a valid command..." << endl;
+    };
+
+    string getUserCommand()
+    {
+        cout << "\nPlease enter command: ";
+
+        string command;
+        cin >> command;
+
+        return command;
+    };
+
+    // Implementation of the GameEngine class methods
+    GameState::GameState(GameEngine &gameEngine, GameStateType gameStateId, string name):
+        _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
+    
+    void GameState::enter(){
+        cout << "\n\tEntered the " << _name << " State" << endl;
     }
 
-    void enter(){
-        printStateEnterMessage(_name);
+    GameStateType GameState::getGameStateId(){
+        return _gameStateID;
     }
 
-    void update()
+    // Implementation of the GameState class methods
+    GameEngine::GameEngine() : _currentGameState(nullptr) {};
+
+    GameState& GameEngine::getGameState(GameStateType gameStateID){
+        return *_gameStates[gameStateID];
+    }
+
+    GameState& GameEngine::getCurrentGameState(){
+        return *_currentGameState;
+    }
+
+    template <typename S> 
+    GameState& GameEngine::add(GameStateType gameStateID)
     {
-        string input =  getUserCommand();
+        _gameStates[gameStateID] = std::unique_ptr<S>(new S(*this));
+        return *_gameStates[gameStateID];
+    }
+
+    void GameEngine::setCurrentGameState(GameStateType gameStateID)
+    {
+        GameState *gameState = &getGameState(gameStateID);
+        setCurrentGameState(gameState);
+    }
+
+    void GameEngine::update(){
+        if (_currentGameState != nullptr)
+        {
+            _currentGameState->update();
+        }
+    }
+
+    void GameEngine::setCurrentGameState(GameState *gameState)
+    {
+        if (_currentGameState == gameState)
+        {
+            return;
+        }
+
+        _currentGameState = gameState;
+        if (_currentGameState != nullptr)
+        {
+            _currentGameState->enter();
+        }
+    }
+
+    // Start state class implementation
+    StartState::StartState(GameEngine &gameEngine)
+            : GameState(gameEngine, START, "Start"){};
+
+    StartState::~StartState() {};
+
+    void StartState::update(){
+        string input = getUserCommand();
 
         if (input == "loadmap")
         {
@@ -69,25 +101,15 @@ public:
             cout << "Please enter a valid command..." << endl;
         }
     }
-};
 
-class MapLoadedState : public GameState<GameStateType>
-{
-public:
-    MapLoadedState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                    MAP_LOADED,
-                                   "Map Loaded")
-    {
-    }
+    // Map Loaded state class implementation
+    MapLoadedState::MapLoadedState(GameEngine &gameEngine)
+        : GameState(gameEngine, MAP_LOADED, "Map Loaded"){};
 
-    void enter() {
-        printStateEnterMessage(_name);
-    }
+    MapLoadedState::~MapLoadedState() {};
 
-    void update()
-    {
-        string input =  getUserCommand();
+    void MapLoadedState::update(){
+        string input = getUserCommand();
 
         if (input == "loadmap")
         {
@@ -102,208 +124,170 @@ public:
             cout << "Please enter a valid command..." << endl;
         }
     }
-};
 
-class MapValidatedState : public GameState<GameStateType>
-{
-public:
-    MapValidatedState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   MAP_VALIDATED,
-                                   "Map Validated")
-    {
+    // Map Validated state class implementation
+    MapValidatedState::MapValidatedState(GameEngine &gameEngine)
+        : GameState(gameEngine, MAP_VALIDATED, "Map Validated"){};
+
+    MapValidatedState::~MapValidatedState() {};
+
+    void MapValidatedState::update(){
+        string input = getUserCommand();
+
+            if (input == "addplayer")
+            {
+                _gameEngine.setCurrentGameState(PLAYERS_ADDED);
+            }
+            else
+            {
+                cout << "Please enter a valid command..." << endl;
+            }
     }
 
-    void enter() {
-        printStateEnterMessage(_name);
-    }
+    // Players Added state class implementation
+    PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
+        : GameState(gameEngine, PLAYERS_ADDED, "Players Added"){};
 
-    void update()
-    {
-        string input =  getUserCommand();
+    PlayersAddedState::~PlayersAddedState() {};
 
-        if (input == "addplayer") {
-            _gameEngine.setCurrentGameState(PLAYERS_ADDED);
-        } else {
-            cout << "Please enter a valid command..." << endl;
+    void PlayersAddedState::update(){
+        string input = getUserCommand();
+
+        if (input == "addplayer")
+        {
+            cout << "Remaining in the " << _name << " State" << endl;
         }
-    }
-};
-
-class PlayersAddedState : public GameState<GameStateType>
-{
-public:
-    PlayersAddedState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   PLAYERS_ADDED,
-                                   "Players Added")
-    {
-    }
-
-    void enter() {
-        printStateEnterMessage(_name);
-    }
-
-    void update()
-    {
-        string input =  getUserCommand();
-
-        if(input == "addplayer"){
-           cout << "Remaining in the " <<  _name << " State" << endl;
-        } else if (input == "assigncountries") {
+        else if (input == "assigncountries")
+        {
             _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
-        } else {
+        }
+        else
+        {
             printInvalidCommandError();
         }
     }
-};
 
-class AssignReinforcementState : public GameState<GameStateType>
-{
-public:
-    AssignReinforcementState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   ASSIGN_REINFORCEMENT,
-                                   "Assign Reinforcement")
-    {
-    }
+    // Assign Reinforcement state class implementation
+    AssignReinforcementState::AssignReinforcementState(GameEngine &gameEngine)
+        : GameState(gameEngine, ASSIGN_REINFORCEMENT, "Assign Reinforcement"){};
 
-    void enter() {
-        printStateEnterMessage(_name);
-    }
+    AssignReinforcementState::~AssignReinforcementState() {};
 
-    void update()
-    {
-        string input =  getUserCommand();
+    void AssignReinforcementState::update(){
+        string input = getUserCommand();
 
-        if(input == "issueorder"){
-           _gameEngine.setCurrentGameState(ISSUE_ORDERS);
-        } else {
+        if (input == "issueorder")
+        {
+            _gameEngine.setCurrentGameState(ISSUE_ORDERS);
+        }
+        else
+        {
             printInvalidCommandError();
         }
     }
-};
 
-class IssueOrdersState : public GameState<GameStateType>
-{
-public:
-    IssueOrdersState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   ISSUE_ORDERS,
-                                   "Issue Orders")
-    {
-    }
 
-    void enter() {
-        printStateEnterMessage(_name);
-    }
+    // Issue Orders state class implementation
+    IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
+        : GameState(gameEngine, ISSUE_ORDERS, "Issue Orders"){};
 
-    void update()
-    {
-        string input =  getUserCommand();
+    IssueOrdersState::~IssueOrdersState() {};
 
-        if(input == "issueorder"){
-           cout << "Remaining in the " <<  _name << " State" << endl;
-        } else if (input == "endissueorders") {
+    void IssueOrdersState::update(){
+        string input = getUserCommand();
+
+        if (input == "issueorder")
+        {
+            cout << "Remaining in the " << _name << " State" << endl;
+        }
+        else if (input == "endissueorders")
+        {
             _gameEngine.setCurrentGameState(EXECUTE_ORDERS);
-        } else {
+        }
+        else
+        {
             printInvalidCommandError();
         }
     }
-};
 
-class ExecuteOrdersState : public GameState<GameStateType>
-{
-public:
-    ExecuteOrdersState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   EXECUTE_ORDERS,
-                                   "Execute Orders")
-    {
-    }
+    // Execute Orders state class implementation
+    ExecuteOrdersState::ExecuteOrdersState(GameEngine &gameEngine)
+        : GameState(gameEngine, EXECUTE_ORDERS, "Execute Orders"){};
 
-    void enter() {
-        printStateEnterMessage(_name);
-    }
+    ExecuteOrdersState::~ExecuteOrdersState() {};
 
-    void update()
-    {
-        string input =  getUserCommand();
+    void ExecuteOrdersState::update(){
+        string input = getUserCommand();
 
-        if(input == "execorder"){
-           cout << "Remaining in the " <<  _name << " State" << endl;
-        } else if (input == "endexecorders") {
+        if (input == "execorder")
+        {
+            cout << "Remaining in the " << _name << " State" << endl;
+        }
+        else if (input == "endexecorders")
+        {
             _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
-        } 
-        else if (input == "win") {
+        }
+        else if (input == "win")
+        {
             _gameEngine.setCurrentGameState(WIN);
-        }else {
+        }
+        else
+        {
             printInvalidCommandError();
         }
     }
-};
 
-class WinState : public GameState<GameStateType>
-{
-public:
-    WinState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   WIN,
-                                   "Win")
-    {
-    }
+    // Win state class implementation
+    WinState::WinState(GameEngine &gameEngine)
+        : GameState(gameEngine, WIN, "Win"){};
 
-    void enter() {
-        printStateEnterMessage(_name);
-    }
+    WinState::~WinState() {};
 
-    void update()
-    {
-        string input =  getUserCommand();
+    void WinState::update(){
+        string input = getUserCommand();
 
-        if (input == "play") {
+        if (input == "play")
+        {
             _gameEngine.setCurrentGameState(START);
-        } else if (input == "end") {
+        }
+        else if (input == "end")
+        {
+            cout << "The game has finished. Thanks for playing :)" << endl;
+
             _gameEngine.setCurrentGameState(END);
-        } else {
+        }
+        else
+        {
             printInvalidCommandError();
         }
     }
-};
 
-class EndState : public GameState<GameStateType>
-{
-public:
-    EndState(GameEngine<GameStateType> &gameEngine)
-        : GameState<GameStateType>(gameEngine,
-                                   END,
-                                   "End")
-    {
-    }
+    // End state class implementation
+    EndState::EndState(GameEngine &gameEngine)
+        : GameState(gameEngine, END, "End"){};
 
-    void enter() {
-        cout << "The game has finished. Thanks for playing :)" << endl;
+    EndState::~EndState() {};
+
+    void EndState::update(){
+        cout << "hello";
     }
 };
 
-};
 
-int main()
-{
-    // Create the game engine and add the valid states
+using namespace warzone;
 
-    std::unique_ptr<GameEngine<GameStateType> > game(new GameEngine<GameStateType>());
+int main(){
+    std::unique_ptr<GameEngine> game(new GameEngine());
 
-    GameState<GameStateType> &startState = game->add<StartState>(START);
-    GameState<GameStateType> &mapLoadedState = game->add<MapLoadedState>(MAP_LOADED);
-    GameState<GameStateType> &mapValidatedState = game->add<MapValidatedState>(MAP_VALIDATED);
-    GameState<GameStateType> &playersAddedState = game->add<PlayersAddedState>(PLAYERS_ADDED);
-    GameState<GameStateType> &assignReinforcementState = game->add<AssignReinforcementState>(ASSIGN_REINFORCEMENT);
-    GameState<GameStateType> &issueOrdersState = game->add<IssueOrdersState>(ISSUE_ORDERS);
-    GameState<GameStateType> &executeOrders = game->add<ExecuteOrdersState>(EXECUTE_ORDERS);
-    GameState<GameStateType> &winState = game->add<WinState>(WIN);
-    GameState<GameStateType> &endState = game->add<EndState>(END);
-
+    GameState &startState = game->add<StartState>(START);
+    GameState &mapLoadedState = game->add<MapLoadedState>(MAP_LOADED);
+    GameState &mapValidatedState = game->add<MapValidatedState>(MAP_VALIDATED);
+    GameState &playersAddedState = game->add<PlayersAddedState>(PLAYERS_ADDED);
+    GameState &assignReinforcementState = game->add<AssignReinforcementState>(ASSIGN_REINFORCEMENT);
+    GameState &issueOrdersState = game->add<IssueOrdersState>(ISSUE_ORDERS);
+    GameState &executeOrders = game->add<ExecuteOrdersState>(EXECUTE_ORDERS);
+    GameState &winState = game->add<WinState>(WIN);
+    GameState &endState = game->add<EndState>(END);
 
     game->setCurrentGameState(START);
 
@@ -311,4 +295,4 @@ int main()
     {
         game->update();
     }
-}
+};

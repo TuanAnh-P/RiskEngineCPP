@@ -3,114 +3,169 @@
 #include <memory>
 #include <map>
 #include <string>
-#include <assert.h>
 
 using std::string;
-using std::cout;
-using std::endl;
 
 namespace warzone
 {
-    void printStateEnterMessage();
+    enum GameStateType
+    {
+        START,
+        MAP_LOADED,
+        MAP_VALIDATED,
+        PLAYERS_ADDED,
+        ASSIGN_REINFORCEMENT,
+        ISSUE_ORDERS,
+        EXECUTE_ORDERS,
+        WIN,
+        END
+    };
+
     void printInvalidCommandError();
     string getUserCommand();
 
-    template <typename T>
     class GameEngine;
 
-    template <typename T>
     class GameState
     {
     protected:
         string _name;
-        T _gameStateID;
-        GameEngine<T>& _gameEngine;
+        GameStateType _gameStateID;
+        GameEngine &_gameEngine;
 
     public:
-        explicit GameState(GameEngine<T> &gameEngine,
-                           T gameStateId,
-                           string name)
-            : _name(name),
-              _gameStateID(gameStateId),
-              _gameEngine(gameEngine)
-        {
-        }
+        explicit GameState(GameEngine &gameEngine,
+                           GameStateType gameStateId,
+                           string name);
 
-        T getGameStateId(){
-            return _gameStateID;
-        }
+        virtual ~GameState() = 0;
 
-        virtual void enter() {}
+        GameStateType getGameStateId();
 
-        virtual void update() {}
+        void enter();
+
+        virtual void update() = 0;
     };
 
-    template <typename T>
     class GameEngine
     {
 
     protected:
         // All GameStates of the game
-        std::map<T, std::unique_ptr<GameState<T> > > _gameStates;
+        std::map<GameStateType, std::unique_ptr<GameState > > _gameStates;
         // The current GameState.
-        GameState<T> *_currentGameState;
+        GameState *_currentGameState;
 
     public:
-        GameEngine() : _currentGameState(nullptr)
-        {
-        }
+        GameEngine();
 
-        GameState<T> &getGameState(T gameStateID)
-        {
-            return *_gameStates[gameStateID];
-        }
+        // Get game state instance by ID
+        GameState &getGameState(GameStateType gameStateID);
 
         // Get current GameState
-        GameState<T> &getCurrentGameState()
-        {
-            return *_currentGameState;
-        }
+        GameState &getCurrentGameState();
 
         // Add a new GameState to the game engine
-        template <class S>
-        GameState<T> &add(T gameStateID)
-        {
-            _gameStates[gameStateID] = std::unique_ptr<S>(new S(*this));
-            return *_gameStates[gameStateID];
-        }
+        template <typename S>
+        GameState &add(GameStateType gameStateID);
 
-        void setCurrentGameState(T gameStateID)
-        {
-            GameState<T> *gameState = &getGameState(gameStateID);
-            setCurrentGameState(gameState);
-        }
+        // Change the current game state
+        void setCurrentGameState(GameStateType gameStateID);
 
-        void update()
-        {
-            if (_currentGameState != nullptr)
-            {
-                _currentGameState->update();
-            }
-        }
+        // Call the update method on the current game state instance
+        void update();
 
     protected:
-        void setCurrentGameState(GameState<T>* gameState)
-        {
-            if (_currentGameState == gameState)
-            {
-                return;
-            }
-
-            // if (_currentGameState != nullptr)
-            // {
-            //     _currentGameState->exit();
-            // }
-
-            _currentGameState = gameState;
-            if (_currentGameState != nullptr)
-            {
-                _currentGameState->enter();
-            }
-        }
+        void setCurrentGameState(GameState *gameState);
     };
-}
+
+    class StartState : public GameState
+    {
+    public:
+        StartState(GameEngine &gameEngine);
+        
+        ~StartState();
+
+        void update();
+    };
+
+    class MapLoadedState : public GameState
+    {
+    public:
+        MapLoadedState(GameEngine &gameEngine);
+        
+        ~MapLoadedState();
+
+        void update();
+    };
+
+    class MapValidatedState : public GameState
+    {
+    public:
+        MapValidatedState(GameEngine &gameEngine);
+
+        ~MapValidatedState();
+
+        void update();
+    };
+
+    class PlayersAddedState : public GameState
+    {
+    public:
+        PlayersAddedState(GameEngine &gameEngine);
+
+        ~PlayersAddedState();
+
+        void update();
+    };
+
+    class AssignReinforcementState : public GameState
+    {
+    public:
+        AssignReinforcementState(GameEngine &gameEngine);
+
+        ~AssignReinforcementState();
+
+        void update();
+    };
+
+    class IssueOrdersState : public GameState
+    {
+    public:
+        IssueOrdersState(GameEngine &gameEngine);
+
+        ~IssueOrdersState();
+
+        void update();
+    };
+
+    class ExecuteOrdersState : public GameState
+    {
+    public:
+        ExecuteOrdersState(GameEngine &gameEngine);
+
+        ~ExecuteOrdersState();
+
+        void update();
+    };
+
+    class WinState : public GameState
+    {
+    public:
+        WinState(GameEngine &gameEngine);
+
+        ~WinState();
+
+        void update();
+    };
+
+    class EndState : public GameState
+    {
+    public:
+        EndState(GameEngine &gameEngine);
+
+        ~EndState();
+
+        void update();
+    };
+};
