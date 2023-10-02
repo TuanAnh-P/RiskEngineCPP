@@ -52,12 +52,12 @@ void testPlayers() {
     delete territory2;
 }
 
-int main() {
-    // Call the testPlayers function to demonstrate player object features
-    testPlayers();
-
-    return 0;
-}
+//int main() {
+//    // Call the testPlayers function to demonstrate player object features
+//    testPlayers();
+//
+//    return 0;
+//}
 
 
 
