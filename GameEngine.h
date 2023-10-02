@@ -9,6 +9,7 @@ using std::ostream;
 
 namespace warzone
 {
+    // Enum representing valid game states
     enum GameStateType
     {
         START,
@@ -22,46 +23,69 @@ namespace warzone
         END
     };
 
+    // functions used for printing game messages and reading use commands from standard in
     void printInvalidCommandError();
+    void printRemainingInStateMessage(string name);
     string getUserCommand();
 
     class GameEngine;
 
+    // represents a base class for game states
     class GameState
     {
     protected:
+        // attributes
         string _name;
         GameStateType _gameStateID;
         GameEngine &_gameEngine;
     public:
-        friend ostream & operator << (ostream &out, GameState &state);
-
+        // constructors
         explicit GameState(GameEngine &gameEngine,
                            GameStateType gameStateId,
                            string name);
 
+        explicit GameState(GameState &gameState);
+
+        // Assignment operator
+        void operator=(const GameState &gameState);
+
+        // destructor
         virtual ~GameState() {};
 
+        // stream ingestion operator
+        friend ostream & operator << (ostream &out, GameState &state);
+        
+        // method that returns the Id of the game state
         GameStateType getGameStateId();
-
+        
+        // method for entering the game state
         void enter();
 
+        // method for updating the game state
         virtual void update() {};
     };
 
+    // class representing the game engine
     class GameEngine
     {
 
     protected:
         // All GameStates of the game
-        std::map<GameStateType, std::unique_ptr<GameState > > _gameStates;
+        std::map<GameStateType, std::shared_ptr<GameState > > _gameStates;
         // The current GameState.
         GameState *_currentGameState;
 
     public:
+        // constructor 
         GameEngine();
 
+        GameEngine(GameEngine &engine);
+
+        // Stream ingestion operator
         friend ostream & operator << (ostream &out, GameEngine &gameEngine);
+
+        // Assignment operator
+        void operator=(const GameEngine &gameEngine);
 
         // Get game state instance by ID
         GameState &getGameState(GameStateType gameStateID);
@@ -82,10 +106,12 @@ namespace warzone
         // Call the update method on the current game state instance
         void update();
 
-    protected:
+    protected: 
+        // Sets the current game state
         void setCurrentGameState(GameState *gameState);
     };
 
+    // Class representing the State state
     class StartState : public GameState
     {
     public:
@@ -94,6 +120,7 @@ namespace warzone
         void update();
     };
 
+    // Class MapLoadedState the State state
     class MapLoadedState : public GameState
     {
     public:
@@ -102,6 +129,7 @@ namespace warzone
         void update();
     };
 
+    // Class MapValidatedState the State state
     class MapValidatedState : public GameState
     {
     public:
@@ -110,6 +138,7 @@ namespace warzone
         void update();
     };
 
+    // Class PlayersAddedState the State state
     class PlayersAddedState : public GameState
     {
     public:
@@ -118,6 +147,7 @@ namespace warzone
         void update();
     };
 
+    // Class AssignReinforcementState the State state
     class AssignReinforcementState : public GameState
     {
     public:
@@ -126,6 +156,7 @@ namespace warzone
         void update();
     };
 
+    // Class IssueOrdersState the State state
     class IssueOrdersState : public GameState
     {
     public:
@@ -134,6 +165,7 @@ namespace warzone
         void update();
     };
 
+    // Class ExecuteOrdersState the State state
     class ExecuteOrdersState : public GameState
     {
     public:
@@ -142,6 +174,7 @@ namespace warzone
         void update();
     };
 
+    // Class WinState the State state
     class WinState : public GameState
     {
     public:
@@ -150,6 +183,7 @@ namespace warzone
         void update();
     };
 
+    // Class EndState the State state
     class EndState : public GameState
     {
     public:

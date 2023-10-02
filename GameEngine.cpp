@@ -31,16 +31,24 @@ namespace warzone
         return command;
     };
 
-    // Implementation of the GameEngine class methods
+    // Implementation of the GameEngine class methods / constructors
     GameState::GameState(GameEngine &gameEngine, GameStateType gameStateId, string name):
         _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
+
+    GameState::GameState(GameState &gameState):
+        _name(gameState._name), _gameStateID(gameState._gameStateID), _gameEngine(gameState._gameEngine) {};
     
+    void GameState::operator= (const GameState &gameState){
+        _gameEngine = gameState._gameEngine;
+        _gameStateID = gameState._gameStateID;
+        _name = gameState._name;
+    } 
+
     ostream & operator << (ostream &out, GameState &state)
     {
         out << state._name << endl;
         return out;
     }
-
 
     void GameState::enter(){
         if(_gameStateID == END){
@@ -54,14 +62,22 @@ namespace warzone
         return _gameStateID;
     }
 
-    // Implementation of the GameState class methods
+    // Implementation of the GameState class methods / constructors
     GameEngine::GameEngine() : _currentGameState(nullptr) {};
+
+    GameEngine::GameEngine(GameEngine &engine) : 
+        _currentGameState(engine._currentGameState), _gameStates(engine._gameStates) {};
 
     ostream & operator << (ostream &out, GameEngine &engine)
     {
         out << "current state" << engine._currentGameState->getGameStateId() << endl;
         return out;
     }
+
+    void GameEngine::operator= (const GameEngine &gameEngine){
+        _gameStates = gameEngine._gameStates;
+        _currentGameState = gameEngine._currentGameState;
+    }   
 
     GameState& GameEngine::getGameState(GameStateType gameStateID){
         return *_gameStates[gameStateID];
