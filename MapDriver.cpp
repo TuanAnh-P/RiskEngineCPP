@@ -75,9 +75,9 @@ void testLoadMaps(){
 }
 
 //calls the testLoadMaps function
-int main(){
+/*int main(){
 
     testLoadMaps();
 
     return 0;
-}
+}*/
