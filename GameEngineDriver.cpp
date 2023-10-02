@@ -27,8 +27,3 @@ void testGameStates(){
         game->update();
     }
 };
-
-int main() {
-    testGameStates();
-};
-
