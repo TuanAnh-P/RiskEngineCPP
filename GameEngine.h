@@ -38,13 +38,13 @@ namespace warzone
                            GameStateType gameStateId,
                            string name);
 
-        virtual ~GameState() = 0;
+        virtual ~GameState() {};
 
         GameStateType getGameStateId();
 
         void enter();
 
-        virtual void update() = 0;
+        virtual void update() {};
     };
 
     class GameEngine
@@ -65,9 +65,12 @@ namespace warzone
         // Get current GameState
         GameState &getCurrentGameState();
 
-        // Add a new GameState to the game engine
+        // Register a new GameState to the game engine
+        // since this is a template function, the implementation can only reside in the header file
         template <typename S>
-        GameState &add(GameStateType gameStateID);
+        void registerGameState(GameStateType gameStateID) {
+            _gameStates[gameStateID] = std::unique_ptr<S>(new S(*this));
+        };
 
         // Change the current game state
         void setCurrentGameState(GameStateType gameStateID);
@@ -83,8 +86,6 @@ namespace warzone
     {
     public:
         StartState(GameEngine &gameEngine);
-        
-        ~StartState();
 
         void update();
     };
@@ -93,8 +94,6 @@ namespace warzone
     {
     public:
         MapLoadedState(GameEngine &gameEngine);
-        
-        ~MapLoadedState();
 
         void update();
     };
@@ -104,8 +103,6 @@ namespace warzone
     public:
         MapValidatedState(GameEngine &gameEngine);
 
-        ~MapValidatedState();
-
         void update();
     };
 
@@ -113,8 +110,6 @@ namespace warzone
     {
     public:
         PlayersAddedState(GameEngine &gameEngine);
-
-        ~PlayersAddedState();
 
         void update();
     };
@@ -124,8 +119,6 @@ namespace warzone
     public:
         AssignReinforcementState(GameEngine &gameEngine);
 
-        ~AssignReinforcementState();
-
         void update();
     };
 
@@ -133,8 +126,6 @@ namespace warzone
     {
     public:
         IssueOrdersState(GameEngine &gameEngine);
-
-        ~IssueOrdersState();
 
         void update();
     };
@@ -144,17 +135,13 @@ namespace warzone
     public:
         ExecuteOrdersState(GameEngine &gameEngine);
 
-        ~ExecuteOrdersState();
-
         void update();
     };
 
     class WinState : public GameState
     {
     public:
-        WinState(GameEngine &gameEngine);
-
-        ~WinState();
+        WinState(GameEngine &gameEngine); 
 
         void update();
     };
@@ -163,8 +150,6 @@ namespace warzone
     {
     public:
         EndState(GameEngine &gameEngine);
-
-        ~EndState();
 
         void update();
     };

@@ -49,13 +49,6 @@ namespace warzone
         return *_currentGameState;
     }
 
-    template <typename S> 
-    GameState& GameEngine::add(GameStateType gameStateID)
-    {
-        _gameStates[gameStateID] = std::unique_ptr<S>(new S(*this));
-        return *_gameStates[gameStateID];
-    }
-
     void GameEngine::setCurrentGameState(GameStateType gameStateID)
     {
         GameState *gameState = &getGameState(gameStateID);
@@ -87,8 +80,6 @@ namespace warzone
     StartState::StartState(GameEngine &gameEngine)
             : GameState(gameEngine, START, "Start"){};
 
-    StartState::~StartState() {};
-
     void StartState::update(){
         string input = getUserCommand();
 
@@ -105,8 +96,6 @@ namespace warzone
     // Map Loaded state class implementation
     MapLoadedState::MapLoadedState(GameEngine &gameEngine)
         : GameState(gameEngine, MAP_LOADED, "Map Loaded"){};
-
-    MapLoadedState::~MapLoadedState() {};
 
     void MapLoadedState::update(){
         string input = getUserCommand();
@@ -129,8 +118,6 @@ namespace warzone
     MapValidatedState::MapValidatedState(GameEngine &gameEngine)
         : GameState(gameEngine, MAP_VALIDATED, "Map Validated"){};
 
-    MapValidatedState::~MapValidatedState() {};
-
     void MapValidatedState::update(){
         string input = getUserCommand();
 
@@ -147,8 +134,6 @@ namespace warzone
     // Players Added state class implementation
     PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
         : GameState(gameEngine, PLAYERS_ADDED, "Players Added"){};
-
-    PlayersAddedState::~PlayersAddedState() {};
 
     void PlayersAddedState::update(){
         string input = getUserCommand();
@@ -171,8 +156,6 @@ namespace warzone
     AssignReinforcementState::AssignReinforcementState(GameEngine &gameEngine)
         : GameState(gameEngine, ASSIGN_REINFORCEMENT, "Assign Reinforcement"){};
 
-    AssignReinforcementState::~AssignReinforcementState() {};
-
     void AssignReinforcementState::update(){
         string input = getUserCommand();
 
@@ -190,8 +173,6 @@ namespace warzone
     // Issue Orders state class implementation
     IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
         : GameState(gameEngine, ISSUE_ORDERS, "Issue Orders"){};
-
-    IssueOrdersState::~IssueOrdersState() {};
 
     void IssueOrdersState::update(){
         string input = getUserCommand();
@@ -213,8 +194,6 @@ namespace warzone
     // Execute Orders state class implementation
     ExecuteOrdersState::ExecuteOrdersState(GameEngine &gameEngine)
         : GameState(gameEngine, EXECUTE_ORDERS, "Execute Orders"){};
-
-    ExecuteOrdersState::~ExecuteOrdersState() {};
 
     void ExecuteOrdersState::update(){
         string input = getUserCommand();
@@ -241,8 +220,6 @@ namespace warzone
     WinState::WinState(GameEngine &gameEngine)
         : GameState(gameEngine, WIN, "Win"){};
 
-    WinState::~WinState() {};
-
     void WinState::update(){
         string input = getUserCommand();
 
@@ -266,33 +243,7 @@ namespace warzone
     EndState::EndState(GameEngine &gameEngine)
         : GameState(gameEngine, END, "End"){};
 
-    EndState::~EndState() {};
-
     void EndState::update(){
         cout << "hello";
-    }
-};
-
-
-using namespace warzone;
-
-int main(){
-    std::unique_ptr<GameEngine> game(new GameEngine());
-
-    GameState &startState = game->add<StartState>(START);
-    GameState &mapLoadedState = game->add<MapLoadedState>(MAP_LOADED);
-    GameState &mapValidatedState = game->add<MapValidatedState>(MAP_VALIDATED);
-    GameState &playersAddedState = game->add<PlayersAddedState>(PLAYERS_ADDED);
-    GameState &assignReinforcementState = game->add<AssignReinforcementState>(ASSIGN_REINFORCEMENT);
-    GameState &issueOrdersState = game->add<IssueOrdersState>(ISSUE_ORDERS);
-    GameState &executeOrders = game->add<ExecuteOrdersState>(EXECUTE_ORDERS);
-    GameState &winState = game->add<WinState>(WIN);
-    GameState &endState = game->add<EndState>(END);
-
-    game->setCurrentGameState(START);
-
-    while ((game->getCurrentGameState()).getGameStateId() != END)
-    {
-        game->update();
     }
 };
