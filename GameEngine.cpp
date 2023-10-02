@@ -14,8 +14,12 @@ namespace warzone
 {
     void printInvalidCommandError()
     {
-        cout << "Please enter a valid command..." << endl;
+        cout << "\nCommand not recognized! Please try again ..." << endl;
     };
+
+    void printRemainingInStateMessage(string name){
+        cout << "\nRemaining in ------------> " << name << " State" << endl;
+    }
 
     string getUserCommand()
     {
@@ -39,7 +43,11 @@ namespace warzone
 
 
     void GameState::enter(){
-        cout << "\n\tEntered the " << _name << " State" << endl;
+        if(_gameStateID == END){
+            cout << "\nThe game has finished. Thanks for playing :)\n" << endl;
+        }else {
+            cout << "\nEntering ------------> " << _name << " State" << endl;
+        }
     }
 
     GameStateType GameState::getGameStateId(){
@@ -103,7 +111,7 @@ namespace warzone
         }
         else
         {
-            cout << "Please enter a valid command..." << endl;
+            printInvalidCommandError();
         }
     }
 
@@ -116,7 +124,7 @@ namespace warzone
 
         if (input == "loadmap")
         {
-            cout << "Remaining in the " << _name << " State" << endl;
+            printRemainingInStateMessage(_name);
         }
         else if (input == "validatemap")
         {
@@ -124,7 +132,7 @@ namespace warzone
         }
         else
         {
-            cout << "Please enter a valid command..." << endl;
+            printInvalidCommandError();
         }
     }
 
@@ -141,7 +149,7 @@ namespace warzone
             }
             else
             {
-                cout << "Please enter a valid command..." << endl;
+                printInvalidCommandError();
             }
     }
 
@@ -154,7 +162,7 @@ namespace warzone
 
         if (input == "addplayer")
         {
-            cout << "Remaining in the " << _name << " State" << endl;
+            printRemainingInStateMessage(_name);
         }
         else if (input == "assigncountries")
         {
@@ -193,7 +201,7 @@ namespace warzone
 
         if (input == "issueorder")
         {
-            cout << "Remaining in the " << _name << " State" << endl;
+            printRemainingInStateMessage(_name);
         }
         else if (input == "endissueorders")
         {
@@ -214,7 +222,7 @@ namespace warzone
 
         if (input == "execorder")
         {
-            cout << "Remaining in the " << _name << " State" << endl;
+            printRemainingInStateMessage(_name);
         }
         else if (input == "endexecorders")
         {
@@ -243,8 +251,6 @@ namespace warzone
         }
         else if (input == "end")
         {
-            cout << "The game has finished. Thanks for playing :)" << endl;
-
             _gameEngine.setCurrentGameState(END);
         }
         else
@@ -257,7 +263,5 @@ namespace warzone
     EndState::EndState(GameEngine &gameEngine)
         : GameState(gameEngine, END, "End"){};
 
-    void EndState::update(){
-        cout << "hello";
-    }
+    void EndState::update(){};
 };
