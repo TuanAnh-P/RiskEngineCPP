@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "Orders.h"
 
 class Deck;
 class Hand;
@@ -19,14 +20,13 @@ enum class CardType {
 //------------------------------------------------------------------------------------------------------------------------------
 class Card {
 public:
-    Card(CardType type, Deck* deck);
+    Card(CardType type, Deck* deck); // Contructor
     Card(Card& other); // Copy constructor
     Card& operator=(Card& other); // Assignment operator
     Deck* deck;
 
     CardType getType();
-    //void play(Hand& hand, int index, OrdersList& ordersList);
-    void play(Hand& hand, int index);  // Implement this method to create an order and add it to the player's list of orders.
+    void play(Hand& hand, int index, OrdersList& ordersList);
 
     friend std::ostream& operator<<(std::ostream& os, Card& card); // Stream insertion operator
 
@@ -36,7 +36,7 @@ private:
 //------------------------------------------------------------------------------------------------------------------------------
 class Deck {
 public:
-    Deck();
+    Deck(); // Contructor
     Deck(Deck& other); // Copy constructor
     Deck& operator=(Deck& other); // Assignment operator
 
@@ -49,14 +49,13 @@ public:
 //------------------------------------------------------------------------------------------------------------------------------
 class Hand {
 public:
-    Hand();
+    Hand(); // Contructor
     Hand(Hand& other); // Copy constructor
     Hand& operator=(Hand& other); // Assignment operator
 
     friend std::ostream& operator<<(std::ostream& os, Hand& hand); // Stream insertion operator
+
     std::vector<Card*> cards;
 };
 //------------------------------------------------------------------------------------------------------------------------------
-void testCards();
-
 #endif // CARDS_H
