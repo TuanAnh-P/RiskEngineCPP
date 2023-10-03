@@ -48,4 +48,3 @@ private:
 //    friend std::ostream& operator<<(std::ostream& os, Player& player);
 //
 //    bool removeTerritory(Territory* territory); // Remove a territory from the player's owned territories
-

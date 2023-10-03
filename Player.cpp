@@ -1,8 +1,8 @@
 #include "Player.h" // Include the header file for the Player class
 
 // Constructor -- GOOD
-Player::Player(const std::string& playerName) : playerName(playerName) {
-    std::cout << playerName << " has arrived!" << std::endl;
+Player::Player(const std::string& playerName) : playerName(playerName), hand (new Hand()), ordersList(new OrdersList()) {
+    std::cout << "Player " << playerName << " has arrived!" << std::endl;
 }
 
 // Copy constructor - GOOD
@@ -45,6 +45,7 @@ Player &Player::operator=(Player &other) {
 
 // Destructor - GOOD
 Player::~Player() {
+    std::cout << "Player " << playerName << " has been deleted!" << std::endl;
     // Delete hand and ordersList
     delete hand;
     delete ordersList;
@@ -53,13 +54,12 @@ Player::~Player() {
         delete territory;
     }
     ownedTerritories.clear();
-    std::cout << "Player " << playerName << " was deleted!" << std::endl;
 }
 
 // Add a territory to the player's ownedTerritories or territories to be defended - GOOD
 void Player::addTerritory(Territory* territory) {
     ownedTerritories.push_back(territory);
-    std::cout << territory->getName() << " was added!" << std::endl;
+    std::cout << "Territory " << territory->getName() << " was added!" << std::endl;
 }
 
 // Get a list of territories to be defended (currently returns all owned territories)
@@ -78,8 +78,6 @@ std::vector<Territory*> Player::toAttack() {
 Hand& Player::getHand(){
     return *hand;
 }
-
-// <------------------------------------------------------------------------------------>
 
 // Get the player's list of orders
 OrdersList& Player::getOrdersList(){
@@ -111,7 +109,7 @@ void Player::issueOrder(const std::string& orderType) {
 
     if (newOrder) {
         // Add the created order to the player's list of orders
-        std::cout << orderType << " was added!" << std::endl;
+        std::cout << "Order " << orderType << " was added to the list of orders!" << std::endl;
         ordersList->orders.push_back(newOrder);
     }
     else {
@@ -119,8 +117,6 @@ void Player::issueOrder(const std::string& orderType) {
         std::cout << "Invalid order type." << std::endl;
     }
 }
-
-// <------------------------------------------------------------------------------------>
 
 //std::ostream &operator<<(std::ostream &os, Player &player) {
 //    return <#initializer#>;

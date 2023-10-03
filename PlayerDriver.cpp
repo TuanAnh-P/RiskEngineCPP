@@ -7,13 +7,9 @@ void testPlayers() {
     // Create a player with the name "John" - GOOD
     Player* player = new Player("John");
 
-    // Create some territories - GOOD
-    Territory* territory1 = new Territory("Territory 1", 1, 2);
-    Territory* territory2 = new Territory("Territory 2", 3, 4);
-
     // Add territories to the player's owned territories - GOOD
-    player->addTerritory(territory1);
-    player->addTerritory(territory2);
+    player->addTerritory(new Territory("New York", 1, 2));
+    player->addTerritory(new Territory("London", 3, 4));
 
     // Get the territories to defend (initially, it returns all owned territories) - GOOD
     std::vector<Territory*> territoriesToDefend = player->toDefend();
@@ -21,7 +17,7 @@ void testPlayers() {
     // Display the territories to defend - GOOD
     std::cout << "Territories to Defend: ";
     for (const Territory* territory : territoriesToDefend) {
-        std::cout << territory->getName() << "\t";
+        std::cout << territory->getName() << " - ";
     }
     std::cout << std::endl;
 
@@ -31,33 +27,28 @@ void testPlayers() {
     // Display the territories to attack - GOOD
     std::cout << "Territories to Attack: ";
     for (const Territory* territory : territoriesToAttack) {
-        std::cout << territory->getName() << "\t";
+        std::cout << territory->getName() << ", ";
     }
     std::cout << std::endl;
-
-    // <------------------------------------------------------------------------------------>
-
-    // Issue some orders
-    player->issueOrder("Airlift");  // Example: Advance troops to a neighboring territory
 
     // Get the player's orders list
     OrdersList& playerOrders = player->getOrdersList();
 
+    // Issue some orders
+    player->issueOrder("Airlift");
+    player->issueOrder("Bomb");
+
     // Display the player's orders list
+    std::cout << "Displaying player's orders list:" << std::endl;
     playerOrders.print();
 
-    // <------------------------------------------------------------------------------------>
-
-    // Clean up manually by deleting territories and the player to prevent memory leaks
-    delete territory1;
-    delete territory2;
+    // Clean up the player to prevent memory leaks
     delete player;
 }
 
 //int main() {
 //    // Call the testPlayers function to demonstrate player object features
 //    testPlayers();
-//    std::cout << "Break point" << std::endl;
 //
 //    return 0;
 //}
