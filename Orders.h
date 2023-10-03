@@ -3,10 +3,6 @@
 #include <vector>
 #include "map.h"
 
-
-// Test free function for Orders
-void testOrdersLists();
-
 // Order base class 
 class Order
 {
