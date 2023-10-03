@@ -41,11 +41,11 @@ void testPlayers() {
 
     // Access and test the player's hand
     Hand& playerHand = player.getHand();
-    playerHand.print(); // Assuming a print() function in the Hand class
+    playerHand.cards.size();
 
     // Access and test the player's orders list
-    OrdersList playerOrders = player.getOrdersList();
-    playerOrders.print(); // Assuming a print() function in the OrdersList class
+    OrdersList& playerOrders = player.getOrdersList();
+    playerOrders.print();
 
     // Clean up manually by deleting territories to prevent memory leaks
     delete territory1;

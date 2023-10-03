@@ -1,7 +1,9 @@
 #include "Player.h" // Include the header file for the Player class
 
 // Constructor for the Player class
-Player::Player(const std::string& playerName) : playerName(playerName) {}
+Player::Player(const std::string& playerName) : playerName(playerName) {
+    std::cout << "Player " << playerName << " has arrived!" << std::endl;
+}
 
 // Destructor for the Player class
 Player::~Player() {
@@ -9,11 +11,51 @@ Player::~Player() {
     for (Territory* territory : ownedTerritories) {
         delete territory;
     }
+    std::cout << "Player " << playerName << " was deleted!" << std::endl;
+}
+
+// Copy constructor
+Player::Player(Player &other) {
+    // Deep copy owned territories
+    for (const Territory* territory : other.ownedTerritories) {
+        ownedTerritories.push_back(new Territory(*territory));
+    }
+
+    // Deep copy hand and orders list
+    hand = new Hand(*other.hand);
+    ordersList = new OrdersList(*other.ordersList);
+}
+
+// Copy assignment operator
+Player &Player::operator=(Player &other) {
+    if (this != &other) { // Self-assignment check
+        // Delete existing owned territories
+        for (Territory* territory : ownedTerritories) {
+            delete territory;
+        }
+        ownedTerritories.clear();
+
+        // Deep copy owned territories
+        for (const Territory* territory : other.ownedTerritories) {
+            ownedTerritories.push_back(new Territory(*territory));
+        }
+
+        // Deep copy hand and orders list
+        delete hand;
+        delete ordersList;
+        hand = new Hand(*other.hand);
+        ordersList = new OrdersList(*other.ordersList);
+
+        // Copy playerName
+        playerName = other.playerName;
+    }
+    return *this;
 }
 
 // Add a territory to the player's ownedTerritories or territories to be defended
 void Player::addTerritory(Territory* territory) {
     ownedTerritories.push_back(territory);
+    std::cout << territory->getName() << " was added!" << std::endl;
 }
 
 // Remove a territory from ownedTerritories or territories to be defended
@@ -25,9 +67,11 @@ bool Player::removeTerritory(Territory* territory) {
         // Territory found, erase it from the list
         ownedTerritories.erase(it);
         delete territory; // Delete the removed territory to prevent memory leaks
+        std::cout << territory->getName() << " was deleted!" << std::endl;
         return true; // Territory successfully removed
     }
 
+    std::cout << "Could not find the territory!" << std::endl;
     return false; // Territory not found
 }
 
@@ -45,13 +89,13 @@ std::vector<Territory*> Player::toAttack() {
 }
 
 // Get the player's hand of cards
-const Hand& Player::getHand() const {
-    return hand;
+Hand& Player::getHand(){
+    return *hand;
 }
 
 // Get the player's list of orders
-const OrdersList& Player::getOrdersList() const {
-    return ordersList;
+OrdersList& Player::getOrdersList(){
+    return *ordersList;
 }
 
 // Create an Order object and add it to the player's list of orders
@@ -80,7 +124,8 @@ void Player::issueOrder(const std::string& orderType) {
 
     if (newOrder) {
         // Add the created order to the player's list of orders
-        ordersList.add(newOrder);
+        std::cout << orderType << " was added!" << std::endl;
+        ordersList->orders.push_back(newOrder);
     }
     else {
         // Handle unsupported order type or invalid parameters
