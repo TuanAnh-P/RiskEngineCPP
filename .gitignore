@@ -366,4 +366,3 @@ FodyWeavers.xsd
 output/
 .DS_Store
 *.vsxproj
-*.vsxproj.*
