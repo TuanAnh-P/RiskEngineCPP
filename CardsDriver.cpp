@@ -43,11 +43,13 @@ void testCards() {
     orderListSize = ordersList1->orders.size();
     std::cout << "OrdersList size: " << orderListSize << std::endl;
 
+    
     for (Card* card : deck1->cards) {
         delete card;
     }
     deck1->cards.clear();
-
+    
+    
     for (Card* card : hand1->cards) {
         delete card;
     }
@@ -57,15 +59,16 @@ void testCards() {
         delete order;
     }
     ordersList1->orders.clear();
-
+    
 
     delete deck1;
     delete hand1;
     delete ordersList1;
+
 }
 
 
-int main()
+/*int main()
 {
     testCards();
-}
+}*/
