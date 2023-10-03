@@ -13,10 +13,8 @@ void testCards() {
     int handSize1 = hand1->cards.size();
     std::cout << "Hand size: " << handSize1 << std::endl;
 
-
     int orderListSize = ordersList1->orders.size();
     std::cout << "OrdersList size: " << orderListSize << std::endl;
-
 
     for (int i = 0; i < 7; i++) {
         deck1->draw(*hand1);
@@ -27,6 +25,9 @@ void testCards() {
 
     handSize1 = hand1->cards.size();
     std::cout << "Hand size: " << handSize1 << std::endl;
+
+    orderListSize = ordersList1->orders.size();
+    std::cout << "OrdersList size: " << orderListSize << std::endl;
 
     for (int i = 0; i < 7; i++) {
         hand1->cards[0]->play(*hand1, 0, *ordersList1);
@@ -53,7 +54,6 @@ void testCards() {
         delete card;
     }
     hand1->cards.clear();
-
 
     for (Order* order : ordersList1->orders) {
         delete order;

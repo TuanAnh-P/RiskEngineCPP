@@ -3,17 +3,21 @@
 #include <cstdlib>
 
 //---------------------------------------------------CARD---------------------------------------------------------------------------
-// Constructor (shallow on purpose)
+// Constructor
 Card::Card(CardType type, Deck* deck) : type(type), deck(deck) {}
 
-// Copy constructor (shallow on purpose)
-Card::Card(Card& other) : type(other.type), deck(other.deck) {}
+// Copy constructor (same deck object on purpose)
+Card::Card(Card& other) : type(other.type){
+    Deck* newDeck = other.deck;
+    this->deck = newDeck;
+}
 
 // Assignment operator (shallow on purpose)
 Card& Card::operator=(Card& other) {
     if (this != &other) {
         type = other.type;
-        deck = other.deck;
+        Deck* newDeck = other.deck;
+        this->deck = newDeck;
     }
     return *this;
 }
@@ -44,14 +48,14 @@ std::ostream& operator<<(std::ostream& os, Card& card) {
         default:
             os << "Card Type: " << "Unknown" << std::endl;
             break;
-        }
+    }
     return os;
 }
 
 // Creates order and adds it to orderlist. Card is then put back into the deck.
 void Card::play(Hand& hand, int index, OrdersList& ordersList) {
     if (index >= 0 && index < hand.cards.size()) {
-        
+
         Card* playedCard = hand.cards[index];//put card back in deck before removing from hand from 
 
         if (deck != nullptr) {
@@ -59,35 +63,34 @@ void Card::play(Hand& hand, int index, OrdersList& ordersList) {
         }
 
         switch (playedCard->getType()) {//create order and put into orderlist
-        case CardType::Bomb:{
-            Bomb* newOrder = new Bomb();
-            ordersList.orders.push_back(newOrder);
-            break;
+            case CardType::Bomb: {
+                Bomb *newOrder = new Bomb();
+                ordersList.orders.push_back(newOrder);
+                break;
+            }
+            case CardType::Reinforcement: {
+                //newOrder = new Reinforcement();
+                //ordersList.orders.push_back(newOrder);
+                break;
+            }
+            case CardType::Blockade: {
+                Blockade *newOrder = new Blockade();
+                ordersList.orders.push_back(newOrder);
+                break;
+            }
+            case CardType::Airlift: {
+                Airlift *newOrder = new Airlift();
+                ordersList.orders.push_back(newOrder);
+                break;
+            }
+            case CardType::Diplomacy: {
+                //newOrder = new Diplomacy();
+                //ordersList.orders.push_back(newOrder);
+                break;
+            }
+            default:
+                break;
         }
-        case CardType::Reinforcement: {
-            //newOrder = new Reinforcement();
-            //ordersList.orders.push_back(newOrder);
-            break;
-        }
-        case CardType::Blockade: {
-            Blockade* newOrder = new Blockade();
-            ordersList.orders.push_back(newOrder);
-            break;
-        }
-        case CardType::Airlift: {
-            Airlift* newOrder = new Airlift();
-            ordersList.orders.push_back(newOrder);
-            break;
-        }
-        case CardType::Diplomacy: {
-            //newOrder = new Diplomacy();
-            //ordersList.orders.push_back(newOrder);
-            break;
-        }
-        default:
-            break;
-        }
-
 
         std::cout << *playedCard << " was played." << std::endl;
 
@@ -125,7 +128,6 @@ Deck& Deck::operator=(Deck & other) {
 
     // Clear cards
     for (Card* card : cards) {
-        card = NULL;
         delete card;
     }
     cards.clear();
@@ -155,8 +157,7 @@ void Deck::draw(Hand& hand) {
     }
     Card* drawn = new Card(*cards.front());
     hand.cards.push_back(drawn);//add card to hand before removing from deck
-    delete cards[0];
-    cards[0] = NULL;
+    cards[0] = nullptr;
     cards.erase(cards.begin());
 }
 
@@ -181,7 +182,6 @@ Hand& Hand::operator=(Hand& other) {
 
     // Clear hand cards
     for (Card* card : cards) {
-        card = NULL;
         delete card;
     }
     cards.clear();
