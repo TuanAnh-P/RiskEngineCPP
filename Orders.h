@@ -1,126 +1,125 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include "map.h"
 
-/*
-	Test free function for Orders
-
-*/
-void testOrdersLists();
-
-/*
-	Order abstract base class definition
-*/
+// Order base class 
 class Order
 {
 public:
+	// Constructor
 	Order();
-	~Order();
-	friend std::ostream& operator<< (std::ostream& os, Order& order);
 	
+	// Override ostream operator
+	friend std::ostream& operator<< (std::ostream& os, Order& order);
+
+	// Class member attributes
+	std::string type = "Invalid";
+
+	// Destructor
+	~Order();
 
 protected:
-	std::string type = "Invalid";
+
+	// Derive class methods
 	virtual bool validate();
 	virtual void execute();
 
-	
 };
 
-/*
-	OrdersList base class definition contains the list of Orders to be executed
-*/
+// OrdersList class 
 class OrdersList
 {
 public:
+	// Constructor
 	OrdersList();
-	~OrdersList();
+
 	void remove(Order& order);
 	void move(Order& order, const int target_index);
+
+	// Debug methods
 	void print();
+
+	// Class attributes
 	std::vector<Order*> orders;
 
+	// Destructor
+	~OrdersList();
 };
 
-/*
-	Deploy order class definition. Put a certain number of army units on a target territory
-*/
+// Deploy Order class 
 class Deploy : public Order
 {
 public:
+	// Constructor
 	Deploy(int numOfArmyUnits);
 	
+	// Class methods
 	bool validate();
 	void execute();
 
 };
 
-/*
-	Advance order class definition. Move a certain number of army units from one territory (source territory) to another territory (target
-territory)
-*/
+// Advance Order class 
 class Advance : public Order
 {
 public:
+	// Constructor
 	Advance();
 
+	// Class methods
 	bool validate();
 	void execute();
 
 };
 
-/*
-	Bomb order class definition. Destroy half of the army units located on a target territory. This order can only be issued if a player
-has the bomb card in their hand. 
-
-*/
+// Bomb Order class 
 class Bomb : public Order
 {
 public:
+	// Constructor 
 	Bomb();
 
+	// Class methods
 	bool validate();
 	void execute();
 
 };
 
-/*
-	Blockade order class definition. Triple the number of army units on a target territory and make it a neutral territory. This order can
-only be issued if a player has the blockade card in their hand.
-*/
+// Blockade Order class
 class Blockade : public Order
 {
 public:
+	// Constructor
 	Blockade();
 
+	// Class methods
 	bool validate();
 	void execute();
 
 };
 
-/*
-	Airlift order class definition. Advance a certain number of army units from one from one territory (source territory) to another
-territory (target territory). This order can only be issued if a player has the airlift card in their hand.
-*/
+// Airlift Order class
 class Airlift : public Order
 {
 public:
+	// Constructor
 	Airlift();
 
+	// Class methods
 	bool validate();
 	void execute();
 
 };
 
-/*
-	Negotiate order class definition. Prevent attacks between the current player and another target player until the end of the turn. This
-order can only be issued if a player has the diplomacy card in their hand.
-*/
+// Negotiate order class
 class Negotiate : public Order
 {
 public:
+	// Constructor 
 	Negotiate();
 
+	// Class methods
 	bool validate();
 	void execute();
 

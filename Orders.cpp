@@ -1,31 +1,38 @@
 #include "Orders.h"
+#include "map.h"
 #include <iostream>
 using namespace std;
 
-// Base Order Class constructor
+// --------------- Order class ---------------
+// Order Class constructor
 Order::Order() {};
 
-
-// Base Order Class deconstructor
+// Order Class deconstructor
 Order::~Order() 
 {
 	cout << "Order deconstructor was called!" << endl;
 };
 
-bool Order::validate() {return true;}
+bool Order::validate() { return true;}
+
 void Order::execute() {return;}
 
-// OrdersList class 
+// --------------- OrdersList class ---------------
 
-// Base OrderList Class constructor
+// OrderList Class constructor
 OrdersList::OrdersList() {};
 
-// Base OrderList Class deconstructor
-OrdersList::~OrdersList() {};
+// OrderList Class destructor, makes sure to delete each Order ptr in the OrderList
+OrdersList::~OrdersList() 
+{
+	for (Order* order : orders)
+	{
+		delete order;
+	}
+};
 
-/*
-	Delete the order from the list of Orders 
-*/
+
+// Delete the order from the list of Orders 
 void OrdersList::remove(Order& order)
 {
 	if (this->orders.empty())
@@ -46,9 +53,8 @@ void OrdersList::remove(Order& order)
 	std::cout << "Order is not in the Orders List " << endl;
 }
 
-/*
-	Move the order in the list of Orders. Takes Order ptr and target index within the OrdersList array
-*/
+
+// Move the order in the list of Orders. Takes Order ptr and target index within the OrdersList array
 void OrdersList::move(Order& order, const int target_index)
 {
 	// Check empty array
@@ -72,13 +78,6 @@ void OrdersList::move(Order& order, const int target_index)
 		return;
 	}
 
-	// Check if target index is the array size then just insert
-	else if (target_index == this->orders.size())
-	{
-		this->orders.insert(this->orders.begin() + target_index, &order);
-		return;
-	}
-
 	// Swap target index element 
 
 	for (int i = 0; i < this->orders.size(); i++)
@@ -92,6 +91,7 @@ void OrdersList::move(Order& order, const int target_index)
 	}
 }
 
+// Print each order within the OrdersList
 void OrdersList::print()
 {
 	int n = this->orders.size();
@@ -111,9 +111,7 @@ void OrdersList::print()
 }
 
 
-/*
-	Override stream insertion operator. Prints the order description when passed dwda
-*/
+// Override stream insertion operator. Prints the order description when passed dwda
 ostream& operator<<(ostream& os, Order& order)
 {
 
@@ -149,28 +147,24 @@ ostream& operator<<(ostream& os, Order& order)
 	return os;
 }
 
-// Deploy class
-/*
-	Deploy class constructor. Parameters include number of armies to move, source territory, and target terroritory
-*/
+// --------------- Deploy class ---------------
+
+// Deploy class constructor. Parameters include number of armies to move, source territory, and target terroritory
 Deploy::Deploy(int numOfArmyUnits)
 {
 	std::cout << "Created Deploy order" << std::endl;
 	this->type = "Deploy";
 }
 
-/*
-	Deploy validate checks if source territory and target territory.
-*/
+// Deploy validate checks if source territory and target territory.
 bool Deploy::validate()
 {
 	std::cout << "validate Deploy order\n";
 	return true;
 }
 
-/*
-	Executes Deploy order and begins attack from source territory to target territory
-*/
+
+// Executes Deploy order and begins attack from source territory to target territory
 void Deploy::execute()
 {
 	if (this->validate())
@@ -179,28 +173,23 @@ void Deploy::execute()
 	}	
 }
 
-//  Advance class
-/*
-	Advance class constructor. Parameters include number of armies to move, source territory, and target terroritory
-*/
+// --------------- Advance class ---------------
+
+// Advance class constructor. Parameters include number of armies to move, source territory, and target terroritory
 Advance::Advance()
 {
 	std::cout << "Created Advance order" << std::endl;
 	this->type = "Advance";
 }
 
-/*
-	Advance validate checks if source territory and target territory. 
-*/ 
+// Advance validate checks if source territory and target territory.  
 bool Advance::validate()
 {
 	std::cout << "validate Advance order\n";
 	return true;
 }
 
-/*
-	Executes Advance order and begins attack from source territory to target territory
-*/
+// Executes Advance order and begins attack from source territory to target territory
 void Advance::execute()
 {
 	if (this->validate())
@@ -210,28 +199,24 @@ void Advance::execute()
 	
 }
 
-// Bomb class
-/*
-	Bomb class constructor. Parameters include target territory to bomb
-*/
+// --------------- Bomb class ---------------
+
+// Bomb class constructor. Parameters include target territory to bomb
 Bomb::Bomb()
 {
 	std::cout << "Created Bomb order" << std::endl;
 	this->type = "Bomb";
 }
 
-/*
-	Bomb validate checks if the target territory is validate
-*/
+// Bomb validate checks if the target territory is validate
 bool Bomb::validate()
 {
 	std::cout << "validate Bomb order\n";
 	return true;
 }
 
-/*
-	Executes Bomb order reducing territory army value by half
-*/
+
+// Executes Bomb order reducing territory army value by half
 void Bomb::execute()
 {
 	if (this->validate())
@@ -240,28 +225,25 @@ void Bomb::execute()
 	}
 }
 
-// Blockade class
-/*
-	Blockade class constructor. Parameters include target territory
-*/
+// --------------- Blockade class ---------------
+
+// Blockade class constructor. Parameters include target territory
 Blockade::Blockade()
 {
 	std::cout << "Created Blockade order" << std::endl;
 	this->type = "Blockade";
 }
 
-/*
-	Blockade validate checks if the target territory is validate
-*/
+
+// Blockade validate checks if the target territory is validate
 bool Blockade::validate()
 {
 	std::cout << "validate Blockade order\n";
 	return true;
 }
 
-/*
-	Executes Blockade which turns target territory into a neutral territory and triple the army value
-*/
+
+// Executes Blockade which turns target territory into a neutral territory and triple the army value
 void Blockade::execute()
 {
 	if (this->validate())
@@ -270,54 +252,45 @@ void Blockade::execute()
 	}
 }
 
-// Airlift class
-/*
-	Airlift class constructor. Parameters include the number of armies, source territory and target territory
-*/
+// --------------- Airlift class ---------------
+
+// Airlift class constructor. Parameters include the number of armies, source territory and target territory
 Airlift::Airlift()
 {
 	std::cout << "Created Airlift order" << std::endl;
 	this->type = "Airlift";
 }
 
-/*
 
-*/
+// Airlift validate checks if the number of armies, target, source territory is validate
 bool Airlift::validate()
 {
 	std::cout << "validate Airlift order\n";
 	return true;
 }
 
-/*
 
-*/
+// Execute Airlift moves number of armies from source to target territory
 void Airlift::execute()
 {
 }
 
-// Negotiate class
-/*
-	Negotiate class constructor. Parameters include target player 
-*/
+// --------------- Negotiate class ---------------
+// Negotiate class constructor. Parameters include target player 
 Negotiate::Negotiate()
 {
 	std::cout << "Created Negotiate order" << std::endl;
 	this->type = "Negotiate";
 }
 
-/*
-
-*/
+// Negotiate validate checks if the target player is validate
 bool Negotiate::validate()
 {
 	std::cout << "validate Negotiate order\n";
 	return true;
 }
 
-/*
-
-*/
+// Execute Negotiate disables the target player's ability to attack 
 void Negotiate::execute()
 {
 	if (this->validate())
