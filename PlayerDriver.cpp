@@ -21,7 +21,7 @@ void testPlayers() {
     // Display the territories to defend
     std::cout << "Territories to Defend: ";
     for (const Territory* territory : territoriesToDefend) {
-        std::cout << territory.getName() << "\t";
+        std::cout << territory->getName() << "\t";
     }
     std::cout << std::endl;
 
@@ -31,7 +31,7 @@ void testPlayers() {
     // Display the territories to attack
     std::cout << "Territories to Attack: ";
     for (const Territory* territory : territoriesToAttack) {
-        std::cout << territory.getName() << "\t";
+        std::cout << territory->getName() << "\t";
     }
     std::cout << std::endl;
 

@@ -58,41 +58,40 @@ void Card::play(Hand& hand, int index, OrdersList& ordersList) {
             deck->cards.push_back(playedCard);
         }
 
-
         switch (playedCard->getType()) {//create order and put into orderlist
-        case CardType::Bomb:
+        case CardType::Bomb:{
             Bomb* newOrder = new Bomb();
             ordersList.orders.push_back(newOrder);
             break;
-        case CardType::Reinforcement:
+        }
+        case CardType::Reinforcement: {
             //newOrder = new Reinforcement();
             //ordersList.orders.push_back(newOrder);
             break;
-        case CardType::Blockade:
+        }
+        case CardType::Blockade: {
             Blockade* newOrder = new Blockade();
             ordersList.orders.push_back(newOrder);
             break;
-        case CardType::Airlift:
+        }
+        case CardType::Airlift: {
             Airlift* newOrder = new Airlift();
             ordersList.orders.push_back(newOrder);
             break;
-        case CardType::Diplomacy:
+        }
+        case CardType::Diplomacy: {
             //newOrder = new Diplomacy();
             //ordersList.orders.push_back(newOrder);
             break;
+        }
         default:
-            
             break;
         }
 
 
         std::cout << *playedCard << " was played." << std::endl;
 
-
-
-        delete hand.cards[index];
         hand.cards[index] = nullptr;
-
         hand.cards.erase(hand.cards.begin() + index);
 
     }
