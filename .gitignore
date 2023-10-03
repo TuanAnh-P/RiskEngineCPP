@@ -365,4 +365,5 @@ FodyWeavers.xsd
 .vscode/
 output/
 .DS_Store
-*.vsxproj
+*.vcxproj
+*.sln

@@ -19,7 +19,7 @@ void testOrdersLists()
 	OrdersList* ordersList = new OrdersList;
 	ordersList->orders.push_back(deploy_order);
 	ordersList->orders.push_back(advance_order);
-	ordersList->move(*bomb_order, ordersList->orders.size());
+	ordersList->orders.push_back(bomb_order);
 	ordersList->orders.push_back(blockade_order);
 	ordersList->orders.push_back(airlift_order);
 	ordersList->orders.push_back(negotiate_order);
@@ -43,7 +43,7 @@ void testOrdersLists()
 	// Display Order list
 	ordersList->print();
 
-	LOG("---- Validate \ Execute Orders ----");
+	LOG("---- Validate \\ Execute Orders ----");
 
 	for(Order* order : ordersList->orders)
 	{

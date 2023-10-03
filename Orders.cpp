@@ -78,13 +78,6 @@ void OrdersList::move(Order& order, const int target_index)
 		return;
 	}
 
-	// Check if target index is the array size then just insert
-	else if (target_index == this->orders.size())
-	{
-		this->orders.insert(this->orders.begin() + target_index, &order);
-		return;
-	}
-
 	// Swap target index element 
 
 	for (int i = 0; i < this->orders.size(); i++)
