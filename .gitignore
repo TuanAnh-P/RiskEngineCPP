@@ -361,6 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-COMP345_Project.vcxproj
-COMP345_Project.vcxproj.filters
-main.cpp
+
+.vscode/
+output/
+.DS_Store
