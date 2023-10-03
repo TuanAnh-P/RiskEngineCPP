@@ -14,6 +14,11 @@ public:
     // Constructor to create a Player instance with a specified name
     Player(const std::string& playerName);
 
+    // Copy constructor
+    Player(Player& other);
+
+    Player& operator=(Player& other);
+
     // Destructor to clean up resources when a Player instance is destroyed
     ~Player();
 
@@ -24,18 +29,17 @@ public:
     std::vector<Territory*> toAttack(); // Get a list of territories to attack
 
     // Methods related to managing cards
-    const Hand& getHand() const; // Get the player's hand of cards
+    Hand& getHand(); // Get the player's hand of cards
 
     // Methods related to managing orders
-    const OrdersList& getOrdersList() const; // Get the player's list of orders
+    OrdersList& getOrdersList(); // Get the player's list of orders
     void issueOrder(const std::string& orderType); // Issue a new order of a specified type
 
 private:
     // Attributes related to a Player's instance
     std::string playerName; // The name of the player
     std::vector<Territory*> ownedTerritories; // List of territories owned by the player
-    Hand hand; // The player's hand of cards
-    OrdersList ordersList; // The list of orders issued by the player
+    Hand* hand; // The player's hand of cards
+    OrdersList* ordersList; // The list of orders issued by the player
 };
-
 
