@@ -23,6 +23,15 @@ Territory::~Territory(){
     }*/
 }
 
+//Copy constuctor. Just copying the pointers to adjacent territories, not the territories themselves as it won't make any sense.
+Territory::Territory(const Territory& other) {
+    name = new std::string(*(other.name));
+    x = new int(*(other.x));
+    y = new int(*(other.y));
+    adjacentTerritories = other.adjacentTerritories; 
+}
+
+
 // Adds an adjacent territory to the current territory's adjacentTerritories vector.
 void Territory::addAdjacentTerritory(Territory* territory){
     adjacentTerritories.push_back(territory);
@@ -58,6 +67,29 @@ void Territory::setY (int yCord){
     y = new int(yCord);
 }
 
+//Assignment Operator
+Territory& Territory::operator=(const Territory& other) {
+    if (this == &other) return *this; 
+    delete name;
+    delete x;
+    delete y;
+    name = new std::string(*(other.name));
+    x = new int(*(other.x));
+    y = new int(*(other.y));
+    adjacentTerritories = other.adjacentTerritories;
+    return *this;
+}
+
+//Stream insertion Operator
+std::ostream& operator<<(std::ostream& out, const Territory& territory) {
+    out << "Territory Name: " << territory.getName() << ", X: " << territory.getX() << ", Y: " << territory.getY();
+    return out;
+}
+
+
+
+
+
 //-------------------------------Continent-----------------------------
 // Constructor for Continent: Initializes the name and the number of armies.
 Continent::Continent(const std::string& n ,int numOfArmies){
@@ -74,6 +106,14 @@ Continent::~Continent(){
     }*/
 }
 
+//Copy constructor. Just copying the pointers of territorries. Not the territories themselves as it doesn't make sense.
+Continent::Continent(const Continent& other) {
+    name = new std::string(*(other.name));
+    numberOfArmies = new int(*(other.numberOfArmies));
+    territories = other.territories;
+}
+
+
 // Adds a territory to the current continent's territories vector.
 void Continent::addTerritory(Territory* territory) {
     territories.push_back(territory);
@@ -88,6 +128,23 @@ int Continent::getNumberOfArmies() const {
 }
 std::string Continent::getName() const {
     return *name;
+}
+
+//Assignment Operator
+Continent& Continent::operator=(const Continent& other) {
+    if (this == &other) return *this;
+    delete name;
+    delete numberOfArmies;
+    name = new std::string(*(other.name));
+    numberOfArmies = new int(*(other.numberOfArmies));
+    territories = other.territories;
+    return *this;
+}
+
+//Stream insertion Operator
+std::ostream& operator<<(std::ostream& out, const Continent& continent) {
+    out << "Continent Name: " << continent.getName() << ", Number of Armies: " << continent.getNumberOfArmies();
+    return out;
 }
 
 
@@ -118,6 +175,20 @@ Map::~Map(){
         delete continent;
     }
 }
+
+// Copy constructor Just copying the pointers, not the territories and continents themselves as it doesn't make sense.
+Map::Map(const Map& other) {
+    image = new std::string(*(other.image));
+    scroll = new std::string(*(other.scroll));
+    author = new std::string(*(other.author));
+    name = new std::string(*(other.name));
+    wrap = new bool(*(other.wrap));
+    warn = new bool(*(other.warn));
+
+    territories = other.territories;
+    continents = other.continents;
+}
+
 
 // Adds a territory to the map's territories vector.
 void Map::addTerritory(Territory* territory){
@@ -150,6 +221,33 @@ bool Map::getWarn() const {
 }
 const std::vector<Continent*>& Map::getContinents() const {
     return continents;
+}
+
+//Assignment Operator
+Map& Map::operator=(const Map& other) {
+    if (this == &other) return *this;
+    delete image;
+    delete scroll;
+    delete author;
+    delete name;
+    delete wrap;
+    delete warn;
+    image = new std::string(*(other.image));
+    scroll = new std::string(*(other.scroll));
+    author = new std::string(*(other.author));
+    name = new std::string(*(other.name));
+    wrap = new bool(*(other.wrap));
+    warn = new bool(*(other.warn));
+    territories = other.territories;
+    continents = other.continents;
+    return *this;
+}
+
+
+//Stream insertion Operation
+std::ostream& operator<<(std::ostream& out, const Map& map) {
+    out << "Map Name: " << map.getName() << ", Author: " << map.getAuthor();
+    return out;
 }
 
 

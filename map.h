@@ -35,6 +35,11 @@ public:
 
     //Destructor
     ~Territory();
+
+    // Copy constructor
+    Territory(const Territory& other); 
+    // Assignment operator
+    Territory& operator=(const Territory& other); 
 };
 
 //Continent class
@@ -58,6 +63,11 @@ public:
 
     //Destructor
     ~Continent();
+
+    // Copy constructor
+    Continent(const Continent& other);
+    // Assignment operator
+    Continent& operator=(const Continent& other);
 
 };
 
@@ -105,6 +115,11 @@ public:
 
     //Destrcutor
     ~Map();
+
+    // Copy constructor
+    Map(const Map& other);
+    // Assignment operator
+    Map& operator=(const Map& other);
 };
 
 
