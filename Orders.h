@@ -13,6 +13,9 @@ public:
 	// Override ostream operator
 	friend std::ostream& operator<< (std::ostream& os, Order& order);
 
+	// Assignment operator
+	void operator=(const Order& order);
+
 	// Class member attributes
 	std::string type = "Invalid";
 

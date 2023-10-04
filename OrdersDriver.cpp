@@ -25,8 +25,6 @@ void testOrdersLists()
 		Negotiate* negotiate_order2(negotiate_order);
 		DELETE(deploy_order2);
 	}
-	
-
 
 	// Create OrdersList and push orders
 	OrdersList* ordersList = new OrdersList;

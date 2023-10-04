@@ -13,6 +13,12 @@ Order::~Order()
 	cout << "Order deconstructor was called!" << endl;
 };
 
+// Assingment operator
+void Order::operator= (const Order& order) {
+	type = order.type;
+
+}
+
 bool Order::validate() { return true;}
 
 void Order::execute() {return;}
@@ -109,7 +115,6 @@ void OrdersList::print()
 
 	std::cout << "\n";
 }
-
 
 // Override stream insertion operator. Prints the order description when passed dwda
 ostream& operator<<(ostream& os, Order& order)
