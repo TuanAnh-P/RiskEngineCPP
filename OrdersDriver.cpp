@@ -15,6 +15,19 @@ void testOrdersLists()
 	Airlift* airlift_order = new Airlift();
 	Negotiate* negotiate_order = new Negotiate();
 
+	// Test Copy Constructors
+	{
+		Deploy* deploy_order2 = new Deploy(*deploy_order);
+		Advance* advance_order2(advance_order);
+		Bomb* bomb_order2(bomb_order);
+		Blockade* blockade_order2(blockade_order);
+		Airlift* airlift_order2(airlift_order);
+		Negotiate* negotiate_order2(negotiate_order);
+		DELETE(deploy_order2);
+	}
+	
+
+
 	// Create OrdersList and push orders
 	OrdersList* ordersList = new OrdersList;
 	ordersList->orders.push_back(deploy_order);

@@ -156,13 +156,19 @@ Deploy::Deploy(int numOfArmyUnits)
 	this->type = "Deploy";
 }
 
+//Copy Constructor
+Deploy::Deploy(Deploy& other)
+{
+	this->type = other.type;
+
+}
+
 // Deploy validate checks if source territory and target territory.
 bool Deploy::validate()
 {
 	std::cout << "validate Deploy order\n";
 	return true;
 }
-
 
 // Executes Deploy order and begins attack from source territory to target territory
 void Deploy::execute()
@@ -180,6 +186,13 @@ Advance::Advance()
 {
 	std::cout << "Created Advance order" << std::endl;
 	this->type = "Advance";
+}
+
+//Copy Constructor
+Advance::Advance(Advance& other)
+{
+	this->type = other.type;
+
 }
 
 // Advance validate checks if source territory and target territory.  
@@ -208,13 +221,19 @@ Bomb::Bomb()
 	this->type = "Bomb";
 }
 
+//Copy Constructor
+Bomb::Bomb(Bomb& other)
+{
+	this->type = other.type;
+
+}
+
 // Bomb validate checks if the target territory is validate
 bool Bomb::validate()
 {
 	std::cout << "validate Bomb order\n";
 	return true;
 }
-
 
 // Executes Bomb order reducing territory army value by half
 void Bomb::execute()
@@ -234,6 +253,12 @@ Blockade::Blockade()
 	this->type = "Blockade";
 }
 
+//Copy Constructor
+Blockade::Blockade(Blockade& other)
+{
+	this->type = other.type;
+
+}
 
 // Blockade validate checks if the target territory is validate
 bool Blockade::validate()
@@ -261,6 +286,12 @@ Airlift::Airlift()
 	this->type = "Airlift";
 }
 
+//Copy Constructor
+Airlift::Airlift(Airlift& other)
+{
+	this->type = other.type;
+
+}
 
 // Airlift validate checks if the number of armies, target, source territory is validate
 bool Airlift::validate()
@@ -268,7 +299,6 @@ bool Airlift::validate()
 	std::cout << "validate Airlift order\n";
 	return true;
 }
-
 
 // Execute Airlift moves number of armies from source to target territory
 void Airlift::execute()
@@ -281,6 +311,13 @@ Negotiate::Negotiate()
 {
 	std::cout << "Created Negotiate order" << std::endl;
 	this->type = "Negotiate";
+}
+
+//Copy Constructor
+Negotiate::Negotiate(Negotiate& other)
+{
+	this->type = other.type;
+
 }
 
 // Negotiate validate checks if the target player is validate

@@ -53,10 +53,14 @@ class Deploy : public Order
 public:
 	// Constructor
 	Deploy(int numOfArmyUnits);
+
+	//Copy Constructor
+	Deploy(Deploy& other);
 	
 	// Class methods
 	bool validate();
 	void execute();
+
 
 };
 
@@ -66,6 +70,9 @@ class Advance : public Order
 public:
 	// Constructor
 	Advance();
+
+	//Copy Constructor
+	Advance(Advance& other);
 
 	// Class methods
 	bool validate();
@@ -80,6 +87,9 @@ public:
 	// Constructor 
 	Bomb();
 
+	//Copy Constructor
+	Bomb(Bomb& other);
+
 	// Class methods
 	bool validate();
 	void execute();
@@ -92,6 +102,9 @@ class Blockade : public Order
 public:
 	// Constructor
 	Blockade();
+
+	//Copy Constructor
+	Blockade(Blockade& other);
 
 	// Class methods
 	bool validate();
@@ -106,6 +119,9 @@ public:
 	// Constructor
 	Airlift();
 
+	//Copy Constructor
+	Airlift(Airlift& other);
+
 	// Class methods
 	bool validate();
 	void execute();
@@ -118,6 +134,9 @@ class Negotiate : public Order
 public:
 	// Constructor 
 	Negotiate();
+
+	//Copy Constructor
+	Negotiate(Negotiate& other);
 
 	// Class methods
 	bool validate();
