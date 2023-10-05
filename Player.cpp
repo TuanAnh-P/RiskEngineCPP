@@ -1,26 +1,23 @@
-#include "Player.h" // Include the header file for the Player class
+#include "Player.h"
 
-// Constructor -- GOOD
-Player::Player(const std::string& playerName) : playerName(playerName), hand (new Hand()), ordersList(new OrdersList()) {
+// Constructor
+Player::Player(const std::string& playerName)
+        : playerName(playerName), hand(new Hand()), ordersList(new OrdersList()) {
     std::cout << "Player " << playerName << " has arrived!" << std::endl;
 }
 
-// Copy constructor - GOOD
-Player::Player(Player &other) {
-    // Deep copy owned territories
+// Copy constructor
+Player::Player(const Player& other)
+        : playerName(other.playerName), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)) {
     for (const Territory* territory : other.ownedTerritories) {
         ownedTerritories.push_back(new Territory(*territory));
     }
-
-    // Deep copy hand and orders list
-    hand = new Hand(*other.hand);
-    ordersList = new OrdersList(*other.ordersList);
 }
 
-// Assignment operator - GOOD
-Player &Player::operator=(Player &other) {
+// Assignment operator
+Player& Player::operator=(const Player& other) {
     if (this != &other) { // Self-assignment check
-        // Delete existing owned territories
+        // Clear existing owned territories
         for (Territory* territory : ownedTerritories) {
             delete territory;
         }
@@ -43,12 +40,14 @@ Player &Player::operator=(Player &other) {
     return *this;
 }
 
-// Destructor - GOOD
+// Destructor
 Player::~Player() {
     std::cout << "Player " << playerName << " has been deleted!" << std::endl;
+
     // Delete hand and ordersList
     delete hand;
     delete ordersList;
+
     // Delete owned territories to prevent memory leaks
     for (Territory* territory : ownedTerritories) {
         delete territory;
@@ -56,7 +55,7 @@ Player::~Player() {
     ownedTerritories.clear();
 }
 
-// Add a territory to the player's ownedTerritories or territories to be defended - GOOD
+// Add a territory to the player's ownedTerritories or territories to be defended
 void Player::addTerritory(Territory* territory) {
     ownedTerritories.push_back(territory);
     std::cout << "Territory " << territory->getName() << " was added!" << std::endl;
@@ -75,12 +74,12 @@ std::vector<Territory*> Player::toAttack() {
 }
 
 // Get the player's hand of cards
-Hand& Player::getHand(){
+Hand& Player::getHand() {
     return *hand;
 }
 
 // Get the player's list of orders
-OrdersList& Player::getOrdersList(){
+OrdersList& Player::getOrdersList() {
     return *ordersList;
 }
 
@@ -118,25 +117,13 @@ void Player::issueOrder(const std::string& orderType) {
     }
 }
 
-//std::ostream &operator<<(std::ostream &os, Player &player) {
-//    return <#initializer#>;
-//}
-
-//// Remove a territory from ownedTerritories or territories to be defended
-//bool Player::removeTerritory(Territory* territory) {
-//    // Find the territory in the list of owned territories
-//    auto it = std::find(ownedTerritories.begin(), ownedTerritories.end(), territory);
-//
-//    if (it != ownedTerritories.end()) {
-//        // Territory found, erase it from the list
-//        ownedTerritories.erase(it);
-//        delete territory; // Delete the removed territory to prevent memory leaks
-//        std::cout << territory->getName() << " was deleted!" << std::endl;
-//        return true; // Territory successfully removed
-//    }
-//
-//    std::cout << "Could not find the territory!" << std::endl;
-//    return false; // Territory not found
-//}
+// Stream insertion operator
+std::ostream& operator<<(std::ostream& os, const Player& player) {
+    os << "Player Name: " << player.playerName << std::endl;
+    os << "Owned Territories: " << player.ownedTerritories.size() << " territories" << std::endl;
+    os << "Hand Size: " << player.hand->cards.size() << std::endl;
+    os << "Orders List Size: " << player.ordersList->orders.size() << std::endl;
+    return os;
+}
 
 
