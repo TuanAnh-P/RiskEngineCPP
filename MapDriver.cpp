@@ -64,8 +64,15 @@ void testLoadMaps(){
 
     }
 
+
     //Display the number of valid maps
     std::cout << "Number of valid Maps are: " << validMaps.size() << std::endl;
+
+    //Free memory
+    for (Map* map : validMaps) {
+    delete map;
+    validMaps.clear();
+}
 }
 
 //calls the testLoadMaps function
