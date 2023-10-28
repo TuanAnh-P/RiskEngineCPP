@@ -27,15 +27,24 @@ public:
 
     // Methods related to managing territories
     void addTerritory(Territory* territory); // Add a territory to the player's owned territories
+    bool isTerritoryOwned(Territory* territory); // Checks if the player owns a specific territory
+    std::vector<Territory*> getOwnedTerritories(); // Get a list of the territories the player owns
     std::vector<Territory*> toDefend();       // Get a list of territories to defend
     std::vector<Territory*> toAttack();       // Get a list of territories to attack
 
     // Methods related to managing cards
     Hand& getHand(); // Get the player's hand of cards
 
+    // Helper methods 
+    const std::string getPlayerName(); // Get the player name
+
     // Methods related to managing orders
     OrdersList& getOrdersList();                    // Get the player's list of orders
     void issueOrder(const std::string& orderType);  // Issue a new order of a specified type
+
+    // Methods related to managing negotiated players
+    const std::vector<Player*>& getNegotiatedPlayers();
+    void addToNegotiatedPlayers(Player* player);
 
 private:
     // Attributes related to a Player's instance
@@ -43,5 +52,6 @@ private:
     std::vector<Territory*> ownedTerritories; // List of territories owned by the player
     Hand* hand;                      // The player's hand of cards
     OrdersList* ordersList;          // The list of orders issued by the player
+    std::vector<Player*>* negotiatedPlayers; // The list of negotiated players that the player cannot attack
 };
 

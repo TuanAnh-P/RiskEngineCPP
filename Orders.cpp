@@ -1,20 +1,22 @@
 #include "Orders.h"
 #include "map.h"
 #include <iostream>
-using namespace std;
+#include "Player.h"
 
 // --------------- Order class ---------------
-// Order Class constructor
-Order::Order() {};
 
-// Order Class deconstructor
-Order::~Order() 
+// Constructors
+
+Order::Order() 
+	: m_playerIssuer(NULL), type("Invalid") {}
+
+Order::Order(std::string type, Player* player)
+	: m_playerIssuer(player), type(type) {}
+
+// Assignment operator
+void Order::operator= (const Order& order) 
 {
-	cout << "Order deconstructor was called!" << endl;
-};
-
-// Assingment operator
-void Order::operator= (const Order& order) {
+	m_playerIssuer = order.m_playerIssuer;
 	type = order.type;
 
 }
@@ -23,27 +25,120 @@ bool Order::validate() { return true;}
 
 void Order::execute() {return;}
 
-// --------------- OrdersList class ---------------
-
-// OrderList Class constructor
-OrdersList::OrdersList() {};
-
-// OrderList Class destructor, makes sure to delete each Order ptr in the OrderList
-OrdersList::~OrdersList() 
+Player* Order::getIssuingPlayer()
 {
-	for (Order* order : orders)
+	return this->m_playerIssuer;
+}
+
+void Order::setIssuingPlayer(Player* player)
+{
+	this->m_playerIssuer = player;
+}
+
+std::ostream& operator<<(std::ostream& os, Order& order)
+{
+
+	if (order.type == "Deploy")
 	{
-		delete order;
+		Deploy* d = dynamic_cast<Deploy*>(&order);
+
+		if (d != nullptr)
+		{
+			os << d->type << " - Deploys armies to the terrorities" << std::endl;
+		}
 	}
+
+	else if (order.type == "Advance")
+	{
+		Advance* d = dynamic_cast<Advance*>(&order);
+
+		if (d != nullptr)
+		{
+			os << order.type << " - Advance armies to the terrorities" << std::endl;
+		}
+
+	}
+	else if (order.type == "Bomb")
+	{
+		Bomb* d = dynamic_cast<Bomb*>(&order);
+
+		if (d != nullptr)
+		{
+			os << order.type << " - Bomb target terrority" << std::endl;
+		}
+
+	}
+	else if (order.type == "Blockade")
+	{
+		Blockade* d = dynamic_cast<Blockade*>(&order);
+
+		if (d != nullptr)
+		{
+			os << order.type << " - Blockade target terrority" << std::endl;
+		}
+
+	}
+	else if (order.type == "Airlift")
+	{
+		Airlift* d = dynamic_cast<Airlift*>(&order);
+
+		if (d != nullptr)
+		{
+			os << order.type << " - Airlift armies to the terrorities" << std::endl;
+		}
+
+	}
+	else if (order.type == "Negotiate")
+	{
+		Negotiate* d = dynamic_cast<Negotiate*>(&order);
+
+		if (d != nullptr)
+		{
+			os << order.type << " - Negotiate with target player" << std::endl;
+		}
+
+	}
+	else
+	{
+		os << "Invalid order!";
+	}
+
+	return os;
+}
+
+// Destructor
+
+Order::~Order()
+{
+	std::cout << "Order deconstructor was called!" << std::endl;
 };
 
+// --------------- OrdersList class ---------------
+
+// Constructors
+
+OrdersList::OrdersList() {};
+
+OrdersList::OrdersList(OrdersList& other)
+{
+	if (other.orders.empty()) return;
+
+	else
+	{
+		this->orders.clear();
+		for (int i = 0; i < other.orders.size(); i++)
+		{
+			this->orders[i] = other.orders[i];
+		}
+	}
+}
 
 // Delete the order from the list of Orders 
 void OrdersList::remove(Order& order)
 {
 	if (this->orders.empty())
 	{
-		std::cout << "Order List is empty! " << endl;
+		std::cout << "Order List is empty! " << std::endl;
 		return;
 	}
 
@@ -56,9 +151,8 @@ void OrdersList::remove(Order& order)
 		}
 	}
 
-	std::cout << "Order is not in the Orders List " << endl;
+	std::cout << "Order is not in the Orders List " << std::endl;
 }
-
 
 // Move the order in the list of Orders. Takes Order ptr and target index within the OrdersList array
 void OrdersList::move(Order& order, const int target_index)
@@ -66,21 +160,21 @@ void OrdersList::move(Order& order, const int target_index)
 	// Check empty array
 	if (this->orders.empty())
 	{
-		std::cout << "Order List is empty! " << endl;
+		std::cout << "Order List is empty! " << std::endl;
 		return;
 	}
 
 	// Check if the array has one element
 	else if (this->orders.size() < 2)
 	{
-		std::cout << "Order List only has one element! " << endl;
+		std::cout << "Order List only has one element! " << std::endl;
 		return;
 	}
 
 	// Check if target index is out of bound of the array
 	else if (target_index > this->orders.size())
 	{
-		std::cout << "Index target is out of bounds of the OrdersList " << endl;
+		std::cout << "Index target is out of bounds of the OrdersList " << std::endl;
 		return;
 	}
 
@@ -104,7 +198,7 @@ void OrdersList::print()
 
 	if (this->orders.empty())
 	{
-		std::cout << "Order List is empty! " << endl;
+		std::cout << "Order List is empty! " << std::endl;
 		return;
 	}
 
@@ -116,95 +210,106 @@ void OrdersList::print()
 	std::cout << "\n";
 }
 
-// Override stream insertion operator. Prints the order description when passed dwda
-ostream& operator<<(ostream& os, Order& order)
-{
+// Destructor
 
-	if (order.type == "Deploy")
+OrdersList::~OrdersList()
+{
+	for (Order* order : orders)
 	{
-		os << order.type << " - Deploys armies to the terrorities\n";
+		delete order;
 	}
-	else if (order.type == "Advance")
-	{
-		os << order.type << " - Advance armies to the terrorities\n";
-	}
-	else if (order.type == "Bomb")
-	{
-		os << order.type << " - Bomb target terrority\n";
-	}
-	else if (order.type == "Blockade")
-	{
-		os << order.type << " - Blockade target terrority\n";
-	}
-	else if (order.type == "Airlift")
-	{
-		os << order.type << " - Airlift armies to the terrorities\n";
-	}
-	else if (order.type == "Negotiate")
-	{
-		os << order.type << " - Negotiate with target player\n";
-	}
-	else
-	{
-		os << "Invalid order!";
-	}
-	
-	return os;
-}
+
+	this->orders.clear();
+};
 
 // --------------- Deploy class ---------------
 
-// Deploy class constructor. Parameters include number of armies to move, source territory, and target terroritory
-Deploy::Deploy(int numOfArmyUnits)
-{
-	std::cout << "Created Deploy order" << std::endl;
-	this->type = "Deploy";
-}
+// Constructors
 
-//Copy Constructor
-Deploy::Deploy(Deploy& other)
-{
-	this->type = other.type;
+Deploy::Deploy()
+	: Order("Deploy", NULL), m_targetTerritory(NULL), m_numOfArmyUnits(new int(0)) {}
 
+Deploy::Deploy(Player* player, Territory* target, int* value)
+	: Order("Deploy", player), m_targetTerritory(target), m_numOfArmyUnits(value) {}
+
+Deploy::Deploy(Deploy& other) 
+	: Order("Deploy", other.getIssuingPlayer()), m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)), m_targetTerritory(other.m_targetTerritory) {}
+
+Deploy::~Deploy()
+{
+	std::cout << "Deploy deconstructor was called!" << std::endl;
 }
 
 // Deploy validate checks if source territory and target territory.
 bool Deploy::validate()
 {
-	std::cout << "validate Deploy order\n";
-	return true;
+	std::cout << "Validating " << this->type << " Order.." << std::endl;
+	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
+
+	if (this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory)) return true;
+
+	return false;
+	
 }
 
 // Executes Deploy order and begins attack from source territory to target territory
 void Deploy::execute()
 {
-	if (this->validate())
+	if (validate())
 	{
-		std::cout << "execute Deploy order\n";
+		std::cout << "Executing Deploy Order.." << std::endl;
+		this->print();
+
+
+		/// Add armies to territory
 	}	
+	else
+	{
+		std::cout << "Invalid " << this->type << " - Target territory does not belongs to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << std::endl;
+	}
+
+}
+
+void Deploy::print()
+{
+	std::cout << "-- Deploy Order -- " << std::endl;
+	std::string name = m_targetTerritory->getName();
+	std::cout << "Target Territory: " << name;
+	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << std::endl;
+
 }
 
 // --------------- Advance class ---------------
 
-// Advance class constructor. Parameters include number of armies to move, source territory, and target terroritory
+// Constructors
+
 Advance::Advance()
-{
-	std::cout << "Created Advance order" << std::endl;
-	this->type = "Advance";
-}
+	: Order("Advance", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)) {};
 
-//Copy Constructor
+Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value)
+	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),
+	m_numOfArmyUnits(value) {};
+
 Advance::Advance(Advance& other)
-{
-	this->type = other.type;
-
-}
+	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), 
+	m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)) {}
 
 // Advance validate checks if source territory and target territory.  
 bool Advance::validate()
 {
-	std::cout << "validate Advance order\n";
-	return true;
+	std::cout << "Validating " << this->type << " Order.." << std::endl;
+
+	if (!this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
+
+	// Check that target territory is adjacent to a player owned territory
+	for (Territory* adjacentTerritory : m_targetTerritory->getAdjacentTerritories())
+	{
+		if (m_sourceTerritory == adjacentTerritory) return true;
+	}
+
+	return false;
 }
 
 // Executes Advance order and begins attack from source territory to target territory
@@ -212,32 +317,89 @@ void Advance::execute()
 {
 	if (this->validate())
 	{
-		std::cout << "execute Advance order\n";
+		std::cout << "Executing " << this->type << " order..." << std::endl;
+
+		// Move units
+		if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
+		{
+
+		}
+
+		// Simulate attack
+		else
+		{
+			float attackerAdvantage = 0.6;
+			float defenderAdvantage = 0.7;
+
+
+		}
+
+		this->print();
+		
+	}
+
+	else
+	{
+		/// TODO
+
 	}
 	
 }
 
+void Advance::print()
+{
+	std::cout << " -- " << this->type << " Order -- " << std::endl;
+	std::string target = m_targetTerritory->getName();
+	std::string source = m_sourceTerritory->getName();
+
+	std::cout << "Target Adjacent Territory: " << target << " ----> ";
+	std::cout << " Source Territory: " << source;
+	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << std::endl;
+
+
+}
+
+// Destructor
+
+Advance::~Advance()
+{
+
+}
+
 // --------------- Bomb class ---------------
 
-// Bomb class constructor. Parameters include target territory to bomb
+// Constructors
+
 Bomb::Bomb()
-{
-	std::cout << "Created Bomb order" << std::endl;
-	this->type = "Bomb";
-}
+	: Order("Bomb", NULL), m_targetTerritory(NULL) {}
 
-//Copy Constructor
+Bomb::Bomb(Player* player, Territory* targetTerritory)
+	: Order("Bomb", player), m_targetTerritory(targetTerritory) {}
+
 Bomb::Bomb(Bomb& other)
-{
-	this->type = other.type;
-
-}
+	: Order("Bomb", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory) {}
 
 // Bomb validate checks if the target territory is validate
 bool Bomb::validate()
 {
-	std::cout << "validate Bomb order\n";
-	return true;
+	std::cout << "Validating " << this->type << " order..." << std::endl;
+
+	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
+
+	// Check if player does not own target territory
+	if (!this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
+	{
+		// Check that target territory is adjacent to a player owned territory
+		for (Territory* adjacentTerritory : m_targetTerritory->getAdjacentTerritories())
+		{
+			this->getIssuingPlayer()->isTerritoryOwned(adjacentTerritory);
+
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 // Executes Bomb order reducing territory army value by half
@@ -245,91 +407,172 @@ void Bomb::execute()
 {
 	if (this->validate())
 	{
-		std::cout << "execute Bomb order\n";
+		std::cout << "Executing " << this->type << " order..." << std::endl;
+		this->print();
+
+		// Reduce target territory armies by half
 	}
+	else
+	{
+		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  belongs to " << this->getIssuingPlayer()->getPlayerName()
+			<< " or " << m_targetTerritory->getName() << " territory is not adjacent any to player owned territories" << std::endl;
+
+		std::cout << std::endl;
+	}
+
 }
+
+void Bomb::print()
+{
+	std::cout << " -- " << this->type << " Order-- " << std::endl;
+	std::string target = m_targetTerritory->getName();
+
+	std::cout << " Target Territory: " << target << std::endl;
+	std::cout << std::endl;
+
+}
+
+// Destructor
+
+Bomb::~Bomb() {}
 
 // --------------- Blockade class ---------------
 
-// Blockade class constructor. Parameters include target territory
+// Constructors
+
 Blockade::Blockade()
-{
-	std::cout << "Created Blockade order" << std::endl;
-	this->type = "Blockade";
-}
+	: Order("Blockade", NULL), m_targetTerritory(NULL) {}
 
-//Copy Constructor
+Blockade::Blockade(Player* player, Territory* targetTerritory)
+	: Order("Blockade", player), m_targetTerritory(targetTerritory) {}
+
 Blockade::Blockade(Blockade& other)
-{
-	this->type = other.type;
-
-}
+	: Order("Blockade", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory) {}
 
 // Blockade validate checks if the target territory is validate
 bool Blockade::validate()
 {
-	std::cout << "validate Blockade order\n";
-	return true;
-}
+	std::cout << "Validating " << this->type << " order..." << std::endl;
 
+	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
+
+	if (this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory)) return true;
+
+	return false;
+}
 
 // Executes Blockade which turns target territory into a neutral territory and triple the army value
 void Blockade::execute()
 {
 	if (this->validate())
 	{
-		std::cout << "execute Blockade order\n";
+		std::cout << "Executing " << this->type << " order..." << std::endl;
+		this->print();
+
+		// Double target territory armies and transfer the ownership of the territory to the Neutral player.
+	}
+	else
+	{
+		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  does not belongs to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << std::endl;
 	}
 }
 
+void Blockade::print()
+{
+	std::cout << " -- " << this->type << " Order-- " << std::endl;
+	std::string target = m_targetTerritory->getName();
+	std::cout << " Target Territory: " << target << std::endl;
+
+	std::cout << std::endl;
+}
+
+// Destructor
+
+Blockade::~Blockade() {}
+
 // --------------- Airlift class ---------------
 
-// Airlift class constructor. Parameters include the number of armies, source territory and target territory
-Airlift::Airlift()
-{
-	std::cout << "Created Airlift order" << std::endl;
-	this->type = "Airlift";
-}
+// Constructors
 
-//Copy Constructor
+Airlift::Airlift() 
+	: Order("Airlift", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)) {};
+
+Airlift::Airlift(Player* player, Territory* sourceTerritory, Territory* targetTerritory, int* value)
+	: Order("Airlift", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory), m_numOfArmyUnits(value) {};
+
 Airlift::Airlift(Airlift& other)
-{
-	this->type = other.type;
-
-}
+	: Order("Airlift", other.getIssuingPlayer()), m_sourceTerritory(other.m_sourceTerritory), m_targetTerritory(other.m_targetTerritory), 
+	m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)) {}
 
 // Airlift validate checks if the number of armies, target, source territory is validate
 bool Airlift::validate()
 {
-	std::cout << "validate Airlift order\n";
-	return true;
+	std::cout << "Validating " << this->type << " Order.." << std::endl;
+
+	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
+	
+	if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory)) return true;
+
+	return false;
 }
 
 // Execute Airlift moves number of armies from source to target territory
 void Airlift::execute()
 {
+	if (validate())
+	{
+		std::cout << "Executing " << this->type << " Order.." << std::endl;
+		this->print();
+		// Move armies to target territory
+	}
+	else
+	{
+		std::cout << "Invalid " << this->type << " - Target or Source territory does not belong to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << std::endl;
+	}
+
 }
+
+void Airlift::print()
+{
+
+	std::cout << " -- " << this->type << " Order-- " << std::endl;
+	std::string target = m_targetTerritory->getName();
+	std::string source = m_sourceTerritory->getName();
+
+	std::cout << "Source Territory: " << source << " ----> ";
+	std::cout << " Target Territory: " << target;
+	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+
+	std::cout << std::endl;
+}
+
+// Destructor
+
+Airlift::~Airlift() {}
 
 // --------------- Negotiate class ---------------
-// Negotiate class constructor. Parameters include target player 
+
+// Constructors
+
 Negotiate::Negotiate()
-{
-	std::cout << "Created Negotiate order" << std::endl;
-	this->type = "Negotiate";
-}
+	: Order("Negotiate", NULL), m_targetPlayer(NULL) {}
 
-//Copy Constructor
+Negotiate::Negotiate(Player* player, Player* targetPlayer)
+	: Order("Negotiate", player), m_targetPlayer(targetPlayer) {}
+
 Negotiate::Negotiate(Negotiate& other)
-{
-	this->type = other.type;
-
-}
+	: Order("Negotiate", other.getIssuingPlayer()), m_targetPlayer(other.m_targetPlayer) {}
 
 // Negotiate validate checks if the target player is validate
 bool Negotiate::validate()
 {
-	std::cout << "validate Negotiate order\n";
-	return true;
+	std::cout << "Validating " << this->type << " Order.." << std::endl;
+
+	if (m_targetPlayer != this->getIssuingPlayer()) return true;
+	
+	return false;
 }
 
 // Execute Negotiate disables the target player's ability to attack 
@@ -337,7 +580,29 @@ void Negotiate::execute()
 {
 	if (this->validate())
 	{
-		std::cout << "execute Negotiate order\n";
+		std::cout << "Execute "<< this->type <<" order" << std::endl;
+		this->print();
+
+		m_targetPlayer->addToNegotiatedPlayers(this->getIssuingPlayer());
+
+	}
+
+	else
+	{
+		std::cout << "Invalid " << this->type << " : " << m_targetPlayer->getPlayerName() << " is the issuing player" << std::endl;
+		std::cout << std::endl;
 	}
 }
+
+void Negotiate::print()
+{
+	std::cout << " -- " << this->type << " Order-- " << std::endl;
+	std::cout << " Target Player: " << m_targetPlayer->getPlayerName() << std::endl;
+
+	std::cout << std::endl;
+}
+
+// Destructor
+
+Negotiate::~Negotiate() {}
 

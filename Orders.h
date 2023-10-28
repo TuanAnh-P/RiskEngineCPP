@@ -3,12 +3,18 @@
 #include <vector>
 #include "map.h"
 
+//Forward declaration
+class Player;
+
+
 // Order base class 
 class Order
 {
 public:
 	// Constructor
 	Order();
+
+	Order(std::string type, Player* player);
 	
 	// Override ostream operator
 	friend std::ostream& operator<< (std::ostream& os, Order& order);
@@ -17,16 +23,23 @@ public:
 	void operator=(const Order& order);
 
 	// Class member attributes
-	std::string type = "Invalid";
+	std::string type;
 
 	// Destructor
-	~Order();
+	virtual ~Order();
+
+	virtual void execute() = 0;
 
 protected:
 
-	// Derive class methods
+	// Derived class methods
 	virtual bool validate();
-	virtual void execute();
+	virtual void print() = 0;
+	Player* getIssuingPlayer();
+	void setIssuingPlayer(Player* player);
+
+private:
+	Player* m_playerIssuer;
 
 };
 
@@ -36,6 +49,8 @@ class OrdersList
 public:
 	// Constructor
 	OrdersList();
+
+	OrdersList(OrdersList& other);
 
 	void remove(Order& order);
 	void move(Order& order, const int target_index);
@@ -55,15 +70,32 @@ class Deploy : public Order
 {
 public:
 	// Constructor
-	Deploy(int numOfArmyUnits);
+	Deploy();
+	
+	// Parameter constuctor
+	Deploy(Player* player, Territory* target, int* value);
 
-	//Copy Constructor
+	// Copy Constructor
 	Deploy(Deploy& other);
 	
 	// Class methods
-	bool validate();
 	void execute();
 
+	// Helper methods 
+	void print();
+
+	// Destructor
+	~Deploy();
+
+private: 
+
+	// Members
+	Territory* m_targetTerritory;
+	int* m_numOfArmyUnits;
+
+	// Methods
+	bool validate();
+	
 
 };
 
@@ -77,9 +109,26 @@ public:
 	//Copy Constructor
 	Advance(Advance& other);
 
+	// Parameter Constructor
+	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value);
+
 	// Class methods
-	bool validate();
 	void execute();
+	void print();
+
+	~Advance();
+
+private:
+
+	// Members
+	int* m_numOfArmyUnits;
+	Territory* m_sourceTerritory;
+	Territory* m_targetTerritory;
+
+	//Methods
+	bool validate();
+	
+
 
 };
 
@@ -90,12 +139,22 @@ public:
 	// Constructor 
 	Bomb();
 
+	// Parameter constructor 
+	Bomb(Player* player, Territory* targetTerritory);
+
 	//Copy Constructor
 	Bomb(Bomb& other);
 
 	// Class methods
-	bool validate();
 	void execute();
+	void print();
+
+	~Bomb();
+
+private:
+
+	Territory* m_targetTerritory;
+	bool validate();
 
 };
 
@@ -106,12 +165,20 @@ public:
 	// Constructor
 	Blockade();
 
+	Blockade(Player* player, Territory* tagretTerritory);
+
 	//Copy Constructor
 	Blockade(Blockade& other);
 
 	// Class methods
-	bool validate();
 	void execute();
+	void print();
+
+	~Blockade();
+
+private: 
+	Territory* m_targetTerritory;
+	bool validate();
 
 };
 
@@ -122,12 +189,24 @@ public:
 	// Constructor
 	Airlift();
 
+	// Parameter constructor 
+	Airlift(Player* player, Territory* sourceTerritory, Territory* targetTerritory, int* value);
+
 	//Copy Constructor
 	Airlift(Airlift& other);
 
 	// Class methods
-	bool validate();
 	void execute();
+	void print();
+
+	~Airlift();
+
+private:
+
+	int* m_numOfArmyUnits;
+	Territory* m_targetTerritory;
+	Territory* m_sourceTerritory;
+	bool validate();
 
 };
 
@@ -138,13 +217,21 @@ public:
 	// Constructor 
 	Negotiate();
 
+	Negotiate(Player* player, Player* targetPlayer);
+
 	//Copy Constructor
 	Negotiate(Negotiate& other);
 
 	// Class methods
-	bool validate();
 	void execute();
+	void print();
 
+	~Negotiate();
+
+private: 
+
+	Player* m_targetPlayer;
+	bool validate();
 };
 
 

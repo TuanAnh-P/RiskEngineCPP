@@ -1,15 +1,21 @@
 #include "Player.h"
 
+
+
+
 // Constructor
 Player::Player(const std::string& playerName)
-        : playerName(playerName), hand(new Hand()), ordersList(new OrdersList()) {
+    : playerName(playerName), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers( new std::vector<Player*>) {
     std::cout << "Player " << playerName << " has arrived!" << std::endl;
 }
 
 // Copy constructor
 Player::Player(const Player& other)
-        : playerName(other.playerName), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)) {
-    for (const Territory* territory : other.ownedTerritories) {
+        : playerName(other.playerName), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)), 
+    negotiatedPlayers(new std::vector<Player*>) {
+
+    for (const Territory* territory : other.ownedTerritories) 
+    {
         ownedTerritories.push_back(new Territory(*territory));
     }
 }
@@ -31,8 +37,11 @@ Player& Player::operator=(const Player& other) {
         // Deep copy hand and orders list
         delete hand;
         delete ordersList;
+        delete negotiatedPlayers;
+
         hand = new Hand(*other.hand);
         ordersList = new OrdersList(*other.ordersList);
+        negotiatedPlayers = new std::vector<Player*>(*other.negotiatedPlayers);
 
         // Copy playerName
         playerName = other.playerName;
@@ -47,6 +56,7 @@ Player::~Player() {
     // Delete hand and ordersList
     delete hand;
     delete ordersList;
+    delete negotiatedPlayers;
 
     // Delete owned territories to prevent memory leaks
     for (Territory* territory : ownedTerritories) {
@@ -83,27 +93,41 @@ OrdersList& Player::getOrdersList() {
     return *ordersList;
 }
 
+// Get the list of owned territories
+std::vector<Territory*> Player::getOwnedTerritories()
+{
+    return this->ownedTerritories;
+}
+
 void Player::issueOrder(const std::string& orderType) {
     Order* newOrder = nullptr;
+    
+    Territory* temp = new Territory("TEST", 0, 0); 
+    
 
     // Create an Order object based on the orderType
     if (orderType == "Deploy") {
-        newOrder = new Deploy(5);
+        // Take user input (Colton)
+        newOrder = new Deploy(this, this->ownedTerritories[0], new int(10));
     }
-    else if (orderType == "Advance") {
-        newOrder = new Advance();
+    else if (orderType == "Advance") 
+    {
+        newOrder = new Advance(this, this->ownedTerritories[0], this->ownedTerritories[1], new int(10));
     }
     else if (orderType == "Bomb") {
-        newOrder = new Bomb();
+        // Take user input (Colton)
+        newOrder = new Bomb(this, temp);
     }
     else if (orderType == "Blockade") {
-        newOrder = new Blockade();
+        newOrder = new Blockade(this, this->ownedTerritories[0]);
     }
     else if (orderType == "Airlift") {
-        newOrder = new Airlift();
+
+        newOrder = new Airlift(this, this->ownedTerritories[0], this->ownedTerritories[1], new int(10));
     }
     else if (orderType == "Negotiate") {
-        newOrder = new Negotiate();
+        Player* player = new Player("TEMP_Player"); // TEMP
+        newOrder = new Negotiate(this, player);
     }
 
     if (newOrder) {
@@ -117,6 +141,38 @@ void Player::issueOrder(const std::string& orderType) {
     }
 }
 
+bool Player::isTerritoryOwned(Territory* territory)
+{
+    for (Territory* var : this->ownedTerritories)
+    {
+        if (var == territory)
+        {
+            return true;
+
+        }
+
+    }
+
+    return false;
+
+}
+
+const std::string Player::getPlayerName()
+{
+    return this->playerName;
+}
+
+const std::vector<Player*>& Player::getNegotiatedPlayers()
+{
+    return *this->negotiatedPlayers;
+}
+
+void Player::addToNegotiatedPlayers(Player* player)
+{
+    if (player != NULL && player != this) this->negotiatedPlayers->push_back(player);
+    else std::cout << "NULL player pointer or passing self into parameters, cannot add player to negotiated players' list!" << std::endl;
+}
+
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& player) {
     os << "Player Name: " << player.playerName << std::endl;
@@ -125,5 +181,6 @@ std::ostream& operator<<(std::ostream& os, const Player& player) {
     os << "Orders List Size: " << player.ordersList->orders.size() << std::endl;
     return os;
 }
+
 
 
