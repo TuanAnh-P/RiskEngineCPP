@@ -11,6 +11,7 @@ Territory::Territory(const std::string& n, int xCord, int yCord){
     name = new std::string(n);
     x = new int(xCord);
     y = new int(yCord);
+    numberOfArmies = new int (0);
 }
 
 // Destructor for Territory: Deletes the dynamically allocated members. We should not delete adjacent territories.
@@ -18,6 +19,11 @@ Territory::~Territory(){
     delete name;
     delete x;
     delete y;
+    delete numberOfArmies;
+    name = nullptr;
+    x = nullptr;
+    y = nullptr;
+    numberOfArmies = nullptr;
     /*for(Territory* adjacentTerritory : adjacentTerritories){
         delete adjacentTerritory;
     }*/
@@ -48,6 +54,10 @@ int Territory::getY() const{
     return *y;
 }
 
+int Territory::getNumberOfArmies() const {
+    return *numberOfArmies;
+}
+
 // Getter for the adjacent territories.
 const std::vector<Territory*>& Territory::getAdjacentTerritories() const {
     return adjacentTerritories;
@@ -67,6 +77,11 @@ void Territory::setY (int yCord){
     y = new int(yCord);
 }
 
+void Territory::setNumberOfArmies(int numOfArmies) {
+    delete numberOfArmies;
+    numberOfArmies = new int(numOfArmies);
+}
+
 //Assignment Operator
 Territory& Territory::operator=(const Territory& other) {
     if (this == &other) return *this; 
@@ -82,7 +97,7 @@ Territory& Territory::operator=(const Territory& other) {
 
 //Stream insertion Operator
 std::ostream& operator<<(std::ostream& out, const Territory& territory) {
-    out << "Territory Name: " << territory.getName() << ", X: " << territory.getX() << ", Y: " << territory.getY();
+    out << "Territory Name: " << territory.getName() << ", X: " << territory.getX() << ", Y: " << territory.getY() << ", Number of armies: " << territory.getNumberOfArmies();
     return out;
 }
 
@@ -101,6 +116,8 @@ Continent::Continent(const std::string& n ,int numOfArmies){
 Continent::~Continent(){
     delete name;
     delete numberOfArmies;
+    name = nullptr;
+    numberOfArmies = nullptr;
     /*for (Territory* territory : territories){
         delete territory;
     }*/
@@ -167,13 +184,22 @@ Map::~Map(){
     delete name;
     delete wrap;
     delete warn;
+    image = nullptr;
+    scroll = nullptr;
+    author = nullptr;
+    name = nullptr;
+    wrap = nullptr;
+    warn = nullptr;
 
     for (Territory* territory : territories){
         delete territory;
     }
+    territories.clear();
+
     for (Continent* continent : continents){
         delete continent;
     }
+    territories.clear();
 }
 
 // Copy constructor Just copying the pointers, not the territories and continents themselves as it doesn't make sense.
