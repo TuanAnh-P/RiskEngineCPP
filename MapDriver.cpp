@@ -48,7 +48,7 @@ void testLoadMaps(){
             std::cout << "Number of Armies: " << continent->getNumberOfArmies() << std::endl;
 
             for (const Territory* territory : continent->getTerritories()) {
-                std::cout << "   Territory: " << territory->getName() << " [" << territory->getX() << "," << territory->getY() << "]" << std::endl;
+                std::cout << "   Territory: " << territory->getName() << " [" << territory->getX() << "," << territory->getY() << "], Number of armies: " << territory->getNumberOfArmies() << std::endl;
 
                 // Display adjacent territories for each territory
                 for (const Territory* adjacentTerritory : territory->getAdjacentTerritories()) {
@@ -70,15 +70,15 @@ void testLoadMaps(){
 
     //Free memory
     for (Map* map : validMaps) {
-    delete map;
-    validMaps.clear();
-}
+        delete map;
+        validMaps.clear();
+    }
 }
 
 //calls the testLoadMaps function
-/*int main(){
+int main(){
 
     testLoadMaps();
 
     return 0;
-}*/
+}

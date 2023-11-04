@@ -128,9 +128,12 @@ Map* MapLoader::loadMap() {
         //Add territory to the map
         map->addTerritory(territory);
 
-        // Associate territory with its continent
+        // Associate territory with its continent and apprpiate numberOfArmies for the territory
         if (nameToContinent.find(continentName) != nameToContinent.end()) {
-            nameToContinent[continentName]->addTerritory(territory);
+            Continent* continent = nameToContinent[continentName];
+            continent->addTerritory(territory);
+            // Now we also set the number of armies for the territory
+            territory->setNumberOfArmies(continent->getNumberOfArmies());
         } else {
             //errod handling if territory doesn't exist
             std::cout << "Error: Continent " << continentName << " for territory " << name << " is not found." << std::endl;
