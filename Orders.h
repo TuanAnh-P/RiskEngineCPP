@@ -29,12 +29,13 @@ public:
 	virtual ~Order();
 
 	virtual void execute() = 0;
+	virtual void print() = 0;
 
 protected:
 
 	// Derived class methods
 	virtual bool validate();
-	virtual void print() = 0;
+
 	Player* getIssuingPlayer();
 	void setIssuingPlayer(Player* player);
 

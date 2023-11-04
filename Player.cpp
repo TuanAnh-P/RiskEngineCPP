@@ -143,6 +143,8 @@ void Player::issueOrder(const std::string& orderType) {
 
 bool Player::isTerritoryOwned(Territory* territory)
 {
+    if (this->ownedTerritories.empty()) { return false; }
+
     for (Territory* var : this->ownedTerritories)
     {
         if (var == territory)
