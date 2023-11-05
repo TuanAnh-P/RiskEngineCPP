@@ -1,9 +1,11 @@
 #include "CommandProcessing.h" 
 #include <string>
 #include <iostream>
-#include<vector>
+#include <vector>
+#include <fstream>
 
 using std::string;
+using std::ifstream;
 
 // this function gets the first substring of a string split by whitespace
 string getFirstSubstring(const string& input) {
@@ -176,3 +178,55 @@ std::ostream& operator<<(std::ostream& os, const CommandProcessor& commandProces
     return os;
 }
 
+// Implemenation of the FileLineReader and FileCommandProcessorAdapter
+FileLineReader::FileLineReader() : _fileStream(nullptr) {}
+
+FileLineReader::FileLineReader(const string& filePath) : _fileStream(new ifstream(filePath)) {}
+
+FileLineReader::~FileLineReader() {
+    if (_fileStream) {
+        _fileStream->close();
+        delete _fileStream;
+    }
+}
+
+ostream& operator<<(std::ostream& out, const FileLineReader &flr) {
+    out << "FileLineReader";
+    return out;
+}
+
+string& FileLineReader::readLineFromFile() {
+    string line;
+    if (_fileStream && _fileStream->is_open() && std::getline(*_fileStream, line)) {
+        return line;
+    }
+    return *(new string(""));
+}
+
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter() : _fileLineReader(nullptr) {}
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const std::string& filePath) : _fileLineReader(new FileLineReader(filePath)) {}
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fcp) : _fileLineReader(fcp._fileLineReader ? new FileLineReader(*(fcp._fileLineReader)) : nullptr) {}
+
+FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
+    delete _fileLineReader;
+}
+
+FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter &rhs) {
+    if (this != &rhs) {
+        delete _fileLineReader;
+        _fileLineReader = rhs._fileLineReader ? new FileLineReader(*(rhs._fileLineReader)) : nullptr;
+    }
+    return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, const FileCommandProcessorAdapter &fcp) {
+    out << "FileCommandProcessorAdapter";
+    return out;
+}
+
+string& FileCommandProcessorAdapter::readCommand() {
+    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string(""));
+}
