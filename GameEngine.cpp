@@ -17,7 +17,7 @@ namespace warzone
         cout << "\nCommand not recognized! Please try again ..." << endl;
     };
 
-    void printRemainingInStateMessage(string name){
+    void printRemainingInStateMessage(string &name){
         cout << "\nRemaining in ------------> " << name << " State" << endl;
     }
 
@@ -32,7 +32,7 @@ namespace warzone
     };
 
     // Implementation of the GameEngine class methods / constructors
-    GameState::GameState(GameEngine &gameEngine, GameStateType gameStateId, string name):
+    GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string *name):
         _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
 
     GameState::GameState(GameState &gameState):
@@ -51,15 +51,15 @@ namespace warzone
     }
 
     void GameState::enter(){
-        if(_gameStateID == END){
+        if(*_gameStateID == END){
             cout << "\nThe game has finished. Thanks for playing :)\n" << endl;
         }else {
-            cout << "\nEntering ------------> " << _name << " State" << endl;
+            cout << "\nEntering ------------> " << *_name << " State" << endl;
         }
     }
 
     GameStateType GameState::getGameStateId(){
-        return _gameStateID;
+        return *_gameStateID;
     }
 
     // Implementation of the GameState class methods / constructors
@@ -116,7 +116,7 @@ namespace warzone
 
     // Start state class implementation
     StartState::StartState(GameEngine &gameEngine)
-            : GameState(gameEngine, START, "Start"){};
+            : GameState(gameEngine, new GameStateType(START), new string("Start")){};
 
     void StartState::update(){
         string input = getUserCommand();
@@ -133,14 +133,14 @@ namespace warzone
 
     // Map Loaded state class implementation
     MapLoadedState::MapLoadedState(GameEngine &gameEngine)
-        : GameState(gameEngine, MAP_LOADED, "Map Loaded"){};
+        : GameState(gameEngine, new GameStateType(MAP_LOADED), new string("Map Loaded")){};
 
     void MapLoadedState::update(){
         string input = getUserCommand();
 
         if (input == "loadmap")
         {
-            printRemainingInStateMessage(_name);
+            printRemainingInStateMessage(*_name);
         }
         else if (input == "validatemap")
         {
@@ -154,7 +154,7 @@ namespace warzone
 
     // Map Validated state class implementation
     MapValidatedState::MapValidatedState(GameEngine &gameEngine)
-        : GameState(gameEngine, MAP_VALIDATED, "Map Validated"){};
+        : GameState(gameEngine, new GameStateType(MAP_VALIDATED), new string("Map Validated")) {};
 
     void MapValidatedState::update(){
         string input = getUserCommand();
@@ -171,14 +171,14 @@ namespace warzone
 
     // Players Added state class implementation
     PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
-        : GameState(gameEngine, PLAYERS_ADDED, "Players Added"){};
+        : GameState(gameEngine, new GameStateType(PLAYERS_ADDED), new string("Players Added")){};
 
     void PlayersAddedState::update(){
         string input = getUserCommand();
 
         if (input == "addplayer")
         {
-            printRemainingInStateMessage(_name);
+            printRemainingInStateMessage(*_name);
         }
         else if (input == "assigncountries")
         {
@@ -192,7 +192,7 @@ namespace warzone
 
     // Assign Reinforcement state class implementation
     AssignReinforcementState::AssignReinforcementState(GameEngine &gameEngine)
-        : GameState(gameEngine, ASSIGN_REINFORCEMENT, "Assign Reinforcement"){};
+        : GameState(gameEngine, new GameStateType(ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
 
     void AssignReinforcementState::update(){
         string input = getUserCommand();
@@ -210,14 +210,14 @@ namespace warzone
 
     // Issue Orders state class implementation
     IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
-        : GameState(gameEngine, ISSUE_ORDERS, "Issue Orders"){};
+        : GameState(gameEngine, new GameStateType(ISSUE_ORDERS), new string("Issue Orders")){};
 
     void IssueOrdersState::update(){
         string input = getUserCommand();
 
         if (input == "issueorder")
         {
-            printRemainingInStateMessage(_name);
+            printRemainingInStateMessage(*_name);
         }
         else if (input == "endissueorders")
         {
@@ -231,14 +231,14 @@ namespace warzone
 
     // Execute Orders state class implementation
     ExecuteOrdersState::ExecuteOrdersState(GameEngine &gameEngine)
-        : GameState(gameEngine, EXECUTE_ORDERS, "Execute Orders"){};
+        : GameState(gameEngine, new GameStateType(EXECUTE_ORDERS), new string("Execute Orders")){};
 
     void ExecuteOrdersState::update(){
         string input = getUserCommand();
 
         if (input == "execorder")
         {
-            printRemainingInStateMessage(_name);
+            printRemainingInStateMessage(*_name);
         }
         else if (input == "endexecorders")
         {
@@ -256,7 +256,7 @@ namespace warzone
 
     // Win state class implementation
     WinState::WinState(GameEngine &gameEngine)
-        : GameState(gameEngine, WIN, "Win"){};
+        : GameState(gameEngine, new GameStateType(WIN), new string("Win")){};
 
     void WinState::update(){
         string input = getUserCommand();
@@ -277,7 +277,7 @@ namespace warzone
 
     // End state class implementation
     EndState::EndState(GameEngine &gameEngine)
-        : GameState(gameEngine, END, "End"){};
+        : GameState(gameEngine, new GameStateType(END), new string("End")){};
 
     void EndState::update(){};
 };
