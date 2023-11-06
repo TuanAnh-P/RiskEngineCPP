@@ -25,7 +25,7 @@ namespace warzone
 
     // functions used for printing game messages and reading use commands from standard in
     void printInvalidCommandError();
-    void printRemainingInStateMessage(string name);
+    void printRemainingInStateMessage(string &name);
     string getUserCommand();
 
     class GameEngine;
@@ -35,14 +35,14 @@ namespace warzone
     {
     protected:
         // attributes
-        string _name;
-        GameStateType _gameStateID;
+        string *_name;
+        GameStateType * _gameStateID;
         GameEngine &_gameEngine;
     public:
         // constructors
         explicit GameState(GameEngine &gameEngine,
-                           GameStateType gameStateId,
-                           string name);
+                           GameStateType *gameStateId,
+                           string *name);
 
         explicit GameState(GameState &gameState);
 
