@@ -1,7 +1,5 @@
 #include "GameEngine.h"
 
-using namespace warzone;
-
 // free function to test the game engine 
 void testGameStates(){
     // Create the game engine and add the valid states

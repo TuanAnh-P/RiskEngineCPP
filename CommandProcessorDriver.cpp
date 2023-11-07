@@ -1,10 +1,9 @@
+#include "GameEngine.h"
 #include "CommandProcessing.h"
 #include <string>
 #include <vector>
 #include <iostream>
-#include "GameEngine.h"
 
-using namespace warzone;
 using std::cout;
 using std::endl;
 
@@ -12,8 +11,7 @@ void testCommandProcessor(int argc, char* argv[]) {
     CommandProcessor consoleCommandProcessor;
     FileCommandProcessorAdapter *fileCommandProcessorAdapter;
 
-    std::unique_ptr<GameEngine> game(new GameEngine());
-
+    
     if (argc < 2) {
         cout << "Usage: ./CommandProcessorDriver -console OR ./CommandProcessorDriver file <filename>" << endl;
         return;
@@ -27,23 +25,41 @@ void testCommandProcessor(int argc, char* argv[]) {
             cout << "Please provide a filename for -file option." << endl;
             return;
         }
- 
+
         string filename = argv[2];
         cout << "Reading commands from file: " << filename << endl;
         fileCommandProcessorAdapter = new FileCommandProcessorAdapter(filename);
-        Command fileCommand = fileCommandProcessorAdapter->getCommandFromFile();
-        // Process the file command as needed
-        cout << "Effect of the file command: " << fileCommand.getEffect() << endl;
+
+        std::unique_ptr<GameEngine> game(new GameEngine(*fileCommandProcessorAdapter));
+
+        // Register valid game states
+        game->registerGameState<StartState>(START);
+        game->registerGameState<MapLoadedState>(MAP_LOADED);
+        game->registerGameState<MapValidatedState>(MAP_VALIDATED);
+        game->registerGameState<PlayersAddedState>(PLAYERS_ADDED);
+        game->registerGameState<AssignReinforcementState>(ASSIGN_REINFORCEMENT);
+        game->registerGameState<IssueOrdersState>(ISSUE_ORDERS);
+        game->registerGameState<ExecuteOrdersState>(EXECUTE_ORDERS);
+        game->registerGameState<WinState>(WIN);
+        game->registerGameState<EndState>(END);
+
+        // Set the starting state
+        game->setCurrentGameState(START);
+
+        while ((game->getCurrentGameState()).getGameStateId() != END)
+        {
+            game->update();
+        }
     } 
     else if (inputMode == "-console") {
         // Read commands from the console
-        cout << "Reading commands from the console:\n";
-        Command consoleCommand = consoleCommandProcessor.getCommand();
-        if(consoleCommandProcessor.validate(consoleCommand, game->getCurrentGameState().getGameStateId())) {
-            cout << consoleCommand;
-        }
+        // cout << "Reading commands from the console:\n";
+        // Command consoleCommand = consoleCommandProcessor.getCommand();
+        // if(consoleCommandProcessor.validate(consoleCommand, game->getCurrentGameState().getGameStateId())) {
+        //     cout << consoleCommand;
+        // }
     } else {
-        cout << "Invalid option. Usage: ./CommandProcessor -console OR ./CommandProcessor -file <filename>" << endl;
+        cout << "Invalid option. Usage: ./CommandProcessorDriver -console OR ./CommandProcessorDriver -file <filename>" << endl;
     }
 }
 

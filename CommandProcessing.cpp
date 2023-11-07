@@ -121,28 +121,28 @@ Command& CommandProcessor::getCommand() {
     return saveCommand(command);
 }
 
-bool CommandProcessor::validate(Command& command, warzone::GameStateType gameState) {
+bool CommandProcessor::validate(Command& command, GameStateType gameState) {
     string commandValue = getFirstSubstring(command.getCommand());
 
     switch (gameState)
     {
-    case (warzone::START):
+    case START:
         if(commandValue == "loadmap") {
             return true;
         } 
-    case (warzone::MAP_LOADED):
+    case MAP_LOADED:
         if(commandValue == "loadmap" || commandValue == "validatemap") {
             return true;
         }
-    case warzone::MAP_VALIDATED:
+    case MAP_VALIDATED:
         if(commandValue == "addplayer") {
             return true;
         }
-    case warzone::PLAYERS_ADDED:
+    case PLAYERS_ADDED:
         if(commandValue == "addplayer" || commandValue == "gamestart") {
             return true;
         }
-    case warzone::WIN:
+    case WIN:
         if(commandValue == "replay" || commandValue == "quit") {
             return true;
         }
