@@ -1,14 +1,14 @@
 #include "Player.h"
 
 // Constructor
-Player::Player(const std::string& playerName)
-        : playerName(playerName), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()) {
-    std::cout << "Player " << playerName << " has arrived!" << std::endl;
+Player::Player(const std::string& playerID)
+        : playerID(new std::string(playerID)), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()) {
+    std::cout << "Player " << *this->playerID << " has arrived!" << std::endl;
 }
 
 // Copy constructor
 Player::Player(const Player& other)
-        : playerName(other.playerName), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)) {
+        : playerID(new std::string(*other.playerID)), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)) {
 
     // Deep copy owned territories
     for (const Territory* territory : other.ownedTerritories) {
@@ -21,7 +21,6 @@ Player::Player(const Player& other)
         negotiatedPlayers->push_back(new Player(*player));
     }
 }
-
 
 // Assignment operator
 Player& Player::operator=(const Player& other) {
@@ -46,20 +45,25 @@ Player& Player::operator=(const Player& other) {
         ordersList = new OrdersList(*other.ordersList);
         negotiatedPlayers = new std::vector<Player*>(*other.negotiatedPlayers);
 
-        // Copy playerName
-        playerName = other.playerName;
+        // Copy playerID
+        delete playerID;
+        playerID = new std::string(*other.playerID);
     }
     return *this;
 }
 
 Player::~Player() {
-    std::cout << "Player " << playerName << " has been deleted!" << std::endl;
+    if (playerID) {
+        std::cout << "Player " << *playerID << " has been deleted!" << std::endl;
+        delete playerID;
+    }
 
     // Delete hand and ordersList
     delete hand;
     delete ordersList;
 
     // Set the pointers to nullptr after deletion
+    playerID = nullptr;
     hand = nullptr;
     ordersList = nullptr;
 
@@ -78,6 +82,7 @@ Player::~Player() {
     }
     ownedTerritories.clear(); // Handle dangling pointers
 }
+
 
 // Add a territory to the player's ownedTerritories or territories to be defended
 void Player::addTerritory(Territory* territory) {
@@ -176,10 +181,12 @@ bool Player::isTerritoryOwned(Territory* territory)
 
 }
 
-const std::string Player::getPlayerName()
+const std::string & Player::getPlayerID()
 {
-    return this->playerName;
+    return *playerID;
 }
+
+
 
 const std::vector<Player*>& Player::getNegotiatedPlayers()
 {
@@ -194,7 +201,7 @@ void Player::addToNegotiatedPlayers(Player* player)
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& player) {
-    os << "Player Name: " << player.playerName << std::endl;
+    os << "Player Name: " << player.playerID << std::endl;
     os << "Owned Territories: " << player.ownedTerritories.size() << " territories" << std::endl;
     os << "Hand Size: " << player.hand->cards.size() << std::endl;
     os << "Orders List Size: " << player.ordersList->orders.size() << std::endl;

@@ -265,7 +265,7 @@ void Deploy::execute()
 	}	
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Target territory does not belongs to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << "Invalid " << this->type << " - Target territory does not belongs to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
 		std::cout << std::endl;
 	}
 
@@ -414,7 +414,7 @@ void Bomb::execute()
 	}
 	else
 	{
-		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  belongs to " << this->getIssuingPlayer()->getPlayerName()
+		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  belongs to " << this->getIssuingPlayer()->getPlayerID()
 			<< " or " << m_targetTerritory->getName() << " territory is not adjacent any to player owned territories" << std::endl;
 
 		std::cout << std::endl;
@@ -473,7 +473,7 @@ void Blockade::execute()
 	}
 	else
 	{
-		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  does not belongs to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  does not belongs to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
 		std::cout << std::endl;
 	}
 }
@@ -528,7 +528,7 @@ void Airlift::execute()
 	}
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Target or Source territory does not belong to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << "Invalid " << this->type << " - Target or Source territory does not belong to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
 		std::cout << std::endl;
 	}
 
@@ -589,7 +589,7 @@ void Negotiate::execute()
 
 	else
 	{
-		std::cout << "Invalid " << this->type << " : " << m_targetPlayer->getPlayerName() << " is the issuing player" << std::endl;
+		std::cout << "Invalid " << this->type << " : " << m_targetPlayer->getPlayerID() << " is the issuing player" << std::endl;
 		std::cout << std::endl;
 	}
 }
@@ -597,7 +597,7 @@ void Negotiate::execute()
 void Negotiate::print()
 {
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
-	std::cout << " Target Player: " << m_targetPlayer->getPlayerName() << std::endl;
+	std::cout << " Target Player: " << m_targetPlayer->getPlayerID() << std::endl;
 
 	std::cout << std::endl;
 }
