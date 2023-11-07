@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include "GameEngine.h"
+#include "CommandProcessing.h"
 
 using std::cin;
 using std::cout;
@@ -64,6 +65,8 @@ namespace warzone
 
     // Implementation of the GameState class methods / constructors
     GameEngine::GameEngine() : _currentGameState(nullptr) {};
+    
+    GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
 
     GameEngine::GameEngine(GameEngine &engine) : 
         _currentGameState(engine._currentGameState), _gameStates(engine._gameStates) {};
@@ -78,6 +81,10 @@ namespace warzone
         _gameStates = gameEngine._gameStates;
         _currentGameState = gameEngine._currentGameState;
     }   
+
+    CommandProcessor& GameEngine::getCommandProcessor() {
+        return *_commandProcessor;
+    }
 
     GameState& GameEngine::getGameState(GameStateType gameStateID){
         return *_gameStates[gameStateID];
@@ -119,14 +126,11 @@ namespace warzone
             : GameState(gameEngine, new GameStateType(START), new string("Start")){};
 
     void StartState::update(){
-        string input = getUserCommand();
+        Command command = _gameEngine.getCommandProcessor().getCommand();
 
-        if (input == "loadmap")
-        {
+        if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
             _gameEngine.setCurrentGameState(MAP_LOADED);
-        }
-        else
-        {
+        } else {
             printInvalidCommandError();
         }
     }
@@ -136,18 +140,17 @@ namespace warzone
         : GameState(gameEngine, new GameStateType(MAP_LOADED), new string("Map Loaded")){};
 
     void MapLoadedState::update(){
-        string input = getUserCommand();
+        Command command = _gameEngine.getCommandProcessor().getCommand();
 
-        if (input == "loadmap")
-        {
-            printRemainingInStateMessage(*_name);
-        }
-        else if (input == "validatemap")
-        {
-            _gameEngine.setCurrentGameState(MAP_VALIDATED);
-        }
-        else
-        {
+        if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
+            if (command.getCommand() == "validatemap")
+            {
+                _gameEngine.setCurrentGameState(MAP_VALIDATED);
+            }
+            else {
+                _gameEngine.setCurrentGameState(MAP_LOADED);
+            }
+        } else {
             printInvalidCommandError();
         }
     }
@@ -157,37 +160,33 @@ namespace warzone
         : GameState(gameEngine, new GameStateType(MAP_VALIDATED), new string("Map Validated")) {};
 
     void MapValidatedState::update(){
-        string input = getUserCommand();
+        Command command = _gameEngine.getCommandProcessor().getCommand();
 
-            if (input == "addplayer")
-            {
-                _gameEngine.setCurrentGameState(PLAYERS_ADDED);
-            }
-            else
-            {
-                printInvalidCommandError();
-            }
+        if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
+            _gameEngine.setCurrentGameState(PLAYERS_ADDED);
+        } else {
+            printInvalidCommandError();
+        }
     }
 
-    // Players Added state class implementation
+   // Players Added state class implementation
     PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
         : GameState(gameEngine, new GameStateType(PLAYERS_ADDED), new string("Players Added")){};
 
     void PlayersAddedState::update(){
-        string input = getUserCommand();
+        Command command = _gameEngine.getCommandProcessor().getCommand();
 
-        if (input == "addplayer")
-        {
-            printRemainingInStateMessage(*_name);
-        }
-        else if (input == "assigncountries")
-        {
-            _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
-        }
-        else
-        {
+        if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
+            if (command.getCommand() == "gamestart")
+            {
+                _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
+            }
+            else {
+                _gameEngine.setCurrentGameState(PLAYERS_ADDED);
+            }
+        } else {
             printInvalidCommandError();
-        }
+        }        
     }
 
     // Assign Reinforcement state class implementation
@@ -195,38 +194,40 @@ namespace warzone
         : GameState(gameEngine, new GameStateType(ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
 
     void AssignReinforcementState::update(){
-        string input = getUserCommand();
+        // string input = getUserCommand();
 
-        if (input == "issueorder")
-        {
-            _gameEngine.setCurrentGameState(ISSUE_ORDERS);
-        }
-        else
-        {
-            printInvalidCommandError();
-        }
+        // if (input == "issueorder")
+        // {
+        //     _gameEngine.setCurrentGameState(ISSUE_ORDERS);
+        // }
+        // else
+        // {
+        //     printInvalidCommandError();
+        // }
+
+        _gameEngine.setCurrentGameState(ISSUE_ORDERS);
     }
-
 
     // Issue Orders state class implementation
     IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
         : GameState(gameEngine, new GameStateType(ISSUE_ORDERS), new string("Issue Orders")){};
 
     void IssueOrdersState::update(){
-        string input = getUserCommand();
+    //     string input = getUserCommand();
 
-        if (input == "issueorder")
-        {
-            printRemainingInStateMessage(*_name);
-        }
-        else if (input == "endissueorders")
-        {
-            _gameEngine.setCurrentGameState(EXECUTE_ORDERS);
-        }
-        else
-        {
-            printInvalidCommandError();
-        }
+    //     if (input == "issueorder")
+    //     {
+    //         printRemainingInStateMessage(*_name);
+    //     }
+    //     else if (input == "endissueorders")
+    //     {
+    //         _gameEngine.setCurrentGameState(EXECUTE_ORDERS);
+    //     }
+    //     else
+    //     {
+    //         printInvalidCommandError();
+    //     }
+        _gameEngine.setCurrentGameState(EXECUTE_ORDERS);
     }
 
     // Execute Orders state class implementation
@@ -234,24 +235,26 @@ namespace warzone
         : GameState(gameEngine, new GameStateType(EXECUTE_ORDERS), new string("Execute Orders")){};
 
     void ExecuteOrdersState::update(){
-        string input = getUserCommand();
+        // string input = getUserCommand();
 
-        if (input == "execorder")
-        {
-            printRemainingInStateMessage(*_name);
-        }
-        else if (input == "endexecorders")
-        {
-            _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
-        }
-        else if (input == "win")
-        {
-            _gameEngine.setCurrentGameState(WIN);
-        }
-        else
-        {
-            printInvalidCommandError();
-        }
+        // if (input == "execorder")
+        // {
+        //     printRemainingInStateMessage(*_name);
+        // }
+        // else if (input == "endexecorders")
+        // {
+        //     _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
+        // }
+        // else if (input == "win")
+        // {
+        //     _gameEngine.setCurrentGameState(WIN);
+        // }
+        // else
+        // {
+        //     printInvalidCommandError();
+        // }
+
+        _gameEngine.setCurrentGameState(WIN);
     }
 
     // Win state class implementation
@@ -259,21 +262,20 @@ namespace warzone
         : GameState(gameEngine, new GameStateType(WIN), new string("Win")){};
 
     void WinState::update(){
-        string input = getUserCommand();
+        Command command = _gameEngine.getCommandProcessor().getCommand();
 
-        if (input == "play")
-        {
-            _gameEngine.setCurrentGameState(START);
-        }
-        else if (input == "end")
-        {
-            _gameEngine.setCurrentGameState(END);
-        }
-        else
-        {
+        if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
+            if (command.getCommand() == "replay")
+            {
+                _gameEngine.setCurrentGameState(START);
+            }
+            else {
+                _gameEngine.setCurrentGameState(END);
+            }
+        } else {
             printInvalidCommandError();
         }
-    }
+   }
 
     // End state class implementation
     EndState::EndState(GameEngine &gameEngine)

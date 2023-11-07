@@ -121,7 +121,6 @@ Command& CommandProcessor::getCommand() {
     return saveCommand(command);
 }
 
-
 bool CommandProcessor::validate(Command& command, warzone::GameStateType gameState) {
     string commandValue = getFirstSubstring(command.getCommand());
 
@@ -129,43 +128,25 @@ bool CommandProcessor::validate(Command& command, warzone::GameStateType gameSta
     {
     case (warzone::START):
         if(commandValue == "loadmap") {
-            command.saveEffect("transitioning to map loaded state"); 
             return true;
         } 
     case (warzone::MAP_LOADED):
-        if(commandValue == "loadmap") {
-            command.saveEffect("transitioning to map loaded state"); 
-            return true;
-        }
-        if(commandValue == "validatemap") {
-            command.saveEffect("transitioning to map validated state"); 
+        if(commandValue == "loadmap" || commandValue == "validatemap") {
             return true;
         }
     case warzone::MAP_VALIDATED:
         if(commandValue == "addplayer") {
-            command.saveEffect("transitioning to players added state"); 
             return true;
         }
     case warzone::PLAYERS_ADDED:
-        if(commandValue == "addplayer") {
-            command.saveEffect("transitioning to players added state"); 
-            return true;
-        }
-        if(commandValue == "gamestart") {
-            command.saveEffect("transitioning to assign reinforcement state"); 
+        if(commandValue == "addplayer" || commandValue == "gamestart") {
             return true;
         }
     case warzone::WIN:
-        if(commandValue == "replay") {
-            command.saveEffect("transitioning to start state"); 
-            return true;
-        }
-        if(commandValue == "quit") {
-            command.saveEffect("transitioning to exit state"); 
+        if(commandValue == "replay" || commandValue == "quit") {
             return true;
         }
     default:
-        command.saveEffect("Command is invalid in the current state"); 
         return false;
     }
 }
@@ -206,7 +187,7 @@ string& FileLineReader::readLineFromFile() {
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter() : _fileLineReader(nullptr) {}
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const std::string& filePath) : _fileLineReader(new FileLineReader(filePath)) {}
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& filePath) : _fileLineReader(new FileLineReader(filePath)) {}
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fcp) : _fileLineReader(fcp._fileLineReader ? new FileLineReader(*(fcp._fileLineReader)) : nullptr) {}
 

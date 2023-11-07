@@ -74,10 +74,14 @@ namespace warzone
         std::map<GameStateType, std::shared_ptr<GameState > > _gameStates;
         // The current GameState.
         GameState *_currentGameState;
+        // Command processor 
+        CommandProcessor * _commandProcessor;
 
     public:
         // constructor 
         GameEngine();
+
+        GameEngine(CommandProcessor& commandProcessor);
 
         GameEngine(GameEngine &engine);
 
@@ -86,6 +90,9 @@ namespace warzone
 
         // Assignment operator
         void operator=(const GameEngine &gameEngine);
+        
+        // Getter for command processor 
+        CommandProcessor& getCommandProcessor();
 
         // Get game state instance by ID
         GameState &getGameState(GameStateType gameStateID);
