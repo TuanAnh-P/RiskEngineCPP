@@ -14,6 +14,7 @@ private:
     int* x;
     int* y;
     std::vector<Territory*> adjacentTerritories;
+    int* numberOfArmies;
 
 public:
     //constructor
@@ -26,12 +27,14 @@ public:
     std::string getName() const;
     int getX() const;
     int getY() const;
+    int getNumberOfArmies() const;
 
     //Basics Setters
     const std::vector<Territory*>& getAdjacentTerritories() const;
     void setName(const std::string& name);
     void setX(int x);
     void setY(int y);
+    void setNumberOfArmies(int numOfArmies);
 
     //Destructor
     ~Territory();
