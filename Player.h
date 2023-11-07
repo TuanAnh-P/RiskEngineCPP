@@ -26,6 +26,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
 
     // Methods related to managing territories
+    void removeTerritory(Territory* territory); // Remove a territory from the player's owned territories
     void addTerritory(Territory* territory); // Add a territory to the player's owned territories
     bool isTerritoryOwned(Territory* territory); // Checks if the player owns a specific territory
     std::vector<Territory*> getOwnedTerritories(); // Get a list of the territories the player owns

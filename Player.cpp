@@ -65,6 +65,25 @@ Player::~Player() {
     ownedTerritories.clear();
 }
 
+// Remove a territory from the player's owned territories
+void Player::removeTerritory(Territory* territory)
+{
+    if (ownedTerritories.empty()) { std::cout << "Player does not own any territories!" << std::endl; return;}
+
+    auto it = find(ownedTerritories.begin(), ownedTerritories.end(), territory);
+
+    if (it != ownedTerritories.end())
+    {
+        int targetTerritoryIndex;
+        targetTerritoryIndex = ownedTerritories.begin() - it;
+        ownedTerritories.erase(ownedTerritories.begin() + targetTerritoryIndex);
+    }
+    else
+    {
+        std::cout << "ERROR: Target territory is not owned by the issuing player, cannot remove territory" << std::endl;
+    }
+}
+
 // Add a territory to the player's ownedTerritories or territories to be defended
 void Player::addTerritory(Territory* territory) {
     ownedTerritories.push_back(territory);

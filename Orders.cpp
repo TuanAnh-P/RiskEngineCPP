@@ -287,10 +287,9 @@ void Deploy::execute()
 	if (validate())
 	{
 		std::cout << "Executing Deploy Order.." << std::endl;
+		std::cout << m_targetTerritory->getNumberOfArmies() << std::endl;
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 		this->print();
-
-
-		/// Add armies to territory
 	}	
 	else
 	{
@@ -307,7 +306,8 @@ void Deploy::print()
 	std::cout << "-- Deploy Order -- " << std::endl;
 	std::string name = m_targetTerritory->getName();
 	std::cout << "Target Territory: " << name;
-	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << " - Deployed number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << " - Territory number of armies: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 	std::cout << std::endl;
 
 }
@@ -351,25 +351,79 @@ void Advance::execute()
 		// Move units
 		if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
 		{
-
+			m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+			m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+			std::cout << "-- Move Advance order --" << std::endl;
+			this->print();
 		}
 
 		// Simulate attack
 		else
 		{
-			float attackerAdvantage = 0.6;
-			float defenderAdvantage = 0.7;
+
+			bool attackersTurn = true;
+			bool attackersWon = false;
+
+			std::cout << "-- Attack Advance order --" << std::endl;
+
+			// check if target enemy player is in the issuing Player's negioated players list
+
+			while (m_sourceTerritory->getNumberOfArmies() != 0 || m_targetTerritory->getNumberOfArmies() != 0)
+			{
+
+				int roll;
+				switch (attackersTurn)
+				{
+					// attacker's turn
+					case true:
+						roll = rand() % 10 + 1;
+						if (roll <= 6) // Attacker has 60% chance of kill a unit
+						{
+							m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() - 1);
+							bool attackersTurn = false;
+							if (m_targetTerritory->getNumberOfArmies() == 0) { attackersWon = true; }
+
+							break;
+						}
+					break;
+					
+					// defender's turn
+					case false:
+						roll = rand() % 10 + 1;
+						if (roll <= 7) // Defender has 70% chance of kill a unit
+						{
+							m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - 1);
+							bool attackersTurn = true;
+							if (m_sourceTerritory->getNumberOfArmies() == 0) { attackersWon = false; }
+
+							break;
+						}
+					break;
+				}
+			}
+
+			if (attackersWon == true)
+			{
+				std::cout << "-- Attacker Won --" << std::endl;
+
+				// transfer ownership
+
+				// give card
+
+			}
+			else std::cout << "-- Attacker Lost --" << std::endl;
 
 
+			this->print();
 		}
-
-		this->print();
 		
 	}
 
 	else
 	{
-		/// TODO
+		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerName() 
+			<< "or Source and Target territories are not adjacent territories" << std::endl;
+		std::cout << std::endl;
 
 	}
 	
@@ -439,9 +493,13 @@ void Bomb::execute()
 	if (this->validate())
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
-		this->print();
 
 		// Reduce target territory armies by half
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() / 2);
+
+		this->print();
+
+		
 	}
 	else
 	{
@@ -456,6 +514,7 @@ void Bomb::execute()
 void Bomb::print()
 {
 	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
 
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
 	std::string target = m_targetTerritory->getName();
@@ -503,9 +562,15 @@ void Blockade::execute()
 	if (this->validate())
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
-		this->print();
 
-		// Double target territory armies and transfer the ownership of the territory to the Neutral player.
+		// Double target territory armies and transfer the ownership of the territory to the Neutral player
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() * 2);
+
+		this->getIssuingPlayer()->removeTerritory(m_targetTerritory);
+
+		// TODO - Give NEUTRAL player the target territory
+
+		this->print();
 	}
 	else
 	{
@@ -521,6 +586,7 @@ void Blockade::print()
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
 	std::string target = m_targetTerritory->getName();
 	std::cout << " Target Territory: " << target << std::endl;
+	std::cout << " Target Territory Armies: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 
 	std::cout << std::endl;
 }
@@ -564,8 +630,14 @@ void Airlift::execute()
 	if (validate())
 	{
 		std::cout << "Executing " << this->type << " Order.." << std::endl;
-		this->print();
 		// Move armies to target territory
+
+		m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+
+		this->print();
+
 	}
 	else
 	{
@@ -585,7 +657,7 @@ void Airlift::print()
 
 	std::cout << "Source Territory: " << source << " ----> ";
 	std::cout << " Target Territory: " << target;
-	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << " - Target Territory Number of armies: " << *m_numOfArmyUnits << std::endl;
 
 	std::cout << std::endl;
 }

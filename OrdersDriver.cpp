@@ -178,7 +178,7 @@ void testOrderExecution()
 	p1->issueOrder("Advance");
 	p1->issueOrder("Airlift");
 	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
-	p1->issueOrder("Blockade");
+	p1->issueOrder("Blockade"); // TODO - Need to add NEUTRAL player
 	p1->issueOrder("Negotiate");
 
 
