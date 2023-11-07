@@ -2,13 +2,13 @@
 
 // Constructor
 Player::Player(const std::string& playerID)
-        : playerID(new std::string(playerID)), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()) {
+        : playerID(new std::string(playerID)), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0)) {
     std::cout << "Player " << *this->playerID << " has arrived!" << std::endl;
 }
 
 // Copy constructor
 Player::Player(const Player& other)
-        : playerID(new std::string(*other.playerID)), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)) {
+        : playerID(new std::string(*other.playerID)), hand(new Hand(*other.hand)), ordersList(new OrdersList(*other.ordersList)), reinforcementPool(new int(*other.reinforcementPool)) {
 
     // Deep copy owned territories
     for (const Territory* territory : other.ownedTerritories) {
@@ -48,6 +48,10 @@ Player& Player::operator=(const Player& other) {
         // Copy playerID
         delete playerID;
         playerID = new std::string(*other.playerID);
+
+        // Copy reinforcementPool
+        delete reinforcementPool;
+        reinforcementPool = new int(*other.reinforcementPool);
     }
     return *this;
 }
@@ -58,12 +62,16 @@ Player::~Player() {
         delete playerID;
     }
 
+    // Delete reinforcementPool
+    delete reinforcementPool;
+
     // Delete hand and ordersList
     delete hand;
     delete ordersList;
 
     // Set the pointers to nullptr after deletion
     playerID = nullptr;
+    reinforcementPool = nullptr;
     hand = nullptr;
     ordersList = nullptr;
 
@@ -181,16 +189,39 @@ bool Player::isTerritoryOwned(Territory* territory)
 
 }
 
-const std::string & Player::getPlayerID()
-{
+std::string Player::getPlayerID() const {
     return *playerID;
 }
 
-
-
-const std::vector<Player*>& Player::getNegotiatedPlayers()
-{
+const std::vector<Player*>& Player::getNegotiatedPlayers() {
     return *this->negotiatedPlayers;
+}
+
+int Player::getReinforcementPool() const {
+    return *reinforcementPool;
+}
+
+void Player::setReinforcementPool(const int& amount) {
+    if (reinforcementPool != nullptr) {
+        delete reinforcementPool;
+    }
+    reinforcementPool = new int(amount);
+}
+
+void Player::addReinforcementPool(const int &amount) {
+    if (reinforcementPool != nullptr) {
+        *reinforcementPool += amount;
+    }
+}
+
+void Player::removeReinforcementPool(const int &amount) {
+    if (reinforcementPool != nullptr) {
+        *reinforcementPool -= amount;
+        if (*reinforcementPool < 0) {
+            // Ensure the reinforcement pool does not go negative.
+            *reinforcementPool = 0;
+        }
+    }
 }
 
 void Player::addToNegotiatedPlayers(Player* player)
@@ -201,10 +232,11 @@ void Player::addToNegotiatedPlayers(Player* player)
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& player) {
-    os << "Player Name: " << player.playerID << std::endl;
+    os << "Player Name: " << *player.playerID << std::endl;
     os << "Owned Territories: " << player.ownedTerritories.size() << " territories" << std::endl;
     os << "Hand Size: " << player.hand->cards.size() << std::endl;
     os << "Orders List Size: " << player.ordersList->orders.size() << std::endl;
+    os << "Reinforcement Pool: " << *player.reinforcementPool << std::endl;
     return os;
 }
 
