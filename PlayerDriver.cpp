@@ -45,6 +45,13 @@ void testPlayers() {
     std::cout << "<----------Displaying Orders List---------->" << std::endl;
     playerOrders.print();
 
+    // Testing reinforcementPool
+    std::cout << "<----------Number of reinforcement pool---------->" << std::endl;
+    player->setReinforcementPool(50);
+    player->addReinforcementPool(100);
+    player->removeReinforcementPool(40);
+    std::cout << player->getReinforcementPool() << std::endl;
+
     //Use the custom operator<< to print player details
     std::cout << "<----------Player's Stats---------->" << std::endl;
     std::cout << *player << std::endl;
@@ -54,11 +61,11 @@ void testPlayers() {
     delete player;
 }
 
-//int main() {
-//    // Call the testPlayers function to demonstrate player object features
-//    testPlayers();
-//    return 0;
-//}
+int main() {
+    // Call the testPlayers function to demonstrate player object features
+    testPlayers();
+    return 0;
+}
 
 
 

@@ -11,7 +11,7 @@
 class Player {
 public:
     // Constructor
-    explicit Player(const std::string& playerName);
+    explicit Player(const std::string& playerID);
 
     // Copy constructor
     Player(const Player& other);
@@ -36,8 +36,8 @@ public:
     // Methods related to managing cards
     Hand& getHand(); // Get the player's hand of cards
 
-    // Helper methods 
-    const std::string getPlayerName(); // Get the player name
+    // Method related to managing the player id
+    std::string getPlayerID() const; // Get the player id
 
     // Methods related to managing orders
     OrdersList& getOrdersList();                    // Get the player's list of orders
@@ -47,12 +47,19 @@ public:
     const std::vector<Player*>& getNegotiatedPlayers();
     void addToNegotiatedPlayers(Player* player);
 
+    // Methods related to managing reinforcementPool
+    int getReinforcementPool() const;
+    void setReinforcementPool(const int& amount);
+    void addReinforcementPool(const int& amount);
+    void removeReinforcementPool(const int& amount);
+
 private:
     // Attributes related to a Player's instance
-    std::string playerName;          // The name of the player
+    std::string* playerID;          // The name of the player
     std::vector<Territory*> ownedTerritories; // List of territories owned by the player
     Hand* hand;                      // The player's hand of cards
     OrdersList* ordersList;          // The list of orders issued by the player
     std::vector<Player*>* negotiatedPlayers; // The list of negotiated players that the player cannot attack
+    int* reinforcementPool;
 };
 
