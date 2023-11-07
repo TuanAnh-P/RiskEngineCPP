@@ -10,6 +10,31 @@ using std::endl;
 using std::string;
 using std::ostream;
 
+string gameStateTypeToString(GameStateType state) {
+    switch (state) {
+        case GameStateType::START:
+            return "START";
+        case GameStateType::MAP_LOADED:
+            return "MAP_LOADED";
+        case GameStateType::MAP_VALIDATED:
+            return "MAP_VALIDATED";
+        case GameStateType::PLAYERS_ADDED:
+            return "PLAYERS_ADDED";
+        case GameStateType::ASSIGN_REINFORCEMENT:
+            return "ASSIGN_REINFORCEMENT";
+        case GameStateType::ISSUE_ORDERS:
+            return "ISSUE_ORDERS";
+        case GameStateType::EXECUTE_ORDERS:
+            return "EXECUTE_ORDERS";
+        case GameStateType::WIN:
+            return "WIN";
+        case GameStateType::END:
+            return "END";
+        default:
+            return "UNKNOWN";
+    }
+}
+
 void printInvalidCommandError()
 {
     cout << "\nCommand not recognized! Please try again ..." << endl;
@@ -49,7 +74,7 @@ ostream & operator << (ostream &out, GameState &state)
 }
 
 void GameState::enter(){
-    if(*_gameStateID == END){
+    if(*_gameStateID == GameStateType::END){
         cout << "\nThe game has finished. Thanks for playing :)\n" << endl;
     }else {
         cout << "\nEntering ------------> " << *_name << " State" << endl;
@@ -70,7 +95,7 @@ GameEngine::GameEngine(GameEngine &engine) :
 
 ostream & operator << (ostream &out, GameEngine &engine)
 {
-    out << "current state" << engine._currentGameState->getGameStateId() << endl;
+    out << "current state" << gameStateTypeToString(engine._currentGameState->getGameStateId())<< endl;
     return out;
 }
 
@@ -120,13 +145,15 @@ void GameEngine::setCurrentGameState(GameState *gameState)
 
 // Start state class implementation
 StartState::StartState(GameEngine &gameEngine)
-        : GameState(gameEngine, new GameStateType(START), new string("Start")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::START), new string("Start")){};
 
 void StartState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
+    cout << "Command received from file: " << endl;
+    cout << command;
 
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        _gameEngine.setCurrentGameState(MAP_LOADED);
+        _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
     } else {
         printInvalidCommandError();
     }
@@ -134,7 +161,7 @@ void StartState::update(){
 
 // Map Loaded state class implementation
 MapLoadedState::MapLoadedState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(MAP_LOADED), new string("Map Loaded")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::MAP_LOADED), new string("Map Loaded")){};
 
 void MapLoadedState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
@@ -142,10 +169,10 @@ void MapLoadedState::update(){
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
         if (command.getCommand() == "validatemap")
         {
-            _gameEngine.setCurrentGameState(MAP_VALIDATED);
+            _gameEngine.setCurrentGameState(GameStateType::MAP_VALIDATED);
         }
         else {
-            _gameEngine.setCurrentGameState(MAP_LOADED);
+            _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
         }
     } else {
         printInvalidCommandError();
@@ -154,13 +181,13 @@ void MapLoadedState::update(){
 
 // Map Validated state class implementation
 MapValidatedState::MapValidatedState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(MAP_VALIDATED), new string("Map Validated")) {};
+    : GameState(gameEngine, new GameStateType(GameStateType::MAP_VALIDATED), new string("Map Validated")) {};
 
 void MapValidatedState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
 
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        _gameEngine.setCurrentGameState(PLAYERS_ADDED);
+        _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
     } else {
         printInvalidCommandError();
     }
@@ -168,7 +195,7 @@ void MapValidatedState::update(){
 
 // Players Added state class implementation
 PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(PLAYERS_ADDED), new string("Players Added")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::PLAYERS_ADDED), new string("Players Added")){};
 
 void PlayersAddedState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
@@ -176,10 +203,10 @@ void PlayersAddedState::update(){
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
         if (command.getCommand() == "gamestart")
         {
-            _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
+            _gameEngine.setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         }
         else {
-            _gameEngine.setCurrentGameState(PLAYERS_ADDED);
+            _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
         }
     } else {
         printInvalidCommandError();
@@ -188,7 +215,7 @@ void PlayersAddedState::update(){
 
 // Assign Reinforcement state class implementation
 AssignReinforcementState::AssignReinforcementState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
 
 void AssignReinforcementState::update(){
     // string input = getUserCommand();
@@ -202,12 +229,12 @@ void AssignReinforcementState::update(){
     //     printInvalidCommandError();
     // }
 
-    _gameEngine.setCurrentGameState(ISSUE_ORDERS);
+    _gameEngine.setCurrentGameState(GameStateType::ISSUE_ORDERS);
 }
 
 // Issue Orders state class implementation
 IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(ISSUE_ORDERS), new string("Issue Orders")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::ISSUE_ORDERS), new string("Issue Orders")){};
 
 void IssueOrdersState::update(){
 //     string input = getUserCommand();
@@ -224,12 +251,12 @@ void IssueOrdersState::update(){
 //     {
 //         printInvalidCommandError();
 //     }
-    _gameEngine.setCurrentGameState(EXECUTE_ORDERS);
+    _gameEngine.setCurrentGameState(GameStateType::EXECUTE_ORDERS);
 }
 
 // Execute Orders state class implementation
 ExecuteOrdersState::ExecuteOrdersState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(EXECUTE_ORDERS), new string("Execute Orders")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::EXECUTE_ORDERS), new string("Execute Orders")){};
 
 void ExecuteOrdersState::update(){
     // string input = getUserCommand();
@@ -251,12 +278,12 @@ void ExecuteOrdersState::update(){
     //     printInvalidCommandError();
     // }
 
-    _gameEngine.setCurrentGameState(WIN);
+    _gameEngine.setCurrentGameState(GameStateType::WIN);
 }
 
 // Win state class implementation
 WinState::WinState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(WIN), new string("Win")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::WIN), new string("Win")){};
 
 void WinState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
@@ -264,10 +291,10 @@ void WinState::update(){
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
         if (command.getCommand() == "replay")
         {
-            _gameEngine.setCurrentGameState(START);
+            _gameEngine.setCurrentGameState(GameStateType::START);
         }
         else {
-            _gameEngine.setCurrentGameState(END);
+            _gameEngine.setCurrentGameState(GameStateType::END);
         }
     } else {
         printInvalidCommandError();
@@ -276,6 +303,6 @@ void WinState::update(){
 
 // End state class implementation
 EndState::EndState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(END), new string("End")){};
+    : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){};
 
 void EndState::update(){};

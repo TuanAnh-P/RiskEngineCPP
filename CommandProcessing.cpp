@@ -117,8 +117,8 @@ Command& CommandProcessor::saveCommand(string& command) {
 }
 
 Command& CommandProcessor::getCommand() {
-    string command = readCommand();
-    return saveCommand(command);
+    string commandValue = readCommand();
+    return saveCommand(commandValue);
 }
 
 bool CommandProcessor::validate(Command& command, GameStateType gameState) {
@@ -126,23 +126,23 @@ bool CommandProcessor::validate(Command& command, GameStateType gameState) {
 
     switch (gameState)
     {
-    case START:
+    case GameStateType::START:
         if(commandValue == "loadmap") {
             return true;
         } 
-    case MAP_LOADED:
+    case GameStateType::MAP_LOADED:
         if(commandValue == "loadmap" || commandValue == "validatemap") {
             return true;
         }
-    case MAP_VALIDATED:
+    case GameStateType::MAP_VALIDATED:
         if(commandValue == "addplayer") {
             return true;
         }
-    case PLAYERS_ADDED:
+    case GameStateType::PLAYERS_ADDED:
         if(commandValue == "addplayer" || commandValue == "gamestart") {
             return true;
         }
-    case WIN:
+    case GameStateType::WIN:
         if(commandValue == "replay" || commandValue == "quit") {
             return true;
         }

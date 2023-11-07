@@ -8,6 +8,8 @@
 
 using std::string;
 
+enum class GameStateType;
+
 string getFirstSubstring(const string& string);
 class Command {
 private: 
@@ -46,7 +48,7 @@ class CommandProcessor {
 private: 
     std::vector<Command*> *_commands;        
 
-    string& readCommand();
+    virtual string& readCommand();
 
     Command& saveCommand(string& command);
 

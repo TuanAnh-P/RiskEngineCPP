@@ -9,7 +9,7 @@ using std::string;
 using std::ostream;
 
 // Enum representing valid game states
-enum GameStateType
+enum class GameStateType
 {
     START,
     MAP_LOADED,
@@ -22,12 +22,15 @@ enum GameStateType
     END
 };
 
+string gameStateTypeToString(GameStateType state);
+
 // functions used for printing game messages and reading use commands from standard in
 void printInvalidCommandError();
 void printRemainingInStateMessage(string &name);
 string getUserCommand();
 
 class GameEngine;
+class CommandProcessor;
 
 // represents a base class for game states
 class GameState
@@ -80,6 +83,7 @@ public:
     GameEngine();
 
     GameEngine(CommandProcessor& commandProcessor);
+
     GameEngine(GameEngine &engine);
 
     // Stream ingestion operator

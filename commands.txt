@@ -1,0 +1,8 @@
+loadmap map1
+loadmap map2
+validatemap
+addplayer
+addplayer
+addplayer
+gamestart
+win
