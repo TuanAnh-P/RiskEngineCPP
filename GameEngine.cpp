@@ -149,10 +149,9 @@ StartState::StartState(GameEngine &gameEngine)
 
 void StartState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
-    cout << "Command received from file: " << endl;
-    cout << command;
 
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
+        command.saveEffect("* transitioning to Map Loaded state");
         _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
     } else {
         printInvalidCommandError();
@@ -169,9 +168,11 @@ void MapLoadedState::update(){
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
         if (command.getCommand() == "validatemap")
         {
+            command.saveEffect("* transitioning to Map Validated state");
             _gameEngine.setCurrentGameState(GameStateType::MAP_VALIDATED);
         }
         else {
+            command.saveEffect("* transitioning to Map Loaded state");
             _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
         }
     } else {
@@ -187,6 +188,7 @@ void MapValidatedState::update(){
     Command command = _gameEngine.getCommandProcessor().getCommand();
 
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
+        command.saveEffect("* transitioning to Players Added state");
         _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
     } else {
         printInvalidCommandError();
@@ -203,9 +205,11 @@ void PlayersAddedState::update(){
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
         if (command.getCommand() == "gamestart")
         {
+            command.saveEffect("* transitioning to Assign Reinforcement state");
             _gameEngine.setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         }
         else {
+            command.saveEffect("* transitioning to Players Added state");
             _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
         }
     } else {
@@ -291,9 +295,12 @@ void WinState::update(){
     if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
         if (command.getCommand() == "replay")
         {
+            command.saveEffect("* transitioning to Start state");
             _gameEngine.setCurrentGameState(GameStateType::START);
         }
         else {
+            cout << _gameEngine.getCommandProcessor();
+            command.saveEffect("* transitioning to End state");
             _gameEngine.setCurrentGameState(GameStateType::END);
         }
     } else {

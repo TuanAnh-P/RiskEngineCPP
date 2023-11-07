@@ -54,8 +54,8 @@ string& Command::getCommand(){
     return *_command;
 }
 
-void Command::saveEffect(const string& effect){
-    *_effect = effect;
+void Command::saveEffect(string effect){
+    _effect = new string(effect);
 }
 
 std::ostream& operator <<(std::ostream& out, const Command& command) {
@@ -103,10 +103,11 @@ CommandProcessor::~CommandProcessor() {
 }
 
 string& CommandProcessor::readCommand(){
+    std::cout << "Please enter a command (enter \"quit\" to exit )";
     string command; 
     std::getline(std::cin, command);
 
-    return command;
+    return *(new string(command));
 }
 
 Command& CommandProcessor::saveCommand(string& command) {
@@ -179,9 +180,9 @@ ostream& operator<<(std::ostream& out, const FileLineReader &flr) {
 string& FileLineReader::readLineFromFile() {
     string line;
     if (_fileStream && _fileStream->is_open() && std::getline(*_fileStream, line)) {
-        return line;
+        return *(new string(line));
     }
-    return *(new string(""));
+    return *(new string("quit"));
 }
 
 
@@ -209,5 +210,5 @@ std::ostream& operator<<(std::ostream& out, const FileCommandProcessorAdapter &f
 }
 
 string& FileCommandProcessorAdapter::readCommand() {
-    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string(""));
+    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string("quit"));
 }

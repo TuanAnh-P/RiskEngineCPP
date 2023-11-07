@@ -5,4 +5,3 @@ addplayer
 addplayer
 addplayer
 gamestart
-win
