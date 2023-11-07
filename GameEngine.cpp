@@ -40,20 +40,6 @@ void printInvalidCommandError()
     cout << "\nCommand not recognized! Please try again ..." << endl;
 };
 
-void printRemainingInStateMessage(string &name){
-    cout << "\nRemaining in ------------> " << name << " State" << endl;
-}
-
-string getUserCommand()
-{
-    cout << "\nPlease enter command: ";
-
-    string command;
-    cin >> command;
-
-    return command;
-};
-
 // Implementation of the GameEngine class methods / constructors
 GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string *name):
     _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
@@ -122,10 +108,10 @@ void GameEngine::setCurrentGameState(GameStateType gameStateID)
     setCurrentGameState(gameState);
 }
 
-void GameEngine::update(){
+void GameEngine::update(Command& command){
     if (_currentGameState != nullptr)
     {
-        _currentGameState->update();
+        _currentGameState->update(command);
     }
 }
 
@@ -147,36 +133,25 @@ void GameEngine::setCurrentGameState(GameState *gameState)
 StartState::StartState(GameEngine &gameEngine)
         : GameState(gameEngine, new GameStateType(GameStateType::START), new string("Start")){};
 
-void StartState::update(){
-    Command command = _gameEngine.getCommandProcessor().getCommand();
-
-    if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        command.saveEffect("* transitioning to Map Loaded state");
-        _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
-    } else {
-        printInvalidCommandError();
-    }
+void StartState::update(Command& command){
+    command.saveEffect("* transitioning to Map Loaded state");
+    _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
 }
 
 // Map Loaded state class implementation
 MapLoadedState::MapLoadedState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::MAP_LOADED), new string("Map Loaded")){};
 
-void MapLoadedState::update(){
-    Command command = _gameEngine.getCommandProcessor().getCommand();
+void MapLoadedState::update(Command& command){
 
-    if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        if (command.getCommand() == "validatemap")
-        {
-            command.saveEffect("* transitioning to Map Validated state");
-            _gameEngine.setCurrentGameState(GameStateType::MAP_VALIDATED);
-        }
-        else {
-            command.saveEffect("* transitioning to Map Loaded state");
-            _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
-        }
-    } else {
-        printInvalidCommandError();
+    if (command.getCommand() == "validatemap")
+    {
+        command.saveEffect("* transitioning to Map Validated state");
+        _gameEngine.setCurrentGameState(GameStateType::MAP_VALIDATED);
+    }
+    else {
+        command.saveEffect("* transitioning to Map Loaded state");
+        _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
     }
 }
 
@@ -184,77 +159,40 @@ void MapLoadedState::update(){
 MapValidatedState::MapValidatedState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::MAP_VALIDATED), new string("Map Validated")) {};
 
-void MapValidatedState::update(){
-    Command command = _gameEngine.getCommandProcessor().getCommand();
-
-    if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        command.saveEffect("* transitioning to Players Added state");
-        _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
-    } else {
-        printInvalidCommandError();
-    }
+void MapValidatedState::update(Command& command){
+    command.saveEffect("* transitioning to Players Added state");
+    _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
 }
 
 // Players Added state class implementation
 PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::PLAYERS_ADDED), new string("Players Added")){};
 
-void PlayersAddedState::update(){
-    Command command = _gameEngine.getCommandProcessor().getCommand();
-
-    if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        if (command.getCommand() == "gamestart")
-        {
-            command.saveEffect("* transitioning to Assign Reinforcement state");
-            _gameEngine.setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
-        }
-        else {
-            command.saveEffect("* transitioning to Players Added state");
-            _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
-        }
-    } else {
-        printInvalidCommandError();
-    }        
+void PlayersAddedState::update(Command& command){
+    if (command.getCommand() == "gamestart")
+    {
+        command.saveEffect("* transitioning to Assign Reinforcement state");
+        _gameEngine.setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
+    }
+    else {
+        command.saveEffect("* transitioning to Players Added state");
+        _gameEngine.setCurrentGameState(GameStateType::PLAYERS_ADDED);
+    }
 }
 
 // Assign Reinforcement state class implementation
 AssignReinforcementState::AssignReinforcementState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
 
-void AssignReinforcementState::update(){
-    // string input = getUserCommand();
-
-    // if (input == "issueorder")
-    // {
-    //     _gameEngine.setCurrentGameState(ISSUE_ORDERS);
-    // }
-    // else
-    // {
-    //     printInvalidCommandError();
-    // }
-
-    _gameEngine.setCurrentGameState(GameStateType::ISSUE_ORDERS);
+void AssignReinforcementState::update(Command& command){
+   _gameEngine.setCurrentGameState(GameStateType::ISSUE_ORDERS);
 }
 
 // Issue Orders state class implementation
 IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::ISSUE_ORDERS), new string("Issue Orders")){};
 
-void IssueOrdersState::update(){
-//     string input = getUserCommand();
-
-//     if (input == "issueorder")
-//     {
-//         printRemainingInStateMessage(*_name);
-//     }
-//     else if (input == "endissueorders")
-//     {
-//         _gameEngine.setCurrentGameState(EXECUTE_ORDERS);
-//     }
-//     else
-//     {
-//         printInvalidCommandError();
-//     }
+void IssueOrdersState::update(Command& command){
     _gameEngine.setCurrentGameState(GameStateType::EXECUTE_ORDERS);
 }
 
@@ -262,26 +200,7 @@ void IssueOrdersState::update(){
 ExecuteOrdersState::ExecuteOrdersState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::EXECUTE_ORDERS), new string("Execute Orders")){};
 
-void ExecuteOrdersState::update(){
-    // string input = getUserCommand();
-
-    // if (input == "execorder")
-    // {
-    //     printRemainingInStateMessage(*_name);
-    // }
-    // else if (input == "endexecorders")
-    // {
-    //     _gameEngine.setCurrentGameState(ASSIGN_REINFORCEMENT);
-    // }
-    // else if (input == "win")
-    // {
-    //     _gameEngine.setCurrentGameState(WIN);
-    // }
-    // else
-    // {
-    //     printInvalidCommandError();
-    // }
-
+void ExecuteOrdersState::update(Command &command){
     _gameEngine.setCurrentGameState(GameStateType::WIN);
 }
 
@@ -289,22 +208,15 @@ void ExecuteOrdersState::update(){
 WinState::WinState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::WIN), new string("Win")){};
 
-void WinState::update(){
-    Command command = _gameEngine.getCommandProcessor().getCommand();
-
-    if (_gameEngine.getCommandProcessor().validate(command, *_gameStateID)){
-        if (command.getCommand() == "replay")
-        {
-            command.saveEffect("* transitioning to Start state");
-            _gameEngine.setCurrentGameState(GameStateType::START);
-        }
-        else {
-            cout << _gameEngine.getCommandProcessor();
-            command.saveEffect("* transitioning to End state");
-            _gameEngine.setCurrentGameState(GameStateType::END);
-        }
-    } else {
-        printInvalidCommandError();
+void WinState::update(Command& command){
+    if (command.getCommand() == "replay")
+    {
+        command.saveEffect("* transitioning to Start state");
+        _gameEngine.setCurrentGameState(GameStateType::START);
+    }
+    else {
+        command.saveEffect("* transitioning to End state");
+        _gameEngine.setCurrentGameState(GameStateType::END);
     }
 }
 
@@ -312,4 +224,4 @@ void WinState::update(){
 EndState::EndState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){};
 
-void EndState::update(){};
+void EndState::update(Command& command){};

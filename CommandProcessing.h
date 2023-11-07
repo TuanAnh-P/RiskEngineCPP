@@ -40,7 +40,7 @@ public:
 
     string& getCommand();
 
-    void saveEffect(string effect);
+    void saveEffect(const string& effect);
 };
 
 class CommandProcessor {

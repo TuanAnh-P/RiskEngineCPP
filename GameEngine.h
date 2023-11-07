@@ -8,6 +8,8 @@
 using std::string;
 using std::ostream;
 
+class Command;
+
 // Enum representing valid game states
 enum class GameStateType
 {
@@ -26,8 +28,6 @@ string gameStateTypeToString(GameStateType state);
 
 // functions used for printing game messages and reading use commands from standard in
 void printInvalidCommandError();
-void printRemainingInStateMessage(string &name);
-string getUserCommand();
 
 class GameEngine;
 class CommandProcessor;
@@ -63,7 +63,7 @@ public:
     void enter();
 
     // method for updating the game state
-    virtual void update() {};
+    virtual void update(Command& command) {};
 };
 
 // class representing the game engine
@@ -112,7 +112,7 @@ public:
     void setCurrentGameState(GameStateType gameStateID);
 
     // Call the update method on the current game state instance
-    void update();
+    void update(Command& command);
 
 protected: 
     // Sets the current game state
@@ -125,7 +125,7 @@ class StartState : public GameState
 public:
     StartState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class MapLoadedState the State state
@@ -134,7 +134,7 @@ class MapLoadedState : public GameState
 public:
     MapLoadedState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class MapValidatedState the State state
@@ -143,7 +143,7 @@ class MapValidatedState : public GameState
 public:
     MapValidatedState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class PlayersAddedState the State state
@@ -152,7 +152,7 @@ class PlayersAddedState : public GameState
 public:
     PlayersAddedState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class AssignReinforcementState the State state
@@ -161,7 +161,7 @@ class AssignReinforcementState : public GameState
 public:
     AssignReinforcementState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class IssueOrdersState the State state
@@ -170,7 +170,7 @@ class IssueOrdersState : public GameState
 public:
     IssueOrdersState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class ExecuteOrdersState the State state
@@ -179,7 +179,7 @@ class ExecuteOrdersState : public GameState
 public:
     ExecuteOrdersState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };
 
 // Class WinState the State state
@@ -188,7 +188,7 @@ class WinState : public GameState
 public:
     WinState(GameEngine &gameEngine); 
 
-    void update();
+    void update(Command& command);
 };
 
 // Class EndState the State state
@@ -197,5 +197,5 @@ class EndState : public GameState
 public:
     EndState(GameEngine &gameEngine);
 
-    void update();
+    void update(Command& command);
 };

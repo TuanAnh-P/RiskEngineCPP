@@ -54,7 +54,7 @@ string& Command::getCommand(){
     return *_command;
 }
 
-void Command::saveEffect(string effect){
+void Command::saveEffect(const string& effect){
     _effect = new string(effect);
 }
 
@@ -103,7 +103,7 @@ CommandProcessor::~CommandProcessor() {
 }
 
 string& CommandProcessor::readCommand(){
-    std::cout << "Please enter a command (enter \"quit\" to exit )";
+    std::cout << "* Please enter a command: ";
     string command; 
     std::getline(std::cin, command);
 
@@ -125,31 +125,35 @@ Command& CommandProcessor::getCommand() {
 bool CommandProcessor::validate(Command& command, GameStateType gameState) {
     string commandValue = getFirstSubstring(command.getCommand());
 
+    if(gameState == GameStateType::ASSIGN_REINFORCEMENT ||  
+       gameState == GameStateType::ISSUE_ORDERS ||
+       gameState == GameStateType::EXECUTE_ORDERS) return true;
+
     switch (gameState)
     {
-    case GameStateType::START:
-        if(commandValue == "loadmap") {
-            return true;
-        } 
-    case GameStateType::MAP_LOADED:
-        if(commandValue == "loadmap" || commandValue == "validatemap") {
-            return true;
+        case GameStateType::START:
+            if(commandValue == "loadmap") {
+                return true;
+            } 
+        case GameStateType::MAP_LOADED:
+            if(commandValue == "loadmap" || commandValue == "validatemap") {
+                return true;
+            }
+        case GameStateType::MAP_VALIDATED:
+            if(commandValue == "addplayer") {
+                return true;
+            }
+        case GameStateType::PLAYERS_ADDED:
+            if(commandValue == "addplayer" || commandValue == "gamestart") {
+                return true;
+            }
+        case GameStateType::WIN:
+            if(commandValue == "replay" || commandValue == "quit") {
+                return true;
+            }
+        default:
+            return false;
         }
-    case GameStateType::MAP_VALIDATED:
-        if(commandValue == "addplayer") {
-            return true;
-        }
-    case GameStateType::PLAYERS_ADDED:
-        if(commandValue == "addplayer" || commandValue == "gamestart") {
-            return true;
-        }
-    case GameStateType::WIN:
-        if(commandValue == "replay" || commandValue == "quit") {
-            return true;
-        }
-    default:
-        return false;
-    }
 }
 
 std::ostream& operator<<(std::ostream& os, const CommandProcessor& commandProcessor) {
