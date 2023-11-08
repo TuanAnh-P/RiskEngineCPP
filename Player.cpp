@@ -121,17 +121,79 @@ void Player::addTerritory(Territory* territory) {
     }
 }
 
+// Remove a territory from the player's ownedTerritories
+void Player::removeTerritory(Territory* territory) {
+    if (ownedTerritories.empty()) { std::cout << "Player does not own any territories!" << std::endl; return;}
+    for (size_t i = 0; i < ownedTerritories.size(); i++) {
+        if (ownedTerritories[i] == territory) {
+            ownedTerritories.erase(ownedTerritories.begin() + i);
+            std::cout << "Territory " << territory->getName() << " was removed!" << std::endl;
+            return; // Exit the function once the territory is found and removed
+        }
+    }
+    // If the loop completes without finding the territory, it means the player does not own it.
+    std::cout << "Error: Attempted to remove a territory that the player does not own." << std::endl;
+}
 
-// Get a list of territories to be defended (currently returns all owned territories)
+// Custom function to swap two territories
+void swapTerritories(Territory*& a, Territory*& b) {
+    Territory* temp = a;
+    a = b;
+    b = temp;
+}
+
+// Custom comparison function for sorting territories by decreasing numberOfArmies
+bool compareTerritoriesByArmies(const Territory* a, const Territory* b) {
+    return a->getNumberOfArmies() > b->getNumberOfArmies();
+}
+
 std::vector<Territory*> Player::toDefend() {
-    // For now, return all owned territories as an arbitrary choice.
+    // Sort owned territories by decreasing numberOfArmies (bubble sort)
+    int n = ownedTerritories.size();
+    bool swapped;
+    for (int i = 0; i < n - 1; i++) {
+        swapped = false;
+        for (int j = 0; j < n - i - 1; j++) {
+            if (compareTerritoriesByArmies(ownedTerritories[j], ownedTerritories[j + 1])) {
+                swapTerritories(ownedTerritories[j], ownedTerritories[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) {
+            break;  // If no two elements were swapped, the array is already sorted
+        }
+    }
     return ownedTerritories;
 }
 
-// Get a list of territories to be attacked (currently returns an empty list)
 std::vector<Territory*> Player::toAttack() {
-    // For now, return an empty list as an arbitrary choice.
-    return std::vector<Territory*>();
+    std::vector<Territory*> toAttack;
+    for (Territory* territory : ownedTerritories) {
+        std::vector<Territory*> adjacentTerritories = territory->getAdjacentTerritories();
+
+        // Sort adjacent territories by decreasing numberOfArmies (bubble sort)
+        int n = adjacentTerritories.size();
+        bool swapped;
+        for (int i = 0; i < n - 1; i++) {
+            swapped = false;
+            for (int j = 0; j < n - i - 1; j++) {
+                if (compareTerritoriesByArmies(adjacentTerritories[j], adjacentTerritories[j + 1])) {
+                    swapTerritories(adjacentTerritories[j], adjacentTerritories[j + 1]);
+                    swapped = true;
+                }
+            }
+            if (!swapped) {
+                break;  // If no two elements were swapped, the array is already sorted
+            }
+        }
+
+        for (Territory* adjacentTerritory : adjacentTerritories) {
+            if (!isTerritoryOwned(adjacentTerritory)) {
+                toAttack.push_back(adjacentTerritory);
+            }
+        }
+    }
+    return toAttack;
 }
 
 // Get the player's hand of cards
@@ -194,20 +256,23 @@ void Player::issueOrder(const std::string& orderType) {
 
 bool Player::isTerritoryOwned(Territory* territory)
 {
-    if (this->ownedTerritories.empty()) { return false; }
-
+    if (this->ownedTerritories.empty()) return false;
+  
     for (Territory* var : this->ownedTerritories)
     {
-        if (var == territory)
-        {
-            return true;
-
-        }
-
+        if (var == territory) return true;
     }
-
     return false;
+}
 
+bool Player::isContinentOwned(Continent* continent) {
+    std::vector<Territory*>& continentTerritories = const_cast<std::vector<Territory *> &>(continent->getTerritories());
+    for (Territory* territory : continentTerritories) {
+        if (!isTerritoryOwned(territory)) {
+            return false; // Player doesn't own all territories in the continent
+        }
+    }
+    return true; // Player owns all territories in the continent
 }
 
 std::string Player::getPlayerID() const {
