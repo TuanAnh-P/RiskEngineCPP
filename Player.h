@@ -64,4 +64,3 @@ private:
     std::vector<Player*>* negotiatedPlayers; // The list of negotiated players that the player cannot attack
     int* reinforcementPool;
 };
-

@@ -1,12 +1,14 @@
 #pragma once
 
+#include "GameEngine.h"
 #include <vector>
 #include <string> 
 #include <ostream> 
 #include <fstream>
-#include "GameEngine.h"
 
 using std::string;
+
+enum class GameStateType;
 
 string getFirstSubstring(const string& string);
 class Command {
@@ -38,7 +40,7 @@ public:
 
     string& getCommand();
 
-    void saveEffect(const string &effect);
+    void saveEffect(const string& effect);
 };
 
 class CommandProcessor {
@@ -46,7 +48,7 @@ class CommandProcessor {
 private: 
     std::vector<Command*> *_commands;        
 
-    string& readCommand();
+    virtual string& readCommand();
 
     Command& saveCommand(string& command);
 
@@ -67,7 +69,7 @@ public:
 
     Command& getCommand();
 
-    bool validate(Command& command, warzone::GameStateType gameState);
+    bool validate(Command& command, GameStateType gameState);
 };
 
 class FileLineReader {
