@@ -18,7 +18,6 @@ void testMainGameLoop() {
     northAmerica->addTerritory(usa);
     northAmerica->addTerritory(mexico);
 
-
 //    // Printing territories in North America
 //    const std::vector<Territory*>& northAmericaTerritories = northAmerica->getTerritories();
 //    std::cout << "Territories in northAmerica:" << std::endl;
@@ -102,7 +101,6 @@ void testMainGameLoop() {
 //        std::cout << "Player " << player->getPlayerID() << " owns " << player->getOwnedTerritories().size() << " territory, " << continentOwned << " continent and gets " << numArmyUnits << " army units." << std::endl;
 //    }
 
-
     std::cout << "Territories To Attack:" << std::endl;
     std::vector<Territory*> toAttack1 = player1->toAttack();
     for (Territory* territory : toAttack1) {
@@ -124,17 +122,10 @@ void testMainGameLoop() {
         std::cout << territory->getName() << std::endl;
     }
 
-
 //    std::cout << "Printing the players stats: " << std::endl;
 //    for (Player* player : playerList) {
 //        cout << *player << endl;
 //    }
-
-
-
-
-
-
 
 //    // Create a player with the name "John"
 //    std::cout << "<----------Creating Player---------->" << std::endl;
@@ -203,8 +194,8 @@ void testMainGameLoop() {
 //    delete player;
 }
 
-int main() {
-    // Call the testPlayers function to demonstrate player object features
-    testMainGameLoop();
-    return 0;
-}
+//int main() {
+//    // Call the testPlayers function to demonstrate player object features
+//    testMainGameLoop();
+//    return 0;
+//}

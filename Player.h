@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "map.h"    // Header for the Territory class
 #include "Cards.h"  // Header for the Cards class
@@ -27,7 +28,7 @@ public:
 
     // Methods related to managing territories
     void addTerritory(Territory* territory); // Add a territory to the player's owned territories
-    void removeTerritory(Territory *territory);
+    void removeTerritory(Territory *territory); // Remove a territory from the player's owned territories
     bool isTerritoryOwned(Territory* territory); // Checks if the player owns a specific territory
     bool isContinentOwned(Continent *continent);
     std::vector<Territory*> getOwnedTerritories(); // Get a list of the territories the player owns

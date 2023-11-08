@@ -104,6 +104,7 @@ void Player::addTerritory(Territory* territory) {
 
 // Remove a territory from the player's ownedTerritories
 void Player::removeTerritory(Territory* territory) {
+    if (ownedTerritories.empty()) { std::cout << "Player does not own any territories!" << std::endl; return;}
     for (size_t i = 0; i < ownedTerritories.size(); i++) {
         if (ownedTerritories[i] == territory) {
             ownedTerritories.erase(ownedTerritories.begin() + i);
@@ -236,7 +237,8 @@ void Player::issueOrder(const std::string& orderType) {
 
 bool Player::isTerritoryOwned(Territory* territory)
 {
-    for (const Territory* var : ownedTerritories)
+    if (this->ownedTerritories.empty()) { return false; }
+    for (Territory* var : this->ownedTerritories)
     {
         if (var == territory) return true;
     }
