@@ -2,6 +2,7 @@
 #include "map.h"
 #include <iostream>
 #include "Player.h"
+#include "Cards.h"
 
 // --------------- Order class ---------------
 
@@ -317,15 +318,13 @@ void Deploy::print()
 // Constructors
 
 Advance::Advance()
-	: Order("Advance", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)) {};
+	: Order("Advance", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)), m_deckRef(NULL) {};
 
-Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value)
-	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),
-	m_numOfArmyUnits(value) {};
+Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck)
+	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),	m_numOfArmyUnits(value), m_deckRef(deck) {};
 
 Advance::Advance(Advance& other)
-	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), 
-	m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)) {}
+	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)), m_deckRef(other.m_deckRef) {}
 
 // Advance validate checks if source territory and target territory.  
 bool Advance::validate()
@@ -360,7 +359,6 @@ void Advance::execute()
 		// Simulate attack
 		else
 		{
-
 			bool attackersTurn = true;
 			bool attackersWon = false;
 
@@ -408,11 +406,17 @@ void Advance::execute()
 
 				// transfer ownership
 
-				// give card
+				// Check if the issuing player has drawn a card this turn after taking an territory			
+				if (!this->getIssuingPlayer()->hasDrawn)
+				{
+					m_deckRef->draw(this->getIssuingPlayer()->getHand());
+					this->getIssuingPlayer()->hasDrawn = true;
+				}
+				
 
 			}
-			else std::cout << "-- Attacker Lost --" << std::endl;
 
+			else std::cout << "-- Attacker Lost --" << std::endl;
 
 			this->print();
 		}
@@ -421,7 +425,7 @@ void Advance::execute()
 
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerName() 
+		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerID() 
 			<< "or Source and Target territories are not adjacent territories" << std::endl;
 		std::cout << std::endl;
 
@@ -441,7 +445,6 @@ void Advance::print()
 	std::cout << " Source Territory: " << source;
 	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
 	std::cout << std::endl;
-
 
 }
 
@@ -630,8 +633,8 @@ void Airlift::execute()
 	if (validate())
 	{
 		std::cout << "Executing " << this->type << " Order.." << std::endl;
-		// Move armies to target territory
 
+		// Move armies to target territory
 		m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
 
 		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);

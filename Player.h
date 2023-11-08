@@ -35,6 +35,7 @@ public:
 
     // Methods related to managing cards
     Hand& getHand(); // Get the player's hand of cards
+    bool hasDrawn; // whether or not a player has drawn a card
 
     // Method related to managing the player id
     std::string getPlayerID() const; // Get the player id
