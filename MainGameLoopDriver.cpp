@@ -80,27 +80,50 @@ void testMainGameLoop() {
     playerList.push_back(player1);
     playerList.push_back(player2);
 
-    int bonusNorthAmerica = 15;
-    int bonusSouthAmerica = 10;
+//    int bonusNorthAmerica = 15;
+//    int bonusSouthAmerica = 10;
 
 //    cout << player1->isContinentOwned(northAmerica) << endl;
 //    cout << player1->isTerritoryOwned(canada) << endl;
 //    cout << player1->isTerritoryOwned(colombia) << endl;
 
-    std::cout << "Reinforcement phase: " << std::endl;
-    for (Player* player : playerList) {
-        int numArmyUnits = std::floor(static_cast<double>(player->getOwnedTerritories().size()) / 3);
-        int continentOwned = 0;
-        if(player->isContinentOwned(northAmerica)){
-            continentOwned++;
-            numArmyUnits += bonusNorthAmerica;
-        }
-        if(player->isContinentOwned(southAmerica)){
-            continentOwned++;
-            numArmyUnits += bonusSouthAmerica;
-        }
-        std::cout << "Player " << player->getPlayerID() << " owns " << player->getOwnedTerritories().size() << " territory, " << continentOwned << " continent and gets " << numArmyUnits << " army units." << std::endl;
+//    std::cout << "Reinforcement phase: " << std::endl;
+//    for (Player* player : playerList) {
+//        int numArmyUnits = std::floor(static_cast<double>(player->getOwnedTerritories().size()) / 3);
+//        int continentOwned = 0;
+//        if(player->isContinentOwned(northAmerica)){
+//            continentOwned++;
+//            numArmyUnits += bonusNorthAmerica;
+//        }
+//        if(player->isContinentOwned(southAmerica)){
+//            continentOwned++;
+//            numArmyUnits += bonusSouthAmerica;
+//        }
+//        std::cout << "Player " << player->getPlayerID() << " owns " << player->getOwnedTerritories().size() << " territory, " << continentOwned << " continent and gets " << numArmyUnits << " army units." << std::endl;
+//    }
+
+
+    std::cout << "Territories To Attack:" << std::endl;
+    std::vector<Territory*> toAttack1 = player1->toAttack();
+    for (Territory* territory : toAttack1) {
+        std::cout << territory->getName() << std::endl;
     }
+    std::cout << "Territories To Attack:" << std::endl;
+    std::vector<Territory*> toDefend1 = player1->toDefend();
+    for (Territory* territory : toDefend1) {
+        std::cout << territory->getName() << std::endl;
+    }
+    std::cout << "Territories To Attack:" << std::endl;
+    std::vector<Territory*> toAttack2 = player2->toAttack();
+    for (Territory* territory : toAttack2) {
+        std::cout << territory->getName() << std::endl;
+    }
+    std::cout << "Territories To Attack:" << std::endl;
+    std::vector<Territory*> toDefend2 = player2->toDefend();
+    for (Territory* territory : toDefend2) {
+        std::cout << territory->getName() << std::endl;
+    }
+
 
 //    std::cout << "Printing the players stats: " << std::endl;
 //    for (Player* player : playerList) {
