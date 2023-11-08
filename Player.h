@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "map.h"    // Header for the Territory class
 #include "Cards.h"  // Header for the Cards class
