@@ -330,7 +330,7 @@ Advance::Advance(Advance& other)
 // Advance validate checks if source territory and target territory.  
 bool Advance::validate()
 {
-	if (!this->getIssuingPlayer() != NULL || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
+	if (this->getIssuingPlayer() == nullptr || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
 
 	// Check that target territory is adjacent to a player owned territory
 	for (Territory* adjacentTerritory : m_targetTerritory->getAdjacentTerritories())
@@ -421,7 +421,7 @@ void Advance::execute()
 
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerName() 
+		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerID() 
 			<< "or Source and Target territories are not adjacent territories" << std::endl;
 		std::cout << std::endl;
 

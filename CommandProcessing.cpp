@@ -135,22 +135,27 @@ bool CommandProcessor::validate(Command& command, GameStateType gameState) {
             if(commandValue == "loadmap") {
                 return true;
             } 
+            return false;
         case GameStateType::MAP_LOADED:
             if(commandValue == "loadmap" || commandValue == "validatemap") {
                 return true;
             }
+            return false;
         case GameStateType::MAP_VALIDATED:
             if(commandValue == "addplayer") {
                 return true;
             }
+            return false;
         case GameStateType::PLAYERS_ADDED:
             if(commandValue == "addplayer" || commandValue == "gamestart") {
                 return true;
             }
+            return false;
         case GameStateType::WIN:
             if(commandValue == "replay" || commandValue == "quit") {
                 return true;
             }
+            return false;
         default:
             return false;
         }

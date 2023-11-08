@@ -1,4 +1,7 @@
 #include "GameEngine.h"
+#include <iostream>
+using namespace std;
+
 
 // free function to test the game engine 
 void testGameStates(){
@@ -20,10 +23,23 @@ void testGameStates(){
     game->setCurrentGameState(GameStateType::START);
 
     // loop until the end state has not been reached
-    while ((game->getCurrentGameState()).getGameStateId() != GameStateType::END)
+    /*while ((game->getCurrentGameState()).getGameStateId() != GameStateType::END)
     {
-        game->update();
-    }
+        Command command = game->getCommandProcessor().getCommand();
+
+        if (game->getCommandProcessor().validate(command, game->getCurrentGameState().getGameStateId())){
+            game->update(command);
+        } else {
+            printInvalidCommandError();
+        }
+    }*/
+    game->startupPhase();
 
 
+};
+
+int main()
+{
+    testGameStates();
+    return 0;
 };
