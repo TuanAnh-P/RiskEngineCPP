@@ -27,7 +27,9 @@ public:
 
     // Methods related to managing territories
     void addTerritory(Territory* territory); // Add a territory to the player's owned territories
+    void removeTerritory(Territory *territory);
     bool isTerritoryOwned(Territory* territory); // Checks if the player owns a specific territory
+    bool isContinentOwned(Continent *continent);
     std::vector<Territory*> getOwnedTerritories(); // Get a list of the territories the player owns
     std::vector<Territory*> toDefend();       // Get a list of territories to defend
     std::vector<Territory*> toAttack();       // Get a list of territories to attack

@@ -102,6 +102,22 @@ void Player::addTerritory(Territory* territory) {
     }
 }
 
+// Remove a territory from the player's ownedTerritories
+void Player::removeTerritory(Territory* territory) {
+    for (size_t i = 0; i < ownedTerritories.size(); i++) {
+        if (ownedTerritories[i] == territory) {
+            ownedTerritories.erase(ownedTerritories.begin() + i);
+            std::cout << "Territory " << territory->getName() << " was removed!" << std::endl;
+            return; // Exit the function once the territory is found and removed
+        }
+    }
+    // If the loop completes without finding the territory, it means the player does not own it.
+    std::cout << "Error: Attempted to remove a territory that the player does not own." << std::endl;
+}
+
+
+
+
 
 // Get a list of territories to be defended (currently returns all owned territories)
 std::vector<Territory*> Player::toDefend() {
@@ -175,18 +191,21 @@ void Player::issueOrder(const std::string& orderType) {
 
 bool Player::isTerritoryOwned(Territory* territory)
 {
-    for (Territory* var : this->ownedTerritories)
+    for (const Territory* var : ownedTerritories)
     {
-        if (var == territory)
-        {
-            return true;
-
-        }
-
+        if (var == territory) return true;
     }
-
     return false;
+}
 
+bool Player::isContinentOwned(Continent* continent) {
+    std::vector<Territory*>& continentTerritories = const_cast<std::vector<Territory *> &>(continent->getTerritories());
+    for (Territory* territory : continentTerritories) {
+        if (!isTerritoryOwned(territory)) {
+            return false; // Player doesn't own all territories in the continent
+        }
+    }
+    return true; // Player owns all territories in the continent
 }
 
 std::string Player::getPlayerID() const {
