@@ -5,6 +5,12 @@
 #include <map>
 #include <string>
 
+#include "Player.h"
+#include "map.h" 
+#include "Cards.h"
+#include "MapLoader.h"
+#include <vector>
+
 using std::string;
 using std::ostream;
 
@@ -69,6 +75,22 @@ public:
 // class representing the game engine
 class GameEngine
 {
+private:
+//    Map* gameMap;
+//    std::vector<Player*> players;
+//    Deck* deck;
+
+    void loadMap(const string& filename);
+    bool validateMap();
+    void addPlayer(const string& playerName);
+    
+    void gameStart();
+    void distributeTerritories();
+    void randomizePlayerOrder();
+    void initializeReinforcementPools();
+    void drawInitialCards();
+
+    void play();
 
 protected:
     // All GameStates of the game
@@ -77,10 +99,31 @@ protected:
     GameState *_currentGameState;
     // Command processor 
     CommandProcessor * _commandProcessor;
+    // Sets the current game state
+    void setCurrentGameState(GameState *gameState);
 
 public:
+    // Temporary
+    Map* gameMap;
+    std::vector<Player*> players;
+    Deck* deck;
+    
+    //getter
+    const std::vector<Player*>& getPlayers() const;
+
+    // startupPhase
+    void startupPhase();
+
+    // mainGameLoop
+    void mainGameLoop();
+    // mainGameLoop's phases
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
     // constructor 
     GameEngine();
+    ~GameEngine();
 
     GameEngine(CommandProcessor& commandProcessor);
 
@@ -113,10 +156,6 @@ public:
 
     // Call the update method on the current game state instance
     void update(Command& command);
-
-protected: 
-    // Sets the current game state
-    void setCurrentGameState(GameState *gameState);
 };
 
 // Class representing the State state

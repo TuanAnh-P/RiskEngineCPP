@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "map.h"    // Header for the Territory class
 #include "Cards.h"  // Header for the Cards class
@@ -26,9 +27,10 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
 
     // Methods related to managing territories
-    void removeTerritory(Territory* territory); // Remove a territory from the player's owned territories
     void addTerritory(Territory* territory); // Add a territory to the player's owned territories
+    void removeTerritory(Territory *territory); // Remove a territory from the player's owned territories
     bool isTerritoryOwned(Territory* territory); // Checks if the player owns a specific territory
+    bool isContinentOwned(Continent *continent);
     std::vector<Territory*> getOwnedTerritories(); // Get a list of the territories the player owns
     std::vector<Territory*> toDefend();       // Get a list of territories to defend
     std::vector<Territory*> toAttack();       // Get a list of territories to attack
@@ -63,4 +65,3 @@ private:
     std::vector<Player*>* negotiatedPlayers; // The list of negotiated players that the player cannot attack
     int* reinforcementPool;
 };
-

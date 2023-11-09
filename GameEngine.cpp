@@ -4,6 +4,10 @@
 #include "GameEngine.h"
 #include "CommandProcessing.h"
 
+#include <algorithm>
+#include <random>
+#include <chrono> 
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -71,8 +75,202 @@ GameStateType GameState::getGameStateId(){
     return *_gameStateID;
 }
 
-// Implementation of the GameState class methods / constructors
-GameEngine::GameEngine() : _currentGameState(nullptr) {};
+//Startuphase
+void GameEngine::startupPhase() {
+    CommandProcessor commandProcessor;
+
+    while (true) {
+        // Get a command from the command processor
+        Command& command = commandProcessor.getCommand();
+
+        // Retrieve the command string
+        string commandStr = command.getCommand();
+
+        //Retrive the game state
+        GameStateType gameState = getCurrentGameState().getGameStateId();
+        bool stateValidated = commandProcessor.validate(command, gameState);
+
+        //do the appropriate sequence
+        if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
+            //load  map
+            string filename = "./maps/" + commandStr.substr(8);
+            loadMap(filename);
+            _currentGameState->update(command);
+        } else if (commandStr == "validatemap" && stateValidated) {
+            // Validate the map
+            validateMap();
+            _currentGameState->update(command);
+        } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
+            // Add a player
+            string player = commandStr.substr(9);
+            addPlayer(player);
+            _currentGameState->update(command);
+        } else if (commandStr == "gamestart" && stateValidated) {
+            //starts game
+            delete &command;
+            gameStart();
+            break;
+        } else {
+            std::cout << "Invalid command for the current state." << std::endl;
+        }
+
+        delete &command;
+    }
+    play();
+}
+
+//loads map
+void GameEngine::loadMap(const std::string& filename) {
+    MapLoader loader(filename);
+    Map* newMap = loader.loadMap();
+
+    cout << "opening map: " << filename << endl;
+    if (!newMap) {
+        std::cout << "Failed to load the map." << std::endl;
+    } else {
+        delete gameMap;
+        gameMap = newMap;
+        std::cout << "Map: " << filename.substr(7) << " loaded successfully." << std::endl;
+    }
+}
+
+//validates map
+bool GameEngine::validateMap() {
+    if (gameMap == nullptr) {
+        std::cout << "No map loaded to validate." << std::endl;
+        return false;
+    }
+    if (gameMap->isValid()) {
+        std::cout << "The map is valid." << std::endl;
+        return true;
+    } else {
+        std::cout << "The map is invalid." << std::endl;
+        return false;
+    }
+}
+
+//just addsplayers
+void GameEngine::addPlayer(const std::string& playerName) {
+    if (players.size() >= 6) {
+        std::cout << "Maximum number of players reached." << std::endl;
+    } else {
+        players.push_back(new Player(playerName));
+        std::cout << "Player " << playerName << " added." << std::endl;
+    }
+}
+
+void GameEngine::distributeTerritories() {
+    // Get all territories from the map
+    std::vector<Territory*> allTerritories;
+    for (const Continent* continent : gameMap->getContinents()) {
+        const auto& territories = continent->getTerritories();
+        allTerritories.insert(allTerritories.end(), territories.begin(), territories.end());
+    }
+
+    // Shuffle territories
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(allTerritories.begin(), allTerritories.end(), std::default_random_engine(seed));
+
+    // Distribute territories among players
+    size_t playerIndex = 0;
+    for (Territory* territory : allTerritories) {
+        players[playerIndex]->addTerritory(territory);
+
+        cout << "Player " << players[playerIndex]->getPlayerID() << " has been assigned territory " << territory->getName() << endl;
+        playerIndex = (playerIndex + 1) % players.size();
+    }
+}
+
+void GameEngine::randomizePlayerOrder() {
+    std::cout << "Player order before randomizing:" << std::endl;
+    for (const auto& player : players) {
+        std::cout << player->getPlayerID() << std::endl;
+    }
+
+    // shuffle players list order
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(players.begin(), players.end(), std::default_random_engine(seed));
+
+    std::cout << "Player order after randomizing:" << std::endl;
+    for (const auto& player : players) {
+        std::cout << player->getPlayerID() << std::endl;
+    }
+}
+
+
+void GameEngine::initializeReinforcementPools() {
+    for (Player* player : players) {
+        player->setReinforcementPool(50);
+    }
+}
+
+void GameEngine::drawInitialCards() {
+    for (Player* player : players) {
+        for(int i = 0; i < 2; i++){
+            deck->draw(player->getHand());
+        }
+        cout << "Player "<< player->getPlayerID() << "'s cards: " << player->getHand() << endl ;
+    }
+}
+
+void GameEngine::gameStart(){
+    cout << "distribituing territories" << endl;
+    distributeTerritories();
+    cout << "rendomizing order" << endl;
+    randomizePlayerOrder();
+    cout << "initialize reinforcement pool" << endl;
+    initializeReinforcementPools();
+    cout << "drawing initial cards" << endl;
+    deck = new Deck();
+    drawInitialCards();
+}
+
+void GameEngine::play(){
+    // tuan you need to encapsulate everything inside here I believe
+    cout<< "playing now" << endl;
+}
+
+void GameEngine::reinforcementPhase() {
+    cout << "The reinforcement phase begin" << endl;
+    for(Player* player: players){
+        int numReinforcement = std::floor(static_cast<double>(player->getOwnedTerritories().size()) / 3);
+        int continentOwned = 0;
+        for(Continent* continent : gameMap->getContinents()){
+            if (player->isContinentOwned(continent)){
+                numReinforcement += continent->getBonus();
+                continentOwned++;
+            }
+        }
+        int finalNumReinforcement = std::max(3, numReinforcement);
+        player->addReinforcementPool(finalNumReinforcement);
+        cout << player->getPlayerID() << " owns " << player->getOwnedTerritories().size() << " territories and " << continentOwned << " continents" << endl;
+        cout << player->getPlayerID() << " receives " << finalNumReinforcement << " army units and now has " << player->getReinforcementPool() << " army units" << endl;
+    }
+}
+
+void GameEngine::issueOrdersPhase() {}
+
+void GameEngine::executeOrdersPhase() {}
+
+void GameEngine::mainGameLoop() {
+    cout << "test" << endl;
+}
+
+const std::vector<Player*>& GameEngine::getPlayers() const {
+    return players;
+}
+
+//New constructor
+GameEngine::GameEngine() : gameMap(nullptr), _currentGameState(nullptr) {};
+
+//Need destructor
+GameEngine::~GameEngine() {
+    delete gameMap;
+    for (auto player : players) {
+        delete player;
+    }
+    delete deck;
+}
 
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
 

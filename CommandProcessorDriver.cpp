@@ -67,7 +67,7 @@ void testCommandProcessor(int argc, char* argv[]) {
     cout << endl << game->getCommandProcessor();
 }
 
-int main(int argc, char* argv[]){
-    testCommandProcessor(argc, argv);
-    return 0;
-}
+//int main(int argc, char* argv[]){
+//    testCommandProcessor(argc, argv);
+//    return 0;
+//}
