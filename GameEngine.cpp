@@ -230,7 +230,23 @@ void GameEngine::play(){
     cout<< "playing now" << endl;
 }
 
-void GameEngine::reinforcementPhase() {}
+void GameEngine::reinforcementPhase() {
+    cout << "The reinforcement phase begin" << endl;
+    for(Player* player: players){
+        int numReinforcement = std::floor(static_cast<double>(player->getOwnedTerritories().size()) / 3);
+        int continentOwned = 0;
+        for(Continent* continent : gameMap->getContinents()){
+            if (player->isContinentOwned(continent)){
+                numReinforcement += continent->getBonus();
+                continentOwned++;
+            }
+        }
+        int finalNumReinforcement = std::max(3, numReinforcement);
+        player->addReinforcementPool(finalNumReinforcement);
+        cout << player->getPlayerID() << " owns " << player->getOwnedTerritories().size() << " territories and " << continentOwned << " continents" << endl;
+        cout << player->getPlayerID() << " receives " << finalNumReinforcement << " army units and now has " << player->getReinforcementPool() << " army units" << endl;
+    }
+}
 
 void GameEngine::issueOrdersPhase() {}
 
