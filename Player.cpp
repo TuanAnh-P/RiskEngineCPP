@@ -3,7 +3,7 @@
 // Constructor
 Player::Player(const std::string& playerID)
         : playerID(new std::string(playerID)), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0)) {
-    std::cout << "Player " << *this->playerID << " has arrived!" << std::endl;
+//    std::cout << "Player " << *this->playerID << " has arrived!" << std::endl;
 }
 
 // Copy constructor
@@ -58,7 +58,7 @@ Player& Player::operator=(const Player& other) {
 
 Player::~Player() {
     if (playerID) {
-        std::cout << "Player " << *playerID << " has been deleted!" << std::endl;
+//        std::cout << "Player " << *playerID << " has been deleted!" << std::endl;
         delete playerID;
     }
 
