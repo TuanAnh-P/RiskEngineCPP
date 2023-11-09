@@ -206,7 +206,7 @@ void Player::issueOrder(const std::string& orderType) {
     }
     else if (orderType == "Advance") 
     {
-        newOrder = new Advance(this, this->ownedTerritories[0], this->ownedTerritories[1], new int(10));
+        //newOrder = new Advance(this, this->ownedTerritories[0], this->ownedTerritories[1], new int(10));
     }
     else if (orderType == "Bomb") {
         // Take user input (Colton)
