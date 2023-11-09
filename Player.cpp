@@ -196,10 +196,8 @@ std::vector<Territory*> Player::getOwnedTerritories()
 void Player::issueOrder(const std::string& orderType) {
     Order* newOrder = nullptr;
     
-    Territory* temp = new Territory("TEST", 0, 0); 
-    
+    Territory* temp = new Territory("TEST", 0, 0);
 
-    // Create an Order object based on the orderType
     if (orderType == "Deploy") {
         // Take user input (Colton)
         newOrder = new Deploy(this, this->ownedTerritories[0], new int(10));
@@ -226,7 +224,7 @@ void Player::issueOrder(const std::string& orderType) {
 
     if (newOrder) {
         // Add the created order to the player's list of orders
-        std::cout << "Order " << orderType << " was added to the list of orders!" << std::endl;
+        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
         ordersList->orders.push_back(newOrder);
     }
     else {
