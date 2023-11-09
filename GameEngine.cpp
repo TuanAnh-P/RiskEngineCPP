@@ -248,7 +248,26 @@ void GameEngine::reinforcementPhase() {
     }
 }
 
-void GameEngine::issueOrdersPhase() {}
+void GameEngine::issueOrdersPhase() {
+    cout << "The orders issuing phase begins" << endl;
+    for(Player* player: players) {
+
+
+        // Player must deploy all his reinforcement pool to proceed with Advance order
+        while (player->getReinforcementPool() > 0) {
+            string order;
+            cout << player->getPlayerID() << " enter order: ";
+            cin >> order;
+            // Deduct the reinforcement cost or update the pool inside the loop
+            // For example: player->decreaseReinforcementPool();
+            if (order == "Deploy") player->issueOrder(order);
+            else cout << "You can only issue 'Deploy' orders when your reinforcement pool is not empty." << endl;
+            // Temporary
+            break;
+        }
+    }
+}
+
 
 void GameEngine::executeOrdersPhase() {}
 
@@ -256,9 +275,37 @@ void GameEngine::mainGameLoop() {
     cout << "test" << endl;
 }
 
+Player* GameEngine::getPlayerByID(const string& playerID) {
+    for (Player* player : players) {
+        if (player->getPlayerID() == playerID) {
+            return player;
+        }
+    }
+    return nullptr;  // Player with the specified ID not found
+}
+
+Territory* GameEngine::getTerritoryByName(const string& territoryName){
+    for (const Territory* territory : getAllTerritories()) {
+        if (territory->getName() == territoryName) {
+            return const_cast<Territory*>(territory); // Use const_cast if territories is a member variable
+        }
+    }
+    return nullptr;  // Territory with the specified name not found
+}
+
 const std::vector<Player*>& GameEngine::getPlayers() const {
     return players;
 }
+
+const std::vector<Territory*>& GameEngine::getAllTerritories() const {
+    std::vector<Territory*>* allTerritories = new std::vector<Territory*>();
+    for (const Continent* continent : gameMap->getContinents()) {
+        const auto& territories = continent->getTerritories();
+        allTerritories->insert(allTerritories->end(), territories.begin(), territories.end());
+    }
+    return *allTerritories;
+}
+
 
 //New constructor
 GameEngine::GameEngine() : gameMap(nullptr), _currentGameState(nullptr) {};

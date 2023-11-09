@@ -120,6 +120,11 @@ public:
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
+    // helper methods for mainGameLoop()
+    Player* getPlayerByID(const string& playerId);
+    Territory* getTerritoryByName(const string& territoryName);
+    const std::vector<Territory *> &getAllTerritories() const;
+
 
     // constructor 
     GameEngine();
