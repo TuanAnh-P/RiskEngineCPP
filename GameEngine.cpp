@@ -230,6 +230,16 @@ void GameEngine::play(){
     cout<< "playing now" << endl;
 }
 
+void GameEngine::reinforcementPhase() {}
+
+void GameEngine::issueOrdersPhase() {}
+
+void GameEngine::executeOrdersPhase() {}
+
+void GameEngine::mainGameLoop() {
+    cout << "test" << endl;
+}
+
 const std::vector<Player*>& GameEngine::getPlayers() const {
     return players;
 }

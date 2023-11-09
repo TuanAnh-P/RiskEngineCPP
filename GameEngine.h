@@ -76,9 +76,9 @@ public:
 class GameEngine
 {
 private:
-    Map* gameMap;
-    std::vector<Player*> players;
-    Deck* deck;
+//    Map* gameMap;
+//    std::vector<Player*> players;
+//    Deck* deck;
 
     void loadMap(const string& filename);
     bool validateMap();
@@ -103,12 +103,24 @@ protected:
     void setCurrentGameState(GameState *gameState);
 
 public:
+    // Temporary
+    Map* gameMap;
+    std::vector<Player*> players;
+    Deck* deck;
     
     //getter
     const std::vector<Player*>& getPlayers() const;
 
     // startupPhase
     void startupPhase();
+
+    // mainGameLoop
+    void mainGameLoop();
+    // mainGameLoop's phases
+    void reinforcementPhase();
+    void issueOrdersPhase();
+    void executeOrdersPhase();
+
     // constructor 
     GameEngine();
     ~GameEngine();
