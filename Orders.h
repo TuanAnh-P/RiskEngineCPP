@@ -3,8 +3,10 @@
 #include <vector>
 #include "map.h"
 
+
 //Forward declaration
 class Player;
+class Deck;
 
 
 // Order base class 
@@ -111,7 +113,7 @@ public:
 	Advance(Advance& other);
 
 	// Parameter Constructor
-	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value);
+	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck);
 
 	// Class methods
 	void execute();
@@ -125,6 +127,7 @@ private:
 	int* m_numOfArmyUnits;
 	Territory* m_sourceTerritory;
 	Territory* m_targetTerritory;
+	Deck* m_deckRef;
 
 	//Methods
 	bool validate();
