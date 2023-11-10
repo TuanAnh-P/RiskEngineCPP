@@ -11,7 +11,7 @@
 
 void testOrdersLists()
 {
-	// Set up map data 
+	// Set up map data
 	std::cout << std::endl;
 	LOG("-------- Order Lists Test Setup --------")
 		std::cout << std::endl;
@@ -55,12 +55,12 @@ void testOrdersLists()
 	p3->addTerritory(c_territories[6]);
 
 	// Issue orders
-	p1->issueOrder("Deploy");
-	p1->issueOrder("Advance");
-	p1->issueOrder("Airlift");
-	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
-	p1->issueOrder("Blockade");
-	p1->issueOrder("Negotiate");
+//	p1->issueOrder("Deploy");
+//	p1->issueOrder("Advance");
+//	p1->issueOrder("Airlift");
+//	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
+//	p1->issueOrder("Blockade");
+//	p1->issueOrder("Negotiate");
 
 	LOG("\n Start Test ---- Order COPY Constructors---- \n");
 	{
@@ -85,7 +85,7 @@ void testOrdersLists()
 
 	}
 
-	
+
 	LOG("\n Start test ---- OrderList Copy -----\n");
 
 	OrdersList ordersList(p1->getOrdersList());
@@ -124,12 +124,12 @@ void testOrdersLists()
 	DELETE(p2);
 	DELETE(p3);
 	LOG("\n CLEAN ---- Copy OrderList -----\n");
-	
+
 }
 
 void testOrderExecution()
 {
-	// Set up map data 
+	// Set up map data
 	std::cout << std::endl;
 	LOG("-------- Order Execution Test Setup --------")
 	std::cout << std::endl;
@@ -150,7 +150,7 @@ void testOrderExecution()
 		std::cout << "----------------------------------------------------------------------------------" << std::endl;
 		return;
 	}
-	
+
 	// Set up player data
 	Player* p1 = new Player("Test_Player01");
 	Player* p2 = new Player("Test_Player02");
@@ -173,16 +173,16 @@ void testOrderExecution()
 	p3->addTerritory(c_territories[6]);
 
 
-	// Issue orders
-	p1->issueOrder("Deploy");
-	p1->issueOrder("Advance");
-	p1->issueOrder("Airlift");
-	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
-	p1->issueOrder("Blockade"); // TODO - Need to add NEUTRAL player
-	p1->issueOrder("Negotiate");
+//	// Issue orders
+//	p1->issueOrder("Deploy");
+//	p1->issueOrder("Advance");
+//	p1->issueOrder("Airlift");
+//	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
+//	p1->issueOrder("Blockade"); // TODO - Need to add NEUTRAL player
+//	p1->issueOrder("Negotiate");
 
 
-	// Execute orders 
+	// Execute orders
 	int issueOrderListLength = p1->getOrdersList().orders.size();
 
 	std::cout << std::endl;

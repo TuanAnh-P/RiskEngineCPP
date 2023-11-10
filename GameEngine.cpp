@@ -227,11 +227,12 @@ void GameEngine::gameStart(){
 
 void GameEngine::play(){
     // tuan you need to encapsulate everything inside here I believe
-    cout<< "playing now" << endl;
+    cout<< "Playing now" << endl;
+    mainGameLoop();
 }
 
 void GameEngine::reinforcementPhase() {
-    cout << "The reinforcement phase begin" << endl;
+    cout << "<----------The reinforcement phase begin---------->" << endl;
     for(Player* player: players){
         int numReinforcement = std::floor(static_cast<double>(player->getOwnedTerritories().size()) / 3);
         int continentOwned = 0;
@@ -249,30 +250,125 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase() {
-    cout << "The orders issuing phase begins" << endl;
+    cout << "<----------The orders issuing phase begins---------->" << endl;
     for(Player* player: players) {
-
 
         // Player must deploy all his reinforcement pool to proceed with Advance order
         while (player->getReinforcementPool() > 0) {
             string order;
-            cout << player->getPlayerID() << " enter order: ";
+            cout << player->getPlayerID() << " enters order: ";
             cin >> order;
-            // Deduct the reinforcement cost or update the pool inside the loop
-            // For example: player->decreaseReinforcementPool();
-            if (order == "Deploy") player->issueOrder(order);
+            if (order == "Deploy"){
+                // Get territories that can deploy to (territories from toDefend())
+                std::cout << "Territories " << player->getPlayerID() << " can deploy army units:" << std::endl;
+                for (Territory* territory : player->toDefend()) {
+                    std::cout << territory->getName() << std::endl;
+                }
+                string deployTarget;
+                int numDeploy;
+                cout << player->getPlayerID() << " enters target territory to deploy army units: ";
+                cin >> deployTarget;
+                cout << player->getPlayerID() << " enters number of army units to deploy: ";
+                cin >> numDeploy;
+                Territory* deployTerritory = this->getTerritoryByName(deployTarget);
+                if (deployTerritory == nullptr) cout << "Invalid territory" << endl;
+                else player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr);
+            }
             else cout << "You can only issue 'Deploy' orders when your reinforcement pool is not empty." << endl;
             // Temporary
             break;
         }
+
+        // Advance order
+        cout << player->getPlayerID() << " can make Advance Order" << endl;
+        char continueAdvancing;
+        do {
+            // Get territories to defend
+            std::cout << "Territories " << player->getPlayerID() << " can Attack:" << std::endl;
+            for (Territory* territory : player->toAttack()) {
+                std::cout << territory->getName() << std::endl;
+            }
+
+            // Get territories to attack
+            std::cout << "Territories " << player->getPlayerID() << " can Defend:" << std::endl;
+            for (Territory* territory : player->toDefend()) {
+                std::cout << territory->getName() << std::endl;
+            }
+
+            // Ask the player to make an Advance Order
+            string userSource;
+            string userTarget;
+            int numUnits;
+            cout << player->getPlayerID() << " enters source territory: ";
+            cout << endl;
+            cin >> userSource;
+            cout << player->getPlayerID() << " enters target territory: ";
+            cin >> userTarget;
+            cout << endl;
+            cout << player->getPlayerID() << " enters number of army units to advance: ";
+            cin >> numUnits;
+            cout << endl;
+
+            // Retrieving source and target territories
+            Territory* sourceTerritory = this->getTerritoryByName(userSource);
+            Territory* targetTerritory = this->getTerritoryByName(userSource);
+
+            if (sourceTerritory == nullptr) cout << "Invalid source territory" << endl;
+            else if (targetTerritory == nullptr) cout << "Invalid target territory" << endl;
+            else player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(numUnits), nullptr);
+
+            // Ask if the player wants to make another Advance Order
+            cout << "Do you want to make another Advance Order? (y/n): ";
+            cin >> continueAdvancing;
+        } while (continueAdvancing == 'y' || continueAdvancing == 'Y');
+
+        // Player plays a card from their hand
+        cout << player->getPlayerID() << " plays a card from their hand contents below" << endl;
+        cout << player->getHand() << endl;
+        int cardSelection;
+        cout << "Enter the card's index you wish to use (1st card has an index of 0): ";
+        cin >> cardSelection;
+        player->getHand().cards[cardSelection]->play(player->getHand(), cardSelection, player->getOrdersList());
     }
 }
 
 
-void GameEngine::executeOrdersPhase() {}
+void GameEngine::executeOrdersPhase() {
+    cout << "<----------The orders executing phase begins---------->" << endl;
+    for(Player* player: players) {
+        cout << player->getPlayerID() << " is executing orders from his order list" << endl;
+        // Display the player's orders list
+        std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
+        player->getOrdersList().print();
+
+        cout << "The orders will be executed one by one: " << endl;
+        for (Order* order : player->getOrdersList().orders){
+            order->execute();
+//            std::cout << "Press Enter to continue...";
+//            std::cin.get();
+        }
+    }
+}
 
 void GameEngine::mainGameLoop() {
-    cout << "test" << endl;
+    int round = 1;
+    int numPlayersLeft = players.size();
+    while(numPlayersLeft>1){
+        cout << "<--------------------Start of round #" << round<< "-------------------->" << endl;
+        reinforcementPhase();
+        issueOrdersPhase();
+        executeOrdersPhase();
+        round++;
+        for(Player* player: getPlayers()){
+            if (player->getOwnedTerritories().size() == 0) {
+                cout << player->getPlayerID() << " is be kicked out of the game because he doesn't own territories" << endl;
+                players.erase(std::remove(players.begin(), players.end(), player), players.end());
+                numPlayersLeft--;
+            }
+        }
+    }
+    Player* winner = players.at(0);
+    cout << "Congratulation! " << winner->getPlayerID() << " is the winner";
 }
 
 Player* GameEngine::getPlayerByID(const string& playerID) {
