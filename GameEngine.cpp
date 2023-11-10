@@ -272,7 +272,7 @@ void GameEngine::issueOrdersPhase() {
                 cin >> numDeploy;
                 Territory* deployTerritory = this->getTerritoryByName(deployTarget);
                 if (deployTerritory == nullptr) cout << "Invalid territory" << endl;
-                else player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr);
+                else player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr, nullptr, nullptr);
             }
             else cout << "You can only issue 'Deploy' orders when your reinforcement pool is not empty." << endl;
             // Temporary
@@ -315,7 +315,7 @@ void GameEngine::issueOrdersPhase() {
 
             if (sourceTerritory == nullptr) cout << "Invalid source territory" << endl;
             else if (targetTerritory == nullptr) cout << "Invalid target territory" << endl;
-            else player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(numUnits), nullptr);
+            else player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(numUnits), nullptr, deck, this);
 
             // Ask if the player wants to make another Advance Order
             cout << "Do you want to make another Advance Order? (y/n): ";

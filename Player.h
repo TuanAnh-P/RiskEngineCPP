@@ -37,13 +37,14 @@ public:
 
     // Methods related to managing cards
     Hand& getHand(); // Get the player's hand of cards
+    bool hasDrawn; // whether or not a player has drawn a card
 
     // Method related to managing the player id
     std::string getPlayerID() const; // Get the player id
 
     // Methods related to managing orders
     OrdersList& getOrdersList();                    // Get the player's list of orders
-    void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer);  // Issue a new order of a specified type
+    void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);  // Issue a new order of a specified type
 
     // Methods related to managing negotiated players
     const std::vector<Player*>& getNegotiatedPlayers();

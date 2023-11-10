@@ -39,8 +39,8 @@ void testPlayers() {
 
     // Issue some orders
     std::cout << "<----------Issuing Orders---------->" << std::endl;
-    player->issueOrder("Airlift", territory1, territory2, new int(50), nullptr);
-    player->issueOrder("Bomb", nullptr, territory2, nullptr, nullptr);
+    player->issueOrder("Airlift", territory1, territory2, new int(50), nullptr, nullptr, nullptr);
+    player->issueOrder("Bomb", nullptr, territory2, nullptr, nullptr, nullptr, nullptr);
 
 
     // Display the player's orders list
