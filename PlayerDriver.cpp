@@ -8,8 +8,9 @@ void testPlayers() {
 
     // Add territories to the player's owned territories
     std::cout << "<----------Adding Territories---------->" << std::endl;
-    player->addTerritory(new Territory("New York", 1, 2));
-    player->addTerritory(new Territory("London", 3, 4));
+    Territory* territory1 = new Territory("New York", 1, 2);
+    Territory* territory2 = new Territory("London", 3, 4);
+    player->addTerritory(territory1);
 
     // Get the territories to defend (initially, it returns all owned territories)
     std::vector<Territory*> territoriesToDefend = player->toDefend();
@@ -38,8 +39,9 @@ void testPlayers() {
 
     // Issue some orders
     std::cout << "<----------Issuing Orders---------->" << std::endl;
-    player->issueOrder("Airlift");
-    player->issueOrder("Bomb");
+    player->issueOrder("Airlift", territory1, territory2, new int(50), nullptr);
+    player->issueOrder("Bomb", nullptr, territory2, nullptr, nullptr);
+
 
     // Display the player's orders list
     std::cout << "<----------Displaying Orders List---------->" << std::endl;
@@ -52,9 +54,20 @@ void testPlayers() {
     player->removeReinforcementPool(40);
     std::cout << player->getReinforcementPool() << std::endl;
 
-    //Use the custom operator<< to print player details
+    Deck* deck = new Deck();
+    std::cout << *deck << std::endl;
+
+    deck->draw(player->getHand());
+    deck->draw(player->getHand());
+
+    std::cout << player->getHand() << std::endl;
+    player->getHand().cards[0]->play(player->getHand(), 0, player->getOrdersList());
+
+
+    // Use the custom operator<< to print player details
     std::cout << "<----------Player's Stats---------->" << std::endl;
     std::cout << *player << std::endl;
+
 
     // Clean up the player to prevent memory leaks
     std::cout << "<----------Deleting Player---------->" << std::endl;
