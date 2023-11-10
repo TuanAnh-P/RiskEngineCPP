@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Player.h"
 #include "Cards.h"
+#include "GameEngine.h"
 
 // --------------- Order class ---------------
 
@@ -318,18 +319,18 @@ void Deploy::print()
 // Constructors
 
 Advance::Advance()
-	: Order("Advance", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)), m_deckRef(NULL) {};
+	: Order("Advance", nullptr), m_targetTerritory(nullptr), m_sourceTerritory(nullptr), m_numOfArmyUnits(new int(0)), m_deckRef(nullptr), m_gameEngineRef(nullptr) {};
 
-Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck)
-	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),	m_numOfArmyUnits(value), m_deckRef(deck) {};
+Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck, GameEngine* gameEngine)
+	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),	m_numOfArmyUnits(value), m_deckRef(deck), m_gameEngineRef(gameEngine) {};
 
 Advance::Advance(Advance& other)
-	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)), m_deckRef(other.m_deckRef) {}
+	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)), m_deckRef(other.m_deckRef), m_gameEngineRef(other.m_gameEngineRef) {}
 
 // Advance validate checks if source territory and target territory.  
 bool Advance::validate()
 {
-	if (!this->getIssuingPlayer() != nullptr || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
+	if (this->getIssuingPlayer() == nullptr || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
 
 	// Check that target territory is adjacent to a player owned territory
 	for (Territory* adjacentTerritory : m_targetTerritory->getAdjacentTerritories())
@@ -405,7 +406,19 @@ void Advance::execute()
 				std::cout << "-- Attacker Won --" << std::endl;
 
 				// transfer ownership
-
+				std::vector<Player*> players = m_gameEngineRef->getPlayers();
+				for (Player* player : players)
+				{
+					for (Territory* territory : player->getOwnedTerritories())
+					{
+						if (territory == m_sourceTerritory)
+						{
+							player->removeTerritory(territory);
+							this->getIssuingPlayer()->addTerritory(territory);
+						}
+					}
+				}
+				
 				// Check if the issuing player has drawn a card this turn after taking an territory			
 				if (!this->getIssuingPlayer()->hasDrawn)
 				{

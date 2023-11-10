@@ -193,11 +193,11 @@ std::vector<Territory*> Player::getOwnedTerritories()
     return this->ownedTerritories;
 }
 
-void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer) {
+void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) {
     Order* newOrder = nullptr;
 
     if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
-    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num);
+    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
     else if (orderType == "Bomb") newOrder = new Bomb(this, target);
     else if (orderType == "Blockade") newOrder = new Blockade(this, target);
     else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);

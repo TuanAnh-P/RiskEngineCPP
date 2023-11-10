@@ -7,6 +7,7 @@
 //Forward declaration
 class Player;
 class Deck;
+class GameEngine;
 
 
 // Order base class 
@@ -113,7 +114,7 @@ public:
 	Advance(Advance& other);
 
 	// Parameter Constructor
-	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck);
+	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck, GameEngine* gameEngine);
 
 	// Class methods
 	void execute();
@@ -128,6 +129,7 @@ private:
 	Territory* m_sourceTerritory;
 	Territory* m_targetTerritory;
 	Deck* m_deckRef;
+	GameEngine* m_gameEngineRef;
 
 	//Methods
 	bool validate();
