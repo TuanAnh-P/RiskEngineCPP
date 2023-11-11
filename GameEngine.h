@@ -58,7 +58,7 @@ public:
     void operator=(const GameState &gameState);
 
     // destructor
-    virtual ~GameState() {};
+    ~GameState();
 
     // stream ingestion operator
     friend ostream & operator << (ostream &out, GameState &state);

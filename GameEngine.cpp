@@ -41,7 +41,7 @@ string gameStateTypeToString(GameStateType state) {
 
 void printInvalidCommandError()
 {
-    cout << "\nCommand not recognized! Please try again ..." << endl;
+    cout << "\nInvalid Command entered..." << endl;
 };
 
 // Implementation of the GameEngine class methods / constructors
@@ -50,6 +50,10 @@ GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string 
 
 GameState::GameState(GameState &gameState):
     _name(gameState._name), _gameStateID(gameState._gameStateID), _gameEngine(gameState._gameEngine) {};
+
+GameState::~GameState(){
+    delete _name;
+}
 
 void GameState::operator= (const GameState &gameState){
     _gameEngine = gameState._gameEngine;
@@ -413,6 +417,12 @@ GameEngine::~GameEngine() {
         delete player;
     }
     delete deck;
+
+    _gameStates.clear(); 
+
+    delete _currentGameState;
+
+    delete _commandProcessor;
 }
 
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
