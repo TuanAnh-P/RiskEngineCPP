@@ -300,20 +300,18 @@ void GameEngine::issueOrdersPhase() {
         cout << player->getPlayerID() << " can make Advance Order" << endl;
         char continueAdvancing;
         do {
-            
-            // Get territories to attack
+
+            // Get territories to defend
             std::cout << "Territories " << player->getPlayerID() << " can Defend:" << std::endl;
             for (Territory* territory : player->toDefend()) {
                 std::cout << territory->getName() << std::endl;
             }
-
-            // Get territories to defend
+            
+            // Get territories to attack
             std::cout << "Territories " << player->getPlayerID() << " can Attack:" << std::endl;
             for (Territory* territory : player->toAttack()) {
                 std::cout << territory->getName() << std::endl;
             }
-
-
 
             // Ask the player to make an Advance Order
             string userSource;
@@ -331,7 +329,7 @@ void GameEngine::issueOrdersPhase() {
 
             // Retrieving source and target territories
             Territory* sourceTerritory = this->getTerritoryByName(userSource);
-            Territory* targetTerritory = this->getTerritoryByName(userSource);
+            Territory* targetTerritory = this->getTerritoryByName(userTarget);
 
             if (sourceTerritory == nullptr) cout << "Invalid source territory" << endl;
             else if (targetTerritory == nullptr) cout << "Invalid target territory" << endl;
