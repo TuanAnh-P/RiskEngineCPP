@@ -68,11 +68,11 @@ void testCommandProcessor(int argc, char* argv[]) {
             game->update(command);
 
             // this logic skips the game-triggered events
-            if(game->getCurrentGameState().getGameStateId() == GameStateType::ASSIGN_REINFORCEMENT){
+            /*if(game->getCurrentGameState().getGameStateId() == GameStateType::ASSIGN_REINFORCEMENT){
                 for(int i=0; i < 3; i++){
                     game->update(command);
                 }
-            }
+            }*/
         } else {
             // if command is invalid, save it in the effect
             command.saveEffect("Invalid command");
@@ -83,7 +83,7 @@ void testCommandProcessor(int argc, char* argv[]) {
     cout << endl << game->getCommandProcessor();
 }
 
-int main(int argc, char* argv[]){
+/*int main(int argc, char* argv[]){
    testCommandProcessor(argc, argv);
    return 0;
-}
+}*/

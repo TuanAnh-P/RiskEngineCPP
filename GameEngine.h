@@ -80,7 +80,7 @@ private:
 //    std::vector<Player*> players;
 //    Deck* deck;
 
-    void loadMap(const string& filename);
+    bool loadMap(const string& filename);
     bool validateMap();
     void addPlayer(const string& playerName);
     

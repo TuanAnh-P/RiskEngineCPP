@@ -98,12 +98,16 @@ void GameEngine::startupPhase() {
         if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
             //load  map
             string filename = "./maps/" + commandStr.substr(8);
-            loadMap(filename);
-            _currentGameState->update(command);
+            bool mapLoaded = loadMap(filename);
+            if(mapLoaded){
+                _currentGameState->update(command);
+            }
         } else if (commandStr == "validatemap" && stateValidated) {
             // Validate the map
-            validateMap();
-            _currentGameState->update(command);
+            bool mapValidated = validateMap();
+            if (mapValidated){
+                _currentGameState->update(command);
+            }
         } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
             // Add a player
             string player = commandStr.substr(9);
@@ -111,9 +115,13 @@ void GameEngine::startupPhase() {
             _currentGameState->update(command);
         } else if (commandStr == "gamestart" && stateValidated) {
             //starts game
-            delete &command;
-            gameStart();
-            break;
+            if (players.size() >= 2){
+                delete &command;
+                gameStart();
+                break;
+            } else {
+                cout << "Please enter at least 2 players";
+            }
         } else {
             std::cout << "Invalid command for the current state." << std::endl;
         }
@@ -124,17 +132,19 @@ void GameEngine::startupPhase() {
 }
 
 //loads map
-void GameEngine::loadMap(const std::string& filename) {
+bool GameEngine::loadMap(const std::string& filename) {
     MapLoader loader(filename);
     Map* newMap = loader.loadMap();
 
     cout << "opening map: " << filename << endl;
     if (!newMap) {
         std::cout << "Failed to load the map." << std::endl;
+        return false;
     } else {
         delete gameMap;
         gameMap = newMap;
         std::cout << "Map: " << filename.substr(7) << " loaded successfully." << std::endl;
+        return true;
     }
 }
 
