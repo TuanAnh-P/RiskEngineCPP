@@ -2,6 +2,7 @@
 #include "Orders.h"
 #include "Player.h"
 #include "Cards.h"
+#include "GameEngine.h"
 #include "MapLoader.h"
 #include <iostream>
 
@@ -33,14 +34,25 @@ void testOrdersLists()
 		return;
 	}
 
+	// Setup Game Engine
+	GameEngine* gameEngine = new GameEngine();
+
 	// Setup player data
 	Player* p1 = new Player("Test_Player01");
 	Player* p2 = new Player("Test_Player02");
 	Player* p3 = new Player("NEUTRAL");
 
+	gameEngine->players.push_back(p1);
+	gameEngine->players.push_back(p2);
+	gameEngine->players.push_back(p3);
+
+	Deck* deck1 = new Deck();
+
 	const std::vector<Continent*> continents = loadedMap->getContinents();
 	const std::vector<Territory*> c_territories = continents[0]->getTerritories();
 	const std::vector<Territory*> t_territories = continents[1]->getTerritories();
+
+	int* armies = new int(10);
 
 	// Player 1
 	p1->addTerritory(c_territories[0]);
@@ -55,12 +67,13 @@ void testOrdersLists()
 	p3->addTerritory(c_territories[6]);
 
 	// Issue orders
-//	p1->issueOrder("Deploy");
-//	p1->issueOrder("Advance");
-//	p1->issueOrder("Airlift");
-//	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
-//	p1->issueOrder("Blockade");
-//	p1->issueOrder("Negotiate");
+	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
+	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
+	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
+	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Blockade", nullptr, c_territories[0], nullptr, nullptr, nullptr, nullptr);
+	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
+
 
 	LOG("\n Start Test ---- Order COPY Constructors---- \n");
 	{
@@ -83,6 +96,7 @@ void testOrdersLists()
 		Negotiate negotiate_order2(*dynamic_cast<Negotiate*>(p1->getOrdersList().orders[5]));
 		negotiate_order2.print();
 
+		LOG("Copies fall out of scope, call deconstructors!\n")
 	}
 
 
@@ -151,10 +165,22 @@ void testOrderExecution()
 		return;
 	}
 
+	// Set up Game Engine
+	GameEngine* gameEngine = new GameEngine();
+
 	// Set up player data
 	Player* p1 = new Player("Test_Player01");
 	Player* p2 = new Player("Test_Player02");
 	Player* p3 = new Player("NEUTRAL");
+
+	gameEngine->players.push_back(p1);
+	gameEngine->players.push_back(p2);
+	gameEngine->players.push_back(p3);
+
+	Deck* deck1 = new Deck();
+
+	int* armies = new int(10);
+	int* armies2 = new int(10);
 
 	const std::vector<Continent*> continents = loadedMap->getContinents();
 	const std::vector<Territory*> c_territories = continents[0]->getTerritories();
@@ -165,6 +191,7 @@ void testOrderExecution()
 	p1->addTerritory(c_territories[1]);
 
 	// Player 2
+	p2->addTerritory(c_territories[2]);
 	p2->addTerritory(c_territories[3]);
 
 	// Neutral player
@@ -174,21 +201,36 @@ void testOrderExecution()
 
 
 //	// Issue orders
-//	p1->issueOrder("Deploy");
-//	p1->issueOrder("Advance");
-//	p1->issueOrder("Airlift");
-//	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
-//	p1->issueOrder("Blockade"); // TODO - Need to add NEUTRAL player
-//	p1->issueOrder("Negotiate");
-
+	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
+	p2->issueOrder("Deploy", nullptr, p2->getOwnedTerritories()[0], armies2, nullptr, nullptr, nullptr);
 
 	// Execute orders
-	int issueOrderListLength = p1->getOrdersList().orders.size();
+	std::cout << std::endl;
+	for (size_t i = 0; i < p1->getOrdersList().orders.size(); i++)
+	{
+		p1->getOrdersList().orders[i]->execute();
+	}
+
+	// Execute orders
+	std::cout << std::endl;
+	for (size_t i = 0; i < p2->getOrdersList().orders.size(); i++)
+	{
+		p2->getOrdersList().orders[i]->execute();
+	}
+
+
+	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
+	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Blockade", nullptr, c_territories[0], nullptr, nullptr, nullptr, nullptr);
+	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
+
+	// Execute orders
 
 	std::cout << std::endl;
 	LOG("-------- Order Execution --------")
 	std::cout << std::endl;
-	for (size_t i = 0; i < issueOrderListLength; i++)
+	for (size_t i = 0; i < p1->getOrdersList().orders.size(); i++)
 	{
 		p1->getOrdersList().orders[i]->execute();
 	}
@@ -197,8 +239,16 @@ void testOrderExecution()
 	DELETE(p1);
 	DELETE(p2);
 	DELETE(p3)
+	DELETE(armies);
 
 }
+
+//int main()
+//{
+//	testOrdersLists();
+//	testOrderExecution();
+//	return 0;
+//}
 
 
 
