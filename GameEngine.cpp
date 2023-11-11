@@ -236,6 +236,7 @@ void GameEngine::gameStart(){
     initializeReinforcementPools();
     cout << "drawing initial cards" << endl;
     deck = new Deck();
+    neutralPlayer = new Player("Neutral Player");
     drawInitialCards();
     neutralPlayer = new Player("Neutral Player");
 }
@@ -354,6 +355,7 @@ void GameEngine::issueOrdersPhase() {
 
 void GameEngine::executeOrdersPhase() {
     cout << "<----------The orders executing phase begins---------->" << endl;
+    cout << "<----------Deploy orders are executing first---------->" << endl;
     for(Player* player: players) {
         cout << player->getPlayerID() << " is executing orders from his order list" << endl;
         // Display the player's orders list
@@ -362,9 +364,20 @@ void GameEngine::executeOrdersPhase() {
 
         cout << "The orders will be executed one by one: " << endl;
         for (Order* order : player->getOrdersList().orders){
-            order->execute();
-//            std::cout << "Press Enter to continue...";
-//            std::cin.get();
+            if (order->type == "Deploy") order->execute();
+        }
+    }
+
+    cout << "<----------Non-deployed orders are executing now---------->" << endl;
+    for(Player* player: players) {
+        cout << player->getPlayerID() << " is executing orders from his order list" << endl;
+        // Display the player's orders list
+        std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
+        player->getOrdersList().print();
+
+        cout << "The orders will be executed one by one: " << endl;
+        for (Order* order : player->getOrdersList().orders){
+            if (order->type != "Deploy")order->execute();
         }
     }
 }
@@ -374,8 +387,11 @@ void GameEngine::mainGameLoop() {
     int numPlayersLeft = players.size();
     while(numPlayersLeft>1){
         cout << "<--------------------Start of round #" << round<< "-------------------->" << endl;
+        //_currentGameState->update(GameStateType::ASSIGN_REINFORCEMENT);
         reinforcementPhase();
+        //_currentGameState->update(GameStateType::ISSUE_ORDERS);
         issueOrdersPhase();
+        //_currentGameState->update(GameStateType::EXECUTE_ORDERS);
         executeOrdersPhase();
         round++;
         for(Player* player: getPlayers()){
@@ -386,6 +402,7 @@ void GameEngine::mainGameLoop() {
             }
         }
     }
+    //_currentGameState->update(GameStateType::WIN);
     Player* winner = players.at(0);
     cout << "Congratulation! " << winner->getPlayerID() << " is the winner";
 }
