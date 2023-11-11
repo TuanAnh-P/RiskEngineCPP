@@ -55,11 +55,27 @@ void testCommandProcessor(int argc, char* argv[]) {
 
     while ((game->getCurrentGameState()).getGameStateId() != GameStateType::END)
     {
-        Command command = game->getCommandProcessor().getCommand();
+        Command& command = game->getCommandProcessor().getCommand();
 
+        // if reading from file and no more commands can be read from the file, exit the program
+        if(command.getCommand() == "EOD"){
+            cout << "\n\n*** No more commands left in the file, ending game now!\n" << endl;
+            break;
+        }
+
+        // validate command and transition to another state
         if (game->getCommandProcessor().validate(command, game->getCurrentGameState().getGameStateId())){
             game->update(command);
+
+            // this logic skips the game-triggered events
+            /*if(game->getCurrentGameState().getGameStateId() == GameStateType::ASSIGN_REINFORCEMENT){
+                for(int i=0; i < 3; i++){
+                    game->update(command);
+                }
+            }*/
         } else {
+            // if command is invalid, save it in the effect
+            command.saveEffect("Invalid command");
             printInvalidCommandError();
         }
     }
@@ -67,7 +83,7 @@ void testCommandProcessor(int argc, char* argv[]) {
     cout << endl << game->getCommandProcessor();
 }
 
-//int main(int argc, char* argv[]){
-//    testCommandProcessor(argc, argv);
-//    return 0;
-//}
+/*int main(int argc, char* argv[]){
+   testCommandProcessor(argc, argv);
+   return 0;
+}*/

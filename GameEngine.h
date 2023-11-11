@@ -58,7 +58,7 @@ public:
     void operator=(const GameState &gameState);
 
     // destructor
-    virtual ~GameState() {};
+    ~GameState();
 
     // stream ingestion operator
     friend ostream & operator << (ostream &out, GameState &state);
@@ -80,7 +80,7 @@ private:
 //    std::vector<Player*> players;
 //    Deck* deck;
 
-    void loadMap(const string& filename);
+    bool loadMap(const string& filename);
     bool validateMap();
     void addPlayer(const string& playerName);
     

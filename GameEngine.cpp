@@ -41,7 +41,7 @@ string gameStateTypeToString(GameStateType state) {
 
 void printInvalidCommandError()
 {
-    cout << "\nCommand not recognized! Please try again ..." << endl;
+    cout << "\nInvalid Command entered..." << endl;
 };
 
 // Implementation of the GameEngine class methods / constructors
@@ -50,6 +50,10 @@ GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string 
 
 GameState::GameState(GameState &gameState):
     _name(gameState._name), _gameStateID(gameState._gameStateID), _gameEngine(gameState._gameEngine) {};
+
+GameState::~GameState(){
+    delete _name;
+}
 
 void GameState::operator= (const GameState &gameState){
     _gameEngine = gameState._gameEngine;
@@ -94,12 +98,16 @@ void GameEngine::startupPhase() {
         if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
             //load  map
             string filename = "./maps/" + commandStr.substr(8);
-            loadMap(filename);
-            _currentGameState->update(command);
+            bool mapLoaded = loadMap(filename);
+            if(mapLoaded){
+                _currentGameState->update(command);
+            }
         } else if (commandStr == "validatemap" && stateValidated) {
             // Validate the map
-            validateMap();
-            _currentGameState->update(command);
+            bool mapValidated = validateMap();
+            if (mapValidated){
+                _currentGameState->update(command);
+            }
         } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
             // Add a player
             string player = commandStr.substr(9);
@@ -107,9 +115,13 @@ void GameEngine::startupPhase() {
             _currentGameState->update(command);
         } else if (commandStr == "gamestart" && stateValidated) {
             //starts game
-            delete &command;
-            gameStart();
-            break;
+            if (players.size() >= 2){
+                delete &command;
+                gameStart();
+                break;
+            } else {
+                cout << "Please enter at least 2 players";
+            }
         } else {
             std::cout << "Invalid command for the current state." << std::endl;
         }
@@ -120,17 +132,19 @@ void GameEngine::startupPhase() {
 }
 
 //loads map
-void GameEngine::loadMap(const std::string& filename) {
+bool GameEngine::loadMap(const std::string& filename) {
     MapLoader loader(filename);
     Map* newMap = loader.loadMap();
 
     cout << "opening map: " << filename << endl;
     if (!newMap) {
         std::cout << "Failed to load the map." << std::endl;
+        return false;
     } else {
         delete gameMap;
         gameMap = newMap;
         std::cout << "Map: " << filename.substr(7) << " loaded successfully." << std::endl;
+        return true;
     }
 }
 
@@ -413,6 +427,12 @@ GameEngine::~GameEngine() {
         delete player;
     }
     delete deck;
+
+    _gameStates.clear(); 
+
+    delete _currentGameState;
+
+    delete _commandProcessor;
 }
 
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};

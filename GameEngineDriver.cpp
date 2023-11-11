@@ -60,7 +60,7 @@ void testStartupPhase(){
 }
 
 // free function to test the main game loop
-void testMainGameLoop(){
+/*void testMainGameLoop(){
 
     // Create the game engine
 //    std::unique_ptr<GameEngine> game(new GameEngine());
@@ -178,11 +178,12 @@ void testMainGameLoop(){
 
 
 
-}
+}*/
 
 int main()
 {
-    testGameStates();
+//    testGameStates();
+    testStartupPhase();
 //    testMainGameLoop();
     return 0;
 };

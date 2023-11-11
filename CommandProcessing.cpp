@@ -55,7 +55,7 @@ string& Command::getCommand(){
 }
 
 void Command::saveEffect(const string& effect){
-    _effect = new string(effect);
+    *_effect = effect;
 }
 
 std::ostream& operator <<(std::ostream& out, const Command& command) {
@@ -103,7 +103,7 @@ CommandProcessor::~CommandProcessor() {
 }
 
 string& CommandProcessor::readCommand(){
-    std::cout << "* Please enter a command: ";
+    std::cout << "\n* Please enter a command: ";
     string command; 
     std::getline(std::cin, command);
 
@@ -162,11 +162,11 @@ bool CommandProcessor::validate(Command& command, GameStateType gameState) {
 }
 
 std::ostream& operator<<(std::ostream& os, const CommandProcessor& commandProcessor) {
-    os << "Commands in the processor: " << std::endl;
+    os << "Commands in the the command processor: \n" << std::endl;
     for (Command* command : *commandProcessor._commands) {
-        os << *command << std::endl;
+        os << "\t" << *command << std::endl;
     }
-    return os;
+    return os << "\n";
 }
 
 // Implemenation of the FileLineReader and FileCommandProcessorAdapter
@@ -191,7 +191,7 @@ string& FileLineReader::readLineFromFile() {
     if (_fileStream && _fileStream->is_open() && std::getline(*_fileStream, line)) {
         return *(new string(line));
     }
-    return *(new string("quit"));
+    return *(new string("EOD"));
 }
 
 
@@ -219,5 +219,5 @@ std::ostream& operator<<(std::ostream& out, const FileCommandProcessorAdapter &f
 }
 
 string& FileCommandProcessorAdapter::readCommand() {
-    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string("quit"));
+    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string("EOD"));
 }
