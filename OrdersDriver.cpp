@@ -36,6 +36,7 @@ void testOrdersLists()
 
 	// Setup Game Engine
 	GameEngine* gameEngine = new GameEngine();
+	gameEngine->neutralPlayer = new Player("Neutral Player");
 
 	// Setup player data
 	Player* p1 = new Player("Test_Player01");
@@ -71,7 +72,7 @@ void testOrdersLists()
 	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
 	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
 	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
-	p1->issueOrder("Blockade", nullptr, c_territories[0], nullptr, nullptr, nullptr, nullptr);
+	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
 	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
 
 
@@ -167,15 +168,14 @@ void testOrderExecution()
 
 	// Set up Game Engine
 	GameEngine* gameEngine = new GameEngine();
+	gameEngine->neutralPlayer = new Player("Neutral Player");
 
 	// Set up player data
 	Player* p1 = new Player("Test_Player01");
 	Player* p2 = new Player("Test_Player02");
-	Player* p3 = new Player("NEUTRAL");
 
 	gameEngine->players.push_back(p1);
 	gameEngine->players.push_back(p2);
-	gameEngine->players.push_back(p3);
 
 	Deck* deck1 = new Deck();
 
@@ -193,11 +193,6 @@ void testOrderExecution()
 	// Player 2
 	p2->addTerritory(c_territories[2]);
 	p2->addTerritory(c_territories[3]);
-
-	// Neutral player
-	p3->addTerritory(c_territories[4]);
-	p3->addTerritory(c_territories[5]);
-	p3->addTerritory(c_territories[6]);
 
 
 //	// Issue orders
@@ -218,15 +213,13 @@ void testOrderExecution()
 		p2->getOrdersList().orders[i]->execute();
 	}
 
-
 	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
-	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
-	p1->issueOrder("Blockade", nullptr, c_territories[0], nullptr, nullptr, nullptr, nullptr);
+	p1->issueOrder("Bomb", nullptr, p2->getOwnedTerritories()[0], nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
 	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
 	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
 
 	// Execute orders
-
 	std::cout << std::endl;
 	LOG("-------- Order Execution --------")
 	std::cout << std::endl;
@@ -238,8 +231,8 @@ void testOrderExecution()
 	/// Clean Players
 	DELETE(p1);
 	DELETE(p2);
-	DELETE(p3)
 	DELETE(armies);
+	DELETE(armies2);
 
 }
 

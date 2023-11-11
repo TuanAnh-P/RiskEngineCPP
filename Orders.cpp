@@ -360,7 +360,7 @@ void Advance::execute()
 		else
 		{
 			bool attackersTurn = true;
-			bool attackersWon = false;
+			bool attackersWon = true;
 			Player* enemyPlayer = nullptr;
 
 
@@ -434,7 +434,7 @@ void Advance::execute()
 					{
 						for (Territory* territory : player->getOwnedTerritories())
 						{
-							if (territory == m_sourceTerritory)
+							if (territory == m_targetTerritory)
 							{
 								player->removeTerritory(territory);
 								this->getIssuingPlayer()->addTerritory(territory);
@@ -542,8 +542,12 @@ void Bomb::execute()
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
 
+		std::cout << " Target Territory armies before bombing: " << m_targetTerritory->getNumberOfArmies() << std::endl;
+
 		// Reduce target territory armies by half
 		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() / 2);
+
+		std::cout << " Target Territory armies after bombing: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 
 		this->print();
 
@@ -562,6 +566,7 @@ void Bomb::execute()
 void Bomb::print()
 {
 	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
 
 
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
@@ -584,13 +589,13 @@ Bomb::~Bomb()
 // Constructors
 
 Blockade::Blockade()
-	: Order("Blockade", nullptr), m_targetTerritory(nullptr) {}
+	: Order("Blockade", nullptr), m_targetTerritory(nullptr), m_gameEngineRef(nullptr) {}
 
-Blockade::Blockade(Player* player, Territory* targetTerritory)
-	: Order("Blockade", player), m_targetTerritory(targetTerritory) {}
+Blockade::Blockade(Player* player, Territory* targetTerritory, GameEngine* gameEngine)
+	: Order("Blockade", player), m_targetTerritory(targetTerritory), m_gameEngineRef(gameEngine) {}
 
 Blockade::Blockade(Blockade& other)
-	: Order("Blockade", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory) {}
+	: Order("Blockade", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_gameEngineRef(other.m_gameEngineRef) {}
 
 // Blockade validate checks if the target territory is validate
 bool Blockade::validate()
@@ -610,11 +615,17 @@ void Blockade::execute()
 	if (this->validate())
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
+		std::cout << " Target Territory armies before blockade: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 
 		// Double target territory armies and transfer the ownership of the territory to the Neutral player
 		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() * 2);
 
+		std::cout << " Target Territory armies after blockade: " << m_targetTerritory->getNumberOfArmies() << std::endl;
+
 		this->getIssuingPlayer()->removeTerritory(m_targetTerritory);
+
+		// Give the neutral player the territory
+		m_gameEngineRef->neutralPlayer->addTerritory(m_targetTerritory);
 
 		this->print();
 	}

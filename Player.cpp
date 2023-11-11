@@ -197,7 +197,7 @@ void Player::issueOrder(const std::string& orderType, Territory* source, Territo
     if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
     else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
     else if (orderType == "Bomb") newOrder = new Bomb(this, target);
-    else if (orderType == "Blockade") newOrder = new Blockade(this, target);
+    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
     else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
     else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
 

@@ -171,7 +171,7 @@ public:
 	// Constructor
 	Blockade();
 
-	Blockade(Player* player, Territory* tagretTerritory);
+	Blockade(Player* player, Territory* tagretTerritory, GameEngine* gameEngineRef);
 
 	//Copy Constructor
 	Blockade(Blockade& other);
@@ -184,6 +184,7 @@ public:
 
 private: 
 	Territory* m_targetTerritory;
+	GameEngine* m_gameEngineRef;
 	bool validate();
 
 };
