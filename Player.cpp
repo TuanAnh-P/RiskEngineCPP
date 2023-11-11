@@ -77,9 +77,6 @@ Player::~Player() {
 
     // Delete negotiatedPlayers and set the pointer to nullptr
     if (negotiatedPlayers) {
-        for (Player* player : *negotiatedPlayers) {
-            delete player;
-        }
         delete negotiatedPlayers;
         negotiatedPlayers = nullptr;
     }
