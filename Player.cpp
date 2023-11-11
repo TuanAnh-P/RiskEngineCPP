@@ -166,11 +166,12 @@ std::vector<Territory*> Player::toAttack() {
         }
 
         for (Territory* adjacentTerritory : adjacentTerritories) {
-            if (!isTerritoryOwned(adjacentTerritory)) {
-                toAttack.push_back(adjacentTerritory);
+                // Check if the territory is not owned and is not already in toAttack
+                if (!isTerritoryOwned(adjacentTerritory) && std::find(toAttack.begin(), toAttack.end(), adjacentTerritory) == toAttack.end()) {
+                    toAttack.push_back(adjacentTerritory);
+                }
             }
         }
-    }
     return toAttack;
 }
 
