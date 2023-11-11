@@ -237,6 +237,7 @@ void GameEngine::gameStart(){
     cout << "drawing initial cards" << endl;
     deck = new Deck();
     drawInitialCards();
+    neutralPlayer = new Player("Neutral Player");
 }
 
 void GameEngine::play(){
@@ -437,6 +438,8 @@ GameEngine::~GameEngine() {
     delete _currentGameState;
 
     delete _commandProcessor;
+
+    delete neutralPlayer;
 }
 
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
