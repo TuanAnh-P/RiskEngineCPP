@@ -5,3 +5,4 @@ addplayer
 addplayer
 addplayer
 gamestart
+replay
