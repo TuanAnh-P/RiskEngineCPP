@@ -237,6 +237,7 @@ void GameEngine::gameStart(){
     cout << "drawing initial cards" << endl;
     deck = new Deck();
     drawInitialCards();
+    neutralPlayer = new Player("Neutral Player");
 }
 
 void GameEngine::play(){
@@ -286,26 +287,30 @@ void GameEngine::issueOrdersPhase() {
                 cin >> numDeploy;
                 Territory* deployTerritory = this->getTerritoryByName(deployTarget);
                 if (deployTerritory == nullptr) cout << "Invalid territory" << endl;
-                else player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr, nullptr, nullptr);
+                else if(numDeploy > player->getReinforcementPool()) cout << "Invalid number of army units to deploy" << endl;
+                else{
+                    player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr, nullptr, nullptr);
+                    player->removeReinforcementPool(numDeploy);
+                }
+                cout << player->getPlayerID() << " has " << player->getReinforcementPool() << " army units left to deploy" << endl;
             }
             else cout << "You can only issue 'Deploy' orders when your reinforcement pool is not empty." << endl;
-            // Temporary
-            break;
         }
 
         // Advance order
         cout << player->getPlayerID() << " can make Advance Order" << endl;
         char continueAdvancing;
         do {
-            // Get territories to defend
-            std::cout << "Territories " << player->getPlayerID() << " can Attack:" << std::endl;
-            for (Territory* territory : player->toAttack()) {
-                std::cout << territory->getName() << std::endl;
-            }
 
-            // Get territories to attack
+            // Get territories to defend
             std::cout << "Territories " << player->getPlayerID() << " can Defend:" << std::endl;
             for (Territory* territory : player->toDefend()) {
+                std::cout << territory->getName() << std::endl;
+            }
+            
+            // Get territories to attack
+            std::cout << "Territories " << player->getPlayerID() << " can Attack:" << std::endl;
+            for (Territory* territory : player->toAttack()) {
                 std::cout << territory->getName() << std::endl;
             }
 
@@ -325,7 +330,7 @@ void GameEngine::issueOrdersPhase() {
 
             // Retrieving source and target territories
             Territory* sourceTerritory = this->getTerritoryByName(userSource);
-            Territory* targetTerritory = this->getTerritoryByName(userSource);
+            Territory* targetTerritory = this->getTerritoryByName(userTarget);
 
             if (sourceTerritory == nullptr) cout << "Invalid source territory" << endl;
             else if (targetTerritory == nullptr) cout << "Invalid target territory" << endl;
@@ -433,6 +438,8 @@ GameEngine::~GameEngine() {
     delete _currentGameState;
 
     delete _commandProcessor;
+
+    delete neutralPlayer;
 }
 
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
