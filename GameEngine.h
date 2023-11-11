@@ -107,6 +107,8 @@ public:
     Map* gameMap;
     std::vector<Player*> players;
     Deck* deck;
+
+    Player* neutralPlayer;
     
     //getter
     const std::vector<Player*>& getPlayers() const;
