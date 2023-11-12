@@ -239,9 +239,7 @@ void GameEngine::gameStart(){
     initializeReinforcementPools();
     cout << "drawing initial cards" << endl;
     deck = new Deck();
-    neutralPlayer = new Player("Neutral Player");
     drawInitialCards();
-    neutralPlayer = new Player("Neutral Player");
 }
 
 void GameEngine::play(){
@@ -443,7 +441,7 @@ const std::vector<Territory*>& GameEngine::getAllTerritories() const {
 
 
 //New constructor
-GameEngine::GameEngine() : gameMap(nullptr), _currentGameState(nullptr) {};
+GameEngine::GameEngine() : gameMap(nullptr), _currentGameState(nullptr), neutralPlayer(new Player("Neutral Player")) {};
 
 //Need destructor
 GameEngine::~GameEngine() {
