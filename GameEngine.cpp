@@ -389,7 +389,7 @@ void GameEngine::issueOrdersPhase() {
             if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
             else player->issueOrder("Blockade", nullptr, targetTerritory, nullptr, nullptr, nullptr, this);
         }
-        else (player->getHand().cards[cardSelection]->getType() == CardType::Diplomacy);{
+        else if (player->getHand().cards[cardSelection]->getType() == CardType::Diplomacy){
             string targetPlayer;
             cout << "Diplomacy/Negotiate - Enter the target player: ";
             cin >> targetPlayer;
