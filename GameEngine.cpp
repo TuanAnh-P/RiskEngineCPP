@@ -349,7 +349,55 @@ void GameEngine::issueOrdersPhase() {
         int cardSelection;
         cout << "Enter the card's index you wish to use (1st card has an index of 0): ";
         cin >> cardSelection;
-        player->getHand().cards[cardSelection]->play(player->getHand(), cardSelection, player->getOrdersList());
+        if (cardSelection>player->getHand().cards.size()-1 || cardSelection<0){
+            cout << "Invalid index ";
+        }
+        else if (player->getHand().cards[cardSelection]->getType() == CardType::Airlift){
+            string source;
+            string target;
+            int num;
+            cout << "Airlift - Enter the source territory: ";
+            cin >> source;
+            cout << "Airlift - Enter the target territory: ";
+            cin >> target;
+            cout << "Airlift - Enter the number of army units: ";
+            cin >> num;
+            Territory* sourceTerritory = this->getTerritoryByName(source);
+            Territory* targetTerritory = this->getTerritoryByName(target);
+            if (sourceTerritory == nullptr) cout << "Source territory is invalid" << endl;
+            else if (targetTerritory == nullptr) cout << "Source territory is invalid" << endl;
+            else player->issueOrder("Airlift", sourceTerritory, targetTerritory, new int(num), nullptr, nullptr, nullptr);
+        }
+        else if (player->getHand().cards[cardSelection]->getType() == CardType::Bomb){
+            string targetPlayer;
+            string target;
+            cout << "Bomb - Enter the target player: ";
+            cin >> targetPlayer;
+            cout << "Bomb - Enter the target territory: ";
+            cin >> target;
+            Territory* targetTerritory = this->getTerritoryByName(target);
+            Player* p = this->getPlayerByID(targetPlayer);
+            if (p == nullptr) cout << "Player is invalid" << endl;
+            else if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
+            else player->issueOrder("Bomb", nullptr, targetTerritory, nullptr, p, nullptr, nullptr);
+        }
+        else if (player->getHand().cards[cardSelection]->getType() == CardType::Blockade){
+            string target;
+            cout << "Blockade - Enter the target territory: ";
+            cin >> target;
+            Territory* targetTerritory = this->getTerritoryByName(target);
+            if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
+            else player->issueOrder("Blockade", nullptr, targetTerritory, nullptr, nullptr, nullptr, this);
+        }
+        else (player->getHand().cards[cardSelection]->getType() == CardType::Diplomacy);{
+            string targetPlayer;
+            cout << "Diplomacy/Negotiate - Enter the target player: ";
+            cin >> targetPlayer;
+            Player* p = this->getPlayerByID(targetPlayer);
+            if (p == nullptr) cout << "Player is invalid" << endl;
+            else player->issueOrder("Negotiate", nullptr, nullptr, nullptr, p, nullptr, nullptr);
+        }
+
     }
 }
 
