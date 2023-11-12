@@ -90,7 +90,7 @@ void testLoggingObserver(){
     delete proof10;
 }
 
-int main(){
+/*int main(){
     testLoggingObserver();
     return 0;
-}
+}*/
