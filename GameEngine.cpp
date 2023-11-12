@@ -101,18 +101,21 @@ void GameEngine::startupPhase() {
             bool mapLoaded = loadMap(filename);
             if(mapLoaded){
                 _currentGameState->update(command);
+                Notify(this);
             }
         } else if (commandStr == "validatemap" && stateValidated) {
             // Validate the map
             bool mapValidated = validateMap();
             if (mapValidated){
                 _currentGameState->update(command);
+                Notify(this);
             }
         } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
             // Add a player
             string player = commandStr.substr(9);
             addPlayer(player);
             _currentGameState->update(command);
+            Notify(this);
         } else if (commandStr == "gamestart" && stateValidated) {
             //starts game
             if (players.size() >= 2){
@@ -497,6 +500,7 @@ void GameEngine::update(Command& command){
     if (_currentGameState != nullptr)
     {
         _currentGameState->update(command);
+        Notify(this);
     }
 }
 
@@ -610,3 +614,13 @@ EndState::EndState(GameEngine &gameEngine)
     : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){};
 
 void EndState::update(Command& command){};
+
+//A2 P5
+string GameEngine::stringToLog(){
+    string currentState = (this->getCurrentGameState()).getGameStateName();
+    return "Game Engine New State: " + currentState;
+};
+
+string GameState::getGameStateName(){
+    return *_name;
+}

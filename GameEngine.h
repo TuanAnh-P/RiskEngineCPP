@@ -70,10 +70,12 @@ public:
 
     // method for updating the game state
     virtual void update(Command& command) {};
+
+    string getGameStateName();
 };
 
 // class representing the game engine
-class GameEngine
+class GameEngine : public ILoggable, public Subject
 {
 private:
 //    Map* gameMap;
@@ -163,6 +165,8 @@ public:
 
     // Call the update method on the current game state instance
     void update(Command& command);
+
+    string stringToLog() override;
 };
 
 // Class representing the State state

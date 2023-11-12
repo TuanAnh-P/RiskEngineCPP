@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "map.h"
+#include "LoggingObserver.h"
 
 
 //Forward declaration
@@ -11,7 +12,7 @@ class GameEngine;
 
 
 // Order base class 
-class Order
+class Order : public ILoggable, public Subject
 {
 public:
 	// Constructor
@@ -48,7 +49,7 @@ private:
 };
 
 // OrdersList class 
-class OrdersList
+class OrdersList : public ILoggable, public Subject
 {
 public:
 	// Constructor
@@ -67,6 +68,10 @@ public:
 
 	// Destructor
 	~OrdersList();
+
+    string stringToLog() override;
+
+    void addOrder(Order& order);
 };
 
 // Deploy Order class 
@@ -90,6 +95,8 @@ public:
 
 	// Destructor
 	~Deploy();
+
+    string stringToLog() override;
 
 private: 
 
@@ -121,6 +128,8 @@ public:
 	void print();
 
 	~Advance();
+
+    string stringToLog() override;
 
 private:
 
@@ -157,6 +166,8 @@ public:
 
 	~Bomb();
 
+    string stringToLog() override;
+
 private:
 
 	Territory* m_targetTerritory;
@@ -181,6 +192,8 @@ public:
 	void print();
 
 	~Blockade();
+
+    string stringToLog() override;
 
 private: 
 	Territory* m_targetTerritory;
@@ -208,6 +221,8 @@ public:
 
 	~Airlift();
 
+    string stringToLog() override;
+
 private:
 
 	int* m_numOfArmyUnits;
@@ -234,6 +249,8 @@ public:
 	void print();
 
 	~Negotiate();
+
+    string stringToLog() override;
 
 private: 
 
