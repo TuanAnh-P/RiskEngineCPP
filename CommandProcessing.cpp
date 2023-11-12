@@ -56,6 +56,8 @@ string& Command::getCommand(){
 
 void Command::saveEffect(const string& effect){
     *_effect = effect;
+
+    Notify(this);
 }
 
 std::ostream& operator <<(std::ostream& out, const Command& command) {
@@ -113,6 +115,8 @@ string& CommandProcessor::readCommand(){
 Command& CommandProcessor::saveCommand(string& command) {
     Command* newCommand = new Command(command);
     _commands->push_back(newCommand);
+
+    Notify(this);
 
     return *newCommand;
 }
@@ -220,4 +224,19 @@ std::ostream& operator<<(std::ostream& out, const FileCommandProcessorAdapter &f
 
 string& FileCommandProcessorAdapter::readCommand() {
     return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string("EOD"));
+}
+
+// A2 P5
+string Command::stringToLog(){
+    string newCommandEffect = this->getCommandEffect();
+    return "Command's Effect: " + newCommandEffect;
+};
+
+string CommandProcessor::stringToLog(){
+    string newCommand = (_commands->back())->getCommand();
+    return "Command: " + newCommand;
+};
+
+string& Command::getCommandEffect(){
+    return *_effect;
 }

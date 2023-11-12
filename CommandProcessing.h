@@ -5,13 +5,14 @@
 #include <string> 
 #include <ostream> 
 #include <fstream>
+#include "LoggingObserver.h"
 
 using std::string;
 
 enum class GameStateType;
 
 string getFirstSubstring(const string& string);
-class Command {
+class Command : public ILoggable, public Subject {
 private: 
     string *_command;
     string *_effect;
@@ -41,9 +42,13 @@ public:
     string& getCommand();
 
     void saveEffect(const string& effect);
+
+    string& getCommandEffect();
+
+    string stringToLog() override;
 };
 
-class CommandProcessor {
+class CommandProcessor : public ILoggable, public Subject {
 
 private: 
     std::vector<Command*> *_commands;        
@@ -70,6 +75,8 @@ public:
     Command& getCommand();
 
     bool validate(Command& command, GameStateType gameState);
+
+    string stringToLog() override;
 };
 
 class FileLineReader {

@@ -291,6 +291,7 @@ void Deploy::execute()
 		std::cout << "Executing Deploy Order.." << std::endl;
 		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 		this->print();
+        Notify(this);
 	}	
 	else
 	{
@@ -354,6 +355,7 @@ void Advance::execute()
 			m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 			std::cout << "-- Move Advance order --" << std::endl;
 			this->print();
+            Notify(this);
 		}
 
 		// Simulate attack
@@ -551,7 +553,7 @@ void Bomb::execute()
 
 		this->print();
 
-		
+        Notify(this);
 	}
 	else
 	{
@@ -628,6 +630,8 @@ void Blockade::execute()
 		m_gameEngineRef->neutralPlayer->addTerritory(m_targetTerritory);
 
 		this->print();
+
+        Notify(this);
 	}
 	else
 	{
@@ -694,7 +698,7 @@ void Airlift::execute()
 		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 
 		this->print();
-
+        Notify(this);
 	}
 	else
 	{
@@ -758,7 +762,7 @@ void Negotiate::execute()
 		this->print();
 
 		m_targetPlayer->addToNegotiatedPlayers(this->getIssuingPlayer());
-
+        Notify(this);
 	}
 
 	else
@@ -783,5 +787,46 @@ void Negotiate::print()
 Negotiate::~Negotiate() 
 {
 	std::cout << this->type << " deconstructor was called!" << std::endl;
+}
+
+// A2 P5
+string OrdersList::stringToLog(){
+    Order* newOrder = orders.back();
+    const std::type_info& type = typeid(*newOrder);
+    std::string typeName = type.name();
+    size_t pos = typeName.find_first_not_of("0123456789");
+    std::string className = typeName.substr(pos);
+    return "Order Issued: " + std::string(className);
+};
+
+string Deploy::stringToLog(){
+    return "Order Executed: Deploy";
+};
+
+string Advance::stringToLog(){
+    return "Order Executed: Advance";
+};
+
+string Bomb::stringToLog(){
+    return "Order Executed: Bomb";
+};
+
+string Blockade::stringToLog(){
+    return "Order Executed: Blockade";
+};
+
+string Airlift::stringToLog(){
+    return "Order Executed: Airlift";
+};
+
+string Negotiate::stringToLog(){
+    return "Order Executed: Negotiate";
+};
+
+void OrdersList::addOrder(Order& order)
+{
+    this->orders.push_back(&order);
+
+    Notify(this);
 }
 
