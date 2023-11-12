@@ -387,11 +387,11 @@ void GameEngine::mainGameLoop() {
     int numPlayersLeft = players.size();
     while(numPlayersLeft>1){
         cout << "<--------------------Start of round #" << round<< "-------------------->" << endl;
-        //_currentGameState->update(GameStateType::ASSIGN_REINFORCEMENT);
+        setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         reinforcementPhase();
-        //_currentGameState->update(GameStateType::ISSUE_ORDERS);
+        setCurrentGameState(GameStateType::ISSUE_ORDERS);
         issueOrdersPhase();
-        //_currentGameState->update(GameStateType::EXECUTE_ORDERS);
+        setCurrentGameState(GameStateType::EXECUTE_ORDERS);
         executeOrdersPhase();
         round++;
         for(Player* player: getPlayers()){
@@ -402,7 +402,7 @@ void GameEngine::mainGameLoop() {
             }
         }
     }
-    //_currentGameState->update(GameStateType::WIN);
+    setCurrentGameState(GameStateType::WIN);
     Player* winner = players.at(0);
     cout << "Congratulation! " << winner->getPlayerID() << " is the winner";
 }
