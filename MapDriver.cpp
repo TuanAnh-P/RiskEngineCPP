@@ -45,7 +45,7 @@ void testLoadMaps(){
         // Display continents and their properties
         for (const Continent* continent : loadedMap->getContinents()) {
             std::cout << "Continent Name: " << continent->getName() << std::endl;
-            std::cout << "Number of Armies: " << continent->getNumberOfArmies() << std::endl;
+            std::cout << "Number of Bonus: " << continent->getBonus() << std::endl;
 
             for (const Territory* territory : continent->getTerritories()) {
                 std::cout << "   Territory: " << territory->getName() << " [" << territory->getX() << "," << territory->getY() << "], Number of armies: " << territory->getNumberOfArmies() << std::endl;
@@ -75,10 +75,3 @@ void testLoadMaps(){
     }
 }
 
-//calls the testLoadMaps function
-int main(){
-
-    testLoadMaps();
-
-    return 0;
-}

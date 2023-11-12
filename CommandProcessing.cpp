@@ -103,10 +103,11 @@ CommandProcessor::~CommandProcessor() {
 }
 
 string& CommandProcessor::readCommand(){
+    std::cout << "\n* Please enter a command: ";
     string command; 
     std::getline(std::cin, command);
 
-    return command;
+    return *(new string(command));
 }
 
 Command& CommandProcessor::saveCommand(string& command) {
@@ -117,65 +118,55 @@ Command& CommandProcessor::saveCommand(string& command) {
 }
 
 Command& CommandProcessor::getCommand() {
-    string command = readCommand();
-    return saveCommand(command);
+    string commandValue = readCommand();
+    return saveCommand(commandValue);
 }
 
-
-bool CommandProcessor::validate(Command& command, warzone::GameStateType gameState) {
+bool CommandProcessor::validate(Command& command, GameStateType gameState) {
     string commandValue = getFirstSubstring(command.getCommand());
+
+    if(gameState == GameStateType::ASSIGN_REINFORCEMENT ||  
+       gameState == GameStateType::ISSUE_ORDERS ||
+       gameState == GameStateType::EXECUTE_ORDERS) return true;
 
     switch (gameState)
     {
-    case (warzone::START):
-        if(commandValue == "loadmap") {
-            command.saveEffect("transitioning to map loaded state"); 
-            return true;
-        } 
-    case (warzone::MAP_LOADED):
-        if(commandValue == "loadmap") {
-            command.saveEffect("transitioning to map loaded state"); 
-            return true;
+        case GameStateType::START:
+            if(commandValue == "loadmap") {
+                return true;
+            } 
+            return false;
+        case GameStateType::MAP_LOADED:
+            if(commandValue == "loadmap" || commandValue == "validatemap") {
+                return true;
+            }
+            return false;
+        case GameStateType::MAP_VALIDATED:
+            if(commandValue == "addplayer") {
+                return true;
+            }
+            return false;
+        case GameStateType::PLAYERS_ADDED:
+            if(commandValue == "addplayer" || commandValue == "gamestart") {
+                return true;
+            }
+            return false;
+        case GameStateType::WIN:
+            if(commandValue == "replay" || commandValue == "quit") {
+                return true;
+            }
+            return false;
+        default:
+            return false;
         }
-        if(commandValue == "validatemap") {
-            command.saveEffect("transitioning to map validated state"); 
-            return true;
-        }
-    case warzone::MAP_VALIDATED:
-        if(commandValue == "addplayer") {
-            command.saveEffect("transitioning to players added state"); 
-            return true;
-        }
-    case warzone::PLAYERS_ADDED:
-        if(commandValue == "addplayer") {
-            command.saveEffect("transitioning to players added state"); 
-            return true;
-        }
-        if(commandValue == "gamestart") {
-            command.saveEffect("transitioning to assign reinforcement state"); 
-            return true;
-        }
-    case warzone::WIN:
-        if(commandValue == "replay") {
-            command.saveEffect("transitioning to start state"); 
-            return true;
-        }
-        if(commandValue == "quit") {
-            command.saveEffect("transitioning to exit state"); 
-            return true;
-        }
-    default:
-        command.saveEffect("Command is invalid in the current state"); 
-        return false;
-    }
 }
 
 std::ostream& operator<<(std::ostream& os, const CommandProcessor& commandProcessor) {
-    os << "Commands in the processor: " << std::endl;
+    os << "Commands in the the command processor: \n" << std::endl;
     for (Command* command : *commandProcessor._commands) {
-        os << *command << std::endl;
+        os << "\t" << *command << std::endl;
     }
-    return os;
+    return os << "\n";
 }
 
 // Implemenation of the FileLineReader and FileCommandProcessorAdapter
@@ -198,15 +189,15 @@ ostream& operator<<(std::ostream& out, const FileLineReader &flr) {
 string& FileLineReader::readLineFromFile() {
     string line;
     if (_fileStream && _fileStream->is_open() && std::getline(*_fileStream, line)) {
-        return line;
+        return *(new string(line));
     }
-    return *(new string(""));
+    return *(new string("EOD"));
 }
 
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter() : _fileLineReader(nullptr) {}
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const std::string& filePath) : _fileLineReader(new FileLineReader(filePath)) {}
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& filePath) : _fileLineReader(new FileLineReader(filePath)) {}
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fcp) : _fileLineReader(fcp._fileLineReader ? new FileLineReader(*(fcp._fileLineReader)) : nullptr) {}
 
@@ -228,5 +219,5 @@ std::ostream& operator<<(std::ostream& out, const FileCommandProcessorAdapter &f
 }
 
 string& FileCommandProcessorAdapter::readCommand() {
-    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string(""));
+    return _fileLineReader ? _fileLineReader->readLineFromFile() : *(new std::string("EOD"));
 }

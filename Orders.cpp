@@ -2,13 +2,15 @@
 #include "map.h"
 #include <iostream>
 #include "Player.h"
+#include "Cards.h"
+#include "GameEngine.h"
 
 // --------------- Order class ---------------
 
 // Constructors
 
 Order::Order() 
-	: m_playerIssuer(NULL), type("Invalid") {}
+	: m_playerIssuer(nullptr), type("Invalid") {}
 
 Order::Order(std::string type, Player* player)
 	: m_playerIssuer(player), type(type) {}
@@ -109,9 +111,7 @@ std::ostream& operator<<(std::ostream& os, Order& order)
 // Destructor
 
 Order::~Order()
-{
-	std::cout << "Order deconstructor was called!" << std::endl;
-};
+{};
 
 // --------------- OrdersList class ---------------
 
@@ -128,7 +128,38 @@ OrdersList::OrdersList(OrdersList& other)
 		this->orders.clear();
 		for (int i = 0; i < other.orders.size(); i++)
 		{
-			this->orders[i] = other.orders[i];
+
+			// Create an Order object based on the orderType
+			if (other.orders[i]->type == "Deploy") 
+			{
+				this->orders.push_back(new Deploy(*dynamic_cast<Deploy*>(other.orders[i])));
+			}
+
+			else if (other.orders[i]->type == "Advance")
+			{
+				this->orders.push_back(new Advance(*dynamic_cast<Advance*>(other.orders[i])));
+			}
+
+			else if (other.orders[i]->type == "Bomb")
+			{
+				this->orders.push_back(new Bomb(*dynamic_cast<Bomb*>(other.orders[i])));
+			}
+
+			else if (other.orders[i]->type == "Blockade")
+			{
+				this->orders.push_back(new Blockade(*dynamic_cast<Blockade*>(other.orders[i])));
+			}
+
+			else if (other.orders[i]->type == "Airlift")
+			{
+				this->orders.push_back(new Airlift(*dynamic_cast<Airlift*>(other.orders[i])));
+			}
+
+			else if (other.orders[i]->type == "Negotiate")
+			{
+				this->orders.push_back(new Negotiate(*dynamic_cast<Negotiate*>(other.orders[i])));
+			}
+
 		}
 	}
 }
@@ -165,14 +196,14 @@ void OrdersList::move(Order& order, const int target_index)
 	}
 
 	// Check if the array has one element
-	else if (this->orders.size() < 2)
+	if (this->orders.size() < 2)
 	{
 		std::cout << "Order List only has one element! " << std::endl;
 		return;
 	}
 
 	// Check if target index is out of bound of the array
-	else if (target_index > this->orders.size())
+	if (target_index >= this->orders.capacity())
 	{
 		std::cout << "Index target is out of bounds of the OrdersList " << std::endl;
 		return;
@@ -204,10 +235,9 @@ void OrdersList::print()
 
 	for (int i = 0; i < n; i++)
 	{
-		std::cout << i << " - " << *this->orders[i];
+		std::cout << i << " - " << orders[i]->type << std::endl;
 	}
 
-	std::cout << "\n";
 }
 
 // Destructor
@@ -227,7 +257,7 @@ OrdersList::~OrdersList()
 // Constructors
 
 Deploy::Deploy()
-	: Order("Deploy", NULL), m_targetTerritory(NULL), m_numOfArmyUnits(new int(0)) {}
+	: Order("Deploy", nullptr), m_targetTerritory(nullptr), m_numOfArmyUnits(new int(0)) {}
 
 Deploy::Deploy(Player* player, Territory* target, int* value)
 	: Order("Deploy", player), m_targetTerritory(target), m_numOfArmyUnits(value) {}
@@ -237,13 +267,14 @@ Deploy::Deploy(Deploy& other)
 
 Deploy::~Deploy()
 {
-	std::cout << "Deploy deconstructor was called!" << std::endl;
+	std::cout << this->type << " deconstructor was called!" << std::endl;
 }
 
 // Deploy validate checks if source territory and target territory.
 bool Deploy::validate()
 {
-	std::cout << "Validating " << this->type << " Order.." << std::endl;
+	if (this->getIssuingPlayer() == nullptr) { return false; }
+
 	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
 
 	if (this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory)) return true;
@@ -258,14 +289,12 @@ void Deploy::execute()
 	if (validate())
 	{
 		std::cout << "Executing Deploy Order.." << std::endl;
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 		this->print();
-
-
-		/// Add armies to territory
 	}	
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Target territory does not belongs to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << "Invalid " << this->type << " - Target territory does not belongs to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
 		std::cout << std::endl;
 	}
 
@@ -273,10 +302,13 @@ void Deploy::execute()
 
 void Deploy::print()
 {
+	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
 	std::cout << "-- Deploy Order -- " << std::endl;
 	std::string name = m_targetTerritory->getName();
 	std::cout << "Target Territory: " << name;
-	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << " - Deployed number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << " - Territory number of armies: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 	std::cout << std::endl;
 
 }
@@ -286,22 +318,18 @@ void Deploy::print()
 // Constructors
 
 Advance::Advance()
-	: Order("Advance", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)) {};
+	: Order("Advance", nullptr), m_targetTerritory(nullptr), m_sourceTerritory(nullptr), m_numOfArmyUnits(new int(0)), m_deckRef(nullptr), m_gameEngineRef(nullptr) {};
 
-Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value)
-	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),
-	m_numOfArmyUnits(value) {};
+Advance::Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck, GameEngine* gameEngine)
+	: Order("Advance", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory),	m_numOfArmyUnits(value), m_deckRef(deck), m_gameEngineRef(gameEngine) {};
 
 Advance::Advance(Advance& other)
-	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), 
-	m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)) {}
+	: Order("Advance", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_sourceTerritory(other.m_sourceTerritory), m_numOfArmyUnits(new int(*other.m_numOfArmyUnits)), m_deckRef(other.m_deckRef), m_gameEngineRef(other.m_gameEngineRef) {}
 
 // Advance validate checks if source territory and target territory.  
 bool Advance::validate()
 {
-	std::cout << "Validating " << this->type << " Order.." << std::endl;
-
-	if (!this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
+	if (this->getIssuingPlayer() == nullptr || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
 
 	// Check that target territory is adjacent to a player owned territory
 	for (Territory* adjacentTerritory : m_targetTerritory->getAdjacentTerritories())
@@ -322,25 +350,129 @@ void Advance::execute()
 		// Move units
 		if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
 		{
-
+			m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+			m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+			std::cout << "-- Move Advance order --" << std::endl;
+			this->print();
 		}
 
 		// Simulate attack
 		else
 		{
-			float attackerAdvantage = 0.6;
-			float defenderAdvantage = 0.7;
+			bool attackersTurn = true;
+			bool attackersWon = true;
+			Player* enemyPlayer = nullptr;
 
 
+			std::vector<Player*> players = m_gameEngineRef->getPlayers();
+			for (Player* player : players)
+			{
+				for (Territory* territory : player->getOwnedTerritories())
+				{
+					enemyPlayer = player;
+				}
+			}
+
+			bool canAttack = true;
+
+			// check if target enemy player is in the issuing Player's negioated players list
+			for (Player* negioatedPlayer : this->getIssuingPlayer()->getNegotiatedPlayers())
+			{
+				if (enemyPlayer == negioatedPlayer)
+				{
+					canAttack = false;
+				}
+			}
+
+			if (canAttack)
+			{
+				std::cout << "-- Attack Advance order --" << std::endl;
+
+				bool attackersTurn = true;
+
+				while (*m_numOfArmyUnits != 0 && m_targetTerritory->getNumberOfArmies() != 0)
+				{
+
+					int roll;
+					switch (attackersTurn)
+					{
+						// attacker's turn
+					case true:
+						roll = rand() % 10 + 1;
+						if (roll > 6) // Attacker has 60% chance of kill a unit
+						{
+							*m_numOfArmyUnits -= 1;
+							if (*m_numOfArmyUnits == 0) { attackersWon = false; }
+						}
+						attackersTurn = false;
+						break;
+
+						// defender's turn
+					case false:
+						roll = rand() % 10 + 1;
+						if (roll > 7) // Defender has 70% chance of kill a unit
+						{
+							m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() - 1);
+							if (m_targetTerritory->getNumberOfArmies() == 0) { attackersWon = true; }
+							
+						}
+						attackersTurn = true;
+						break;
+					}
+
+					std::cout << m_targetTerritory->getName() << " : " << m_targetTerritory->getNumberOfArmies() << std::endl;
+					std::cout << "Attacker armies" << " : " << *m_numOfArmyUnits << std::endl;
+				}
+
+				if (attackersWon == true)
+				{
+					std::cout << "-- Attacker Won --" << std::endl;
+
+					// transfer ownership
+					std::vector<Player*> players = m_gameEngineRef->getPlayers();
+					for (Player* player : players)
+					{
+						for (Territory* territory : player->getOwnedTerritories())
+						{
+							if (territory == m_targetTerritory)
+							{
+								player->removeTerritory(territory);
+								this->getIssuingPlayer()->addTerritory(territory);
+								territory->setNumberOfArmies(*m_numOfArmyUnits);
+							}
+						}
+					}
+
+					// Check if the issuing player has drawn a card this turn after taking an territory			
+					if (!this->getIssuingPlayer()->hasDrawn)
+					{
+						m_deckRef->draw(this->getIssuingPlayer()->getHand());
+						this->getIssuingPlayer()->hasDrawn = true;
+					}
+
+
+				}
+
+				else std::cout << "-- Attacker Lost --" << std::endl;
+
+				this->print();
+			}
+
+			else
+			{
+				std::cout << "Invalid " << this->type << " - Enemy player is a negiaoted player" << std::endl;
+				std::cout << std::endl;
+			}
+			
 		}
-
-		this->print();
 		
 	}
 
 	else
 	{
-		/// TODO
+		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerID() 
+			<< "or Source and Target territories are not adjacent territories" << std::endl;
+		std::cout << std::endl;
 
 	}
 	
@@ -348,6 +480,8 @@ void Advance::execute()
 
 void Advance::print()
 {
+	//if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
 	std::cout << " -- " << this->type << " Order -- " << std::endl;
 	std::string target = m_targetTerritory->getName();
 	std::string source = m_sourceTerritory->getName();
@@ -357,14 +491,13 @@ void Advance::print()
 	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
 	std::cout << std::endl;
 
-
 }
 
 // Destructor
 
 Advance::~Advance()
 {
-
+	std::cout << this->type << " deconstructor was called!" << std::endl;
 }
 
 // --------------- Bomb class ---------------
@@ -372,7 +505,7 @@ Advance::~Advance()
 // Constructors
 
 Bomb::Bomb()
-	: Order("Bomb", NULL), m_targetTerritory(NULL) {}
+	: Order("Bomb", nullptr), m_targetTerritory(nullptr) {}
 
 Bomb::Bomb(Player* player, Territory* targetTerritory)
 	: Order("Bomb", player), m_targetTerritory(targetTerritory) {}
@@ -383,7 +516,7 @@ Bomb::Bomb(Bomb& other)
 // Bomb validate checks if the target territory is validate
 bool Bomb::validate()
 {
-	std::cout << "Validating " << this->type << " order..." << std::endl;
+	if (this->getIssuingPlayer() == nullptr) { return false; }
 
 	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
 
@@ -408,13 +541,21 @@ void Bomb::execute()
 	if (this->validate())
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
-		this->print();
+
+		std::cout << " Target Territory armies before bombing: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 
 		// Reduce target territory armies by half
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() / 2);
+
+		std::cout << " Target Territory armies after bombing: " << m_targetTerritory->getNumberOfArmies() << std::endl;
+
+		this->print();
+
+		
 	}
 	else
 	{
-		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  belongs to " << this->getIssuingPlayer()->getPlayerName()
+		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  belongs to " << this->getIssuingPlayer()->getPlayerID()
 			<< " or " << m_targetTerritory->getName() << " territory is not adjacent any to player owned territories" << std::endl;
 
 		std::cout << std::endl;
@@ -424,6 +565,10 @@ void Bomb::execute()
 
 void Bomb::print()
 {
+	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
+
+
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
 	std::string target = m_targetTerritory->getName();
 
@@ -434,25 +579,28 @@ void Bomb::print()
 
 // Destructor
 
-Bomb::~Bomb() {}
+Bomb::~Bomb() 
+{
+	std::cout << this->type << " deconstructor was called!" << std::endl;
+}
 
 // --------------- Blockade class ---------------
 
 // Constructors
 
 Blockade::Blockade()
-	: Order("Blockade", NULL), m_targetTerritory(NULL) {}
+	: Order("Blockade", nullptr), m_targetTerritory(nullptr), m_gameEngineRef(nullptr) {}
 
-Blockade::Blockade(Player* player, Territory* targetTerritory)
-	: Order("Blockade", player), m_targetTerritory(targetTerritory) {}
+Blockade::Blockade(Player* player, Territory* targetTerritory, GameEngine* gameEngine)
+	: Order("Blockade", player), m_targetTerritory(targetTerritory), m_gameEngineRef(gameEngine) {}
 
 Blockade::Blockade(Blockade& other)
-	: Order("Blockade", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory) {}
+	: Order("Blockade", other.getIssuingPlayer()), m_targetTerritory(other.m_targetTerritory), m_gameEngineRef(other.m_gameEngineRef) {}
 
 // Blockade validate checks if the target territory is validate
 bool Blockade::validate()
 {
-	std::cout << "Validating " << this->type << " order..." << std::endl;
+	if (this->getIssuingPlayer() == nullptr) { return false; }
 
 	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
 
@@ -467,36 +615,52 @@ void Blockade::execute()
 	if (this->validate())
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
-		this->print();
+		std::cout << " Target Territory armies before blockade: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 
-		// Double target territory armies and transfer the ownership of the territory to the Neutral player.
+		// Double target territory armies and transfer the ownership of the territory to the Neutral player
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() * 2);
+
+		std::cout << " Target Territory armies after blockade: " << m_targetTerritory->getNumberOfArmies() << std::endl;
+
+		this->getIssuingPlayer()->removeTerritory(m_targetTerritory);
+
+		// Give the neutral player the territory
+		m_gameEngineRef->neutralPlayer->addTerritory(m_targetTerritory);
+
+		this->print();
 	}
 	else
 	{
-		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  does not belongs to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << "Invalid " << this->type << " - " << m_targetTerritory->getName() << " -  does not belongs to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
 		std::cout << std::endl;
 	}
 }
 
 void Blockade::print()
 {
+	//if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
 	std::string target = m_targetTerritory->getName();
 	std::cout << " Target Territory: " << target << std::endl;
+	std::cout << " Target Territory Armies: " << m_targetTerritory->getNumberOfArmies() << std::endl;
 
 	std::cout << std::endl;
 }
 
 // Destructor
 
-Blockade::~Blockade() {}
+Blockade::~Blockade() 
+{
+	std::cout << this->type << " deconstructor was called!" << std::endl;
+}
 
 // --------------- Airlift class ---------------
 
 // Constructors
 
 Airlift::Airlift() 
-	: Order("Airlift", NULL), m_targetTerritory(NULL), m_sourceTerritory(NULL), m_numOfArmyUnits(new int(0)) {};
+	: Order("Airlift", nullptr), m_targetTerritory(nullptr), m_sourceTerritory(nullptr), m_numOfArmyUnits(new int(0)) {};
 
 Airlift::Airlift(Player* player, Territory* sourceTerritory, Territory* targetTerritory, int* value)
 	: Order("Airlift", player), m_targetTerritory(targetTerritory), m_sourceTerritory(sourceTerritory), m_numOfArmyUnits(value) {};
@@ -508,7 +672,7 @@ Airlift::Airlift(Airlift& other)
 // Airlift validate checks if the number of armies, target, source territory is validate
 bool Airlift::validate()
 {
-	std::cout << "Validating " << this->type << " Order.." << std::endl;
+	if (this->getIssuingPlayer() == nullptr) { return false; }
 
 	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
 	
@@ -523,12 +687,18 @@ void Airlift::execute()
 	if (validate())
 	{
 		std::cout << "Executing " << this->type << " Order.." << std::endl;
-		this->print();
+
 		// Move armies to target territory
+		m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+
+		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+
+		this->print();
+
 	}
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Target or Source territory does not belong to " << this->getIssuingPlayer()->getPlayerName() << std::endl;
+		std::cout << "Invalid " << this->type << " - Target or Source territory does not belong to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
 		std::cout << std::endl;
 	}
 
@@ -536,6 +706,7 @@ void Airlift::execute()
 
 void Airlift::print()
 {
+	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
 
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
 	std::string target = m_targetTerritory->getName();
@@ -543,21 +714,24 @@ void Airlift::print()
 
 	std::cout << "Source Territory: " << source << " ----> ";
 	std::cout << " Target Territory: " << target;
-	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
+	std::cout << " - Target Territory Number of armies: " << *m_numOfArmyUnits << std::endl;
 
 	std::cout << std::endl;
 }
 
 // Destructor
 
-Airlift::~Airlift() {}
+Airlift::~Airlift() 
+{
+	std::cout << this->type << " deconstructor was called!" << std::endl;
+}
 
 // --------------- Negotiate class ---------------
 
 // Constructors
 
 Negotiate::Negotiate()
-	: Order("Negotiate", NULL), m_targetPlayer(NULL) {}
+	: Order("Negotiate", nullptr), m_targetPlayer(nullptr) {}
 
 Negotiate::Negotiate(Player* player, Player* targetPlayer)
 	: Order("Negotiate", player), m_targetPlayer(targetPlayer) {}
@@ -568,7 +742,7 @@ Negotiate::Negotiate(Negotiate& other)
 // Negotiate validate checks if the target player is validate
 bool Negotiate::validate()
 {
-	std::cout << "Validating " << this->type << " Order.." << std::endl;
+	if (this->getIssuingPlayer() == nullptr) { return false; }
 
 	if (m_targetPlayer != this->getIssuingPlayer()) return true;
 	
@@ -589,20 +763,25 @@ void Negotiate::execute()
 
 	else
 	{
-		std::cout << "Invalid " << this->type << " : " << m_targetPlayer->getPlayerName() << " is the issuing player" << std::endl;
+		std::cout << "Invalid " << this->type << " : " << m_targetPlayer->getPlayerID() << " is the issuing player" << std::endl;
 		std::cout << std::endl;
 	}
 }
 
 void Negotiate::print()
 {
+	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
+
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
-	std::cout << " Target Player: " << m_targetPlayer->getPlayerName() << std::endl;
+	std::cout << " Target Player: " << m_targetPlayer->getPlayerID() << std::endl;
 
 	std::cout << std::endl;
 }
 
 // Destructor
 
-Negotiate::~Negotiate() {}
+Negotiate::~Negotiate() 
+{
+	std::cout << this->type << " deconstructor was called!" << std::endl;
+}
 

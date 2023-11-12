@@ -49,19 +49,19 @@ public:
 class Continent {
 private:
     //Attributes : number of armies, name of continent, vector of territories linked to the continent
-    int* numberOfArmies;
+    int* bonus;
     std::string* name;
     std::vector<Territory*> territories;
 
 public:
     //Constructor
-    Continent(const std::string& n, int numOfArmies);
+    Continent(const std::string& n, int bonus);
     //Setter : add territritory that belongs to the continent
     void addTerritory(Territory* territory);
 
     //Basic getters
     const std::vector<Territory*>& getTerritories() const;
-    int getNumberOfArmies() const;
+    int getBonus() const;
     std::string getName() const;
 
     //Destructor

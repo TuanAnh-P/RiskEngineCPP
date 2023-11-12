@@ -107,17 +107,17 @@ std::ostream& operator<<(std::ostream& out, const Territory& territory) {
 
 //-------------------------------Continent-----------------------------
 // Constructor for Continent: Initializes the name and the number of armies.
-Continent::Continent(const std::string& n ,int numOfArmies){
+Continent::Continent(const std::string& n, int bonus) {
     name = new std::string(n);
-    numberOfArmies = new int(numOfArmies);
+    this->bonus = new int(bonus);
 }
 
 // Destructor for Continent: Deletes the dynamically allocated members. We should not delete territories of a continent when deleting it.
 Continent::~Continent(){
     delete name;
-    delete numberOfArmies;
+    delete bonus;
     name = nullptr;
-    numberOfArmies = nullptr;
+    bonus = nullptr;
     /*for (Territory* territory : territories){
         delete territory;
     }*/
@@ -126,7 +126,7 @@ Continent::~Continent(){
 //Copy constructor. Just copying the pointers of territorries. Not the territories themselves as it doesn't make sense.
 Continent::Continent(const Continent& other) {
     name = new std::string(*(other.name));
-    numberOfArmies = new int(*(other.numberOfArmies));
+    bonus = new int(*(other.bonus));
     territories = other.territories;
 }
 
@@ -140,8 +140,8 @@ void Continent::addTerritory(Territory* territory) {
 const std::vector<Territory*>& Continent::getTerritories() const {
     return territories;
 }
-int Continent::getNumberOfArmies() const {
-    return *numberOfArmies;
+int Continent::getBonus() const {
+    return *bonus;
 }
 std::string Continent::getName() const {
     return *name;
@@ -151,16 +151,16 @@ std::string Continent::getName() const {
 Continent& Continent::operator=(const Continent& other) {
     if (this == &other) return *this;
     delete name;
-    delete numberOfArmies;
+    delete bonus;
     name = new std::string(*(other.name));
-    numberOfArmies = new int(*(other.numberOfArmies));
+    bonus = new int(*(other.bonus));
     territories = other.territories;
     return *this;
 }
 
 //Stream insertion Operator
 std::ostream& operator<<(std::ostream& out, const Continent& continent) {
-    out << "Continent Name: " << continent.getName() << ", Number of Armies: " << continent.getNumberOfArmies();
+    out << "Continent Name: " << continent.getName() << ", Number of Armies: " << continent.getBonus();
     return out;
 }
 

@@ -2,6 +2,7 @@
 #include "Orders.h"
 #include "Player.h"
 #include "Cards.h"
+#include "GameEngine.h"
 #include "MapLoader.h"
 #include <iostream>
 
@@ -11,139 +12,139 @@
 
 void testOrdersLists()
 {
+	// Set up map data
 	std::cout << std::endl;
 	LOG("-------- Order Lists Test Setup --------")
-	std::cout << std::endl;
+		std::cout << std::endl;
+	std::vector<std::string> mapsToLoad = { "./maps/3D.map" };
+	std::vector<Map*> validMaps;
 
-	Territory* test_territory = new Territory("Test", 0, 0);
+	MapLoader loader(mapsToLoad[0]);
+	Map* loadedMap = loader.loadMap();
+
+	if (loadedMap->isValid()) {
+		std::cout << "The map was valid" << std::endl;
+		validMaps.push_back(loadedMap);
+	}
+	else {
+		std::cout << "The map was invalid" << std::endl;
+		delete loadedMap;
+		std::cout << "----------------------------------------------------------------------------------" << std::endl;
+		std::cout << "----------------------------------------------------------------------------------" << std::endl;
+		return;
+	}
+
+	// Setup Game Engine
+	GameEngine* gameEngine = new GameEngine();
+	gameEngine->neutralPlayer = new Player("Neutral Player");
+
+	// Setup player data
+	Player* p1 = new Player("Test_Player01");
+	Player* p2 = new Player("Test_Player02");
+	Player* p3 = new Player("NEUTRAL");
+
+	gameEngine->players.push_back(p1);
+	gameEngine->players.push_back(p2);
+	gameEngine->players.push_back(p3);
+
+	Deck* deck1 = new Deck();
+
+	const std::vector<Continent*> continents = loadedMap->getContinents();
+	const std::vector<Territory*> c_territories = continents[0]->getTerritories();
+	const std::vector<Territory*> t_territories = continents[1]->getTerritories();
+
 	int* armies = new int(10);
 
-	// Creates each order type and adds them to a dynamic array
-	Deploy* deploy_order = new Deploy(new Player("Colton"), test_territory, armies);
-	Advance* advance_order = new Advance();
-	Bomb* bomb_order = new Bomb();
-	Blockade* blockade_order = new Blockade();
-	Airlift* airlift_order = new Airlift();
-	Negotiate* negotiate_order = new Negotiate();
+	// Player 1
+	p1->addTerritory(c_territories[0]);
+	p1->addTerritory(c_territories[1]);
 
-	std::cout << std::endl;
-	LOG("Start Test\n ----Poly (Virtual destructor) ----");
+	// Player 2
+	p2->addTerritory(c_territories[3]);
+
+	// Neutral player
+	p3->addTerritory(c_territories[4]);
+	p3->addTerritory(c_territories[5]);
+	p3->addTerritory(c_territories[6]);
+
+	// Issue orders
+	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
+	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
+	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
+	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
+	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
+
+
+	LOG("\n Start Test ---- Order COPY Constructors---- \n");
 	{
-		Order* order = new Deploy();
-		DELETE(order);
 
+		Deploy deploy_order2(*dynamic_cast<Deploy*>(p1->getOrdersList().orders[0]));
+		deploy_order2.print();
+
+		Advance advance_order2(*dynamic_cast<Advance*>(p1->getOrdersList().orders[1]));
+		advance_order2.print();
+
+		Airlift airlift_order2(*dynamic_cast<Airlift*>(p1->getOrdersList().orders[2]));
+		airlift_order2.print();
+
+		Bomb bomb_order2(*dynamic_cast<Bomb*>(p1->getOrdersList().orders[3]));
+		bomb_order2.print();
+
+		Blockade blockade_order2(*dynamic_cast<Blockade*>(p1->getOrdersList().orders[4]));
+		blockade_order2.print();
+
+		Negotiate negotiate_order2(*dynamic_cast<Negotiate*>(p1->getOrdersList().orders[5]));
+		negotiate_order2.print();
+
+		LOG("Copies fall out of scope, call deconstructors!\n")
+	}
+
+
+	LOG("\n Start test ---- OrderList Copy -----\n");
+
+	OrdersList ordersList(p1->getOrdersList());
+
+	std::cout << "Original OrderList" << std::endl;
+	int orderList1Size = p1->getOrdersList().orders.size();
+
+	for (int i = 0; i < orderList1Size; i++)
+	{
+		std::cout << p1->getOrdersList().orders[i]->type << " - " << &p1->getOrdersList().orders[i] << std::endl;
 	}
 	std::cout << std::endl;
 
-
-	LOG("Start Test\n ----COPY Constructors----");
-	// Test Copy Constructors
+	int orderList2Size = ordersList.orders.size();
+	std::cout << "Copied OrderList" << std::endl;
+	for (int i = 0; i < orderList2Size; i++)
 	{
-		Deploy* deploy_order2 = new Deploy(*deploy_order);
-		//Advance* advance_order2(advance_order);
-		//Bomb* bomb_order2(bomb_order);
-		//Blockade* blockade_order2(blockade_order);
-		//Airlift* airlift_order2(airlift_order);
-		//Negotiate* negotiate_order2(negotiate_order);
-		//DELETE(deploy_order2);
+		std::cout << ordersList.orders[i]->type << " - " << &ordersList.orders[i] << std::endl;
 	}
-
-	// Create OrdersList and push orders
-	OrdersList* ordersList = new OrdersList;
-	ordersList->orders.push_back(deploy_order);
-	ordersList->orders.push_back(advance_order);
-	ordersList->orders.push_back(bomb_order);
-	ordersList->orders.push_back(blockade_order);
-	ordersList->orders.push_back(airlift_order);
-	ordersList->orders.push_back(negotiate_order);
-
-	OrdersList* ordersList2(ordersList);
-	
-
-	LOG("Start Test\n ----BEFORE MOVE----");
-	ordersList->print();
-
-	LOG("---- AFTER MOVE ----");
-	ordersList->move(*deploy_order, 2);
-
-	// Display Order list
-	ordersList->print();
-
-	LOG("---- AFTER Remove ----");
-	ordersList->remove(*deploy_order);
-	ordersList->print(); 
-
-	//LOG("---- Print copy before remove ----");
-	//ordersList2->print();
-
-	// resolve dangling pointer
-	DELETE(deploy_order);
-
-	// Display Order list
-	ordersList->print();
-
-	/*for(Order* order : ordersList->orders)
-	{
-		if (order->type == "Advance")
-		{
-			Advance* advance = dynamic_cast<Advance*>(order);
-			advance->execute();
-		}
-
-		else if (order->type == "Deploy")
-		{
-			Deploy* temp = dynamic_cast<Deploy*>(order);
-			temp->execute();
-		}
-
-		else if (order->type == "Bomb")
-		{
-			Bomb* temp = dynamic_cast<Bomb*>(order);
-			temp->execute();
-		}
-
-		else if (order->type == "Bomb")
-		{
-			Bomb* temp = dynamic_cast<Bomb*>(order);
-			temp->execute();
-		}
-
-		else if (order->type == "Blockade")
-		{
-			Blockade* temp = dynamic_cast<Blockade*>(order);
-			temp->execute();
-		}
-
-		else if (order->type == "Airlift")
-		{
-			Airlift* temp = dynamic_cast<Airlift*>(order);
-			temp->execute();
-		}
-
-		else if (order->type == "Negotiate")
-		{
-			Negotiate* temp = dynamic_cast<Negotiate*>(order);
-			temp->execute();
-		}
-
-		else
-		{
-			std::cout << "Invalid Order!! Cannot validate / execute!" << std::endl;
-		}
-
-		
-	}*/
-
 	std::cout << std::endl;
-	LOG("---- DELETE Orders ----");
-	std::cout << std::endl;
-	DELETE(test_territory);
-	DELETE(ordersList);
-	
+
+	LOG("\n Start Test ---- OrderList Methods ----- \n ----BEFORE MOVE----");
+	ordersList.print();
+
+	LOG("\n ---- AFTER MOVE ----");
+	ordersList.move(*ordersList.orders[0], 2);
+	ordersList.print();
+
+	LOG("\n ---- AFTER REMOVE ----");
+	ordersList.remove(*ordersList.orders[0]);
+	ordersList.print();
+
+	/// Clean Players
+	LOG("\n CLEAN ---- Delete Players / OrderList -----\n");
+	DELETE(p1);
+	DELETE(p2);
+	DELETE(p3);
+	LOG("\n CLEAN ---- Copy OrderList -----\n");
+
 }
 
 void testOrderExecution()
 {
+	// Set up map data
 	std::cout << std::endl;
 	LOG("-------- Order Execution Test Setup --------")
 	std::cout << std::endl;
@@ -164,11 +165,22 @@ void testOrderExecution()
 		std::cout << "----------------------------------------------------------------------------------" << std::endl;
 		return;
 	}
-	
-	
+
+	// Set up Game Engine
+	GameEngine* gameEngine = new GameEngine();
+	gameEngine->neutralPlayer = new Player("Neutral Player");
+
+	// Set up player data
 	Player* p1 = new Player("Test_Player01");
 	Player* p2 = new Player("Test_Player02");
-	Player* p3 = new Player("NEUTRAL");
+
+	gameEngine->players.push_back(p1);
+	gameEngine->players.push_back(p2);
+
+	Deck* deck1 = new Deck();
+
+	int* armies = new int(10);
+	int* armies2 = new int(10);
 
 	const std::vector<Continent*> continents = loadedMap->getContinents();
 	const std::vector<Territory*> c_territories = continents[0]->getTerritories();
@@ -179,48 +191,57 @@ void testOrderExecution()
 	p1->addTerritory(c_territories[1]);
 
 	// Player 2
+	p2->addTerritory(c_territories[2]);
 	p2->addTerritory(c_territories[3]);
 
-	// Neutral player
-	p3->addTerritory(c_territories[4]);
-	p3->addTerritory(c_territories[5]);
-	p3->addTerritory(c_territories[6]);
 
+//	// Issue orders
+	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
+	p2->issueOrder("Deploy", nullptr, p2->getOwnedTerritories()[0], armies2, nullptr, nullptr, nullptr);
 
-	// Issue orders
-	p1->issueOrder("Deploy");
-	p1->issueOrder("Advance");
-	p1->issueOrder("Airlift");
-	p1->issueOrder("Bomb"); // Need input to validate (at the moment will always be invalid)
-	p1->issueOrder("Blockade");
-	p1->issueOrder("Negotiate");
-
-
-	// Execute orders 
-	int issueOrderListLength = p1->getOrdersList().orders.size();
-
+	// Execute orders
 	std::cout << std::endl;
-	LOG("-------- Order Execution --------")
-	std::cout << std::endl;
-	for (size_t i = 0; i < issueOrderListLength; i++)
+	for (size_t i = 0; i < p1->getOrdersList().orders.size(); i++)
 	{
 		p1->getOrdersList().orders[i]->execute();
 	}
 
+	// Execute orders
+	std::cout << std::endl;
+	for (size_t i = 0; i < p2->getOrdersList().orders.size(); i++)
+	{
+		p2->getOrdersList().orders[i]->execute();
+	}
 
-	
+	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
+	p1->issueOrder("Bomb", nullptr, p2->getOwnedTerritories()[0], nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
+	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
+	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
 
-	
+	// Execute orders
+	std::cout << std::endl;
+	LOG("-------- Order Execution --------")
+	std::cout << std::endl;
+	for (size_t i = 0; i < p1->getOrdersList().orders.size(); i++)
+	{
+		p1->getOrdersList().orders[i]->execute();
+	}
 
-
-	
-	
-
-
-	
-
+	/// Clean Players
+	DELETE(p1);
+	DELETE(p2);
+	DELETE(armies);
+	DELETE(armies2);
 
 }
+
+//int main()
+//{
+//	testOrdersLists();
+//	testOrderExecution();
+//	return 0;
+//}
 
 
 

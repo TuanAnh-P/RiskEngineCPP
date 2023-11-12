@@ -3,8 +3,11 @@
 #include <vector>
 #include "map.h"
 
+
 //Forward declaration
 class Player;
+class Deck;
+class GameEngine;
 
 
 // Order base class 
@@ -29,12 +32,13 @@ public:
 	virtual ~Order();
 
 	virtual void execute() = 0;
+	virtual void print() = 0;
 
 protected:
 
 	// Derived class methods
 	virtual bool validate();
-	virtual void print() = 0;
+
 	Player* getIssuingPlayer();
 	void setIssuingPlayer(Player* player);
 
@@ -110,7 +114,7 @@ public:
 	Advance(Advance& other);
 
 	// Parameter Constructor
-	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value);
+	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck, GameEngine* gameEngine);
 
 	// Class methods
 	void execute();
@@ -124,6 +128,8 @@ private:
 	int* m_numOfArmyUnits;
 	Territory* m_sourceTerritory;
 	Territory* m_targetTerritory;
+	Deck* m_deckRef;
+	GameEngine* m_gameEngineRef;
 
 	//Methods
 	bool validate();
@@ -165,7 +171,7 @@ public:
 	// Constructor
 	Blockade();
 
-	Blockade(Player* player, Territory* tagretTerritory);
+	Blockade(Player* player, Territory* tagretTerritory, GameEngine* gameEngineRef);
 
 	//Copy Constructor
 	Blockade(Blockade& other);
@@ -178,6 +184,7 @@ public:
 
 private: 
 	Territory* m_targetTerritory;
+	GameEngine* m_gameEngineRef;
 	bool validate();
 
 };
