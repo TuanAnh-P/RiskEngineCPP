@@ -64,7 +64,7 @@ void testLoggingObserver(){
     delete gameEngine;
     delete logObserver;
 
-    ILoggable* log;
+    ILoggable* log = nullptr;
     Subject* sub = new Subject();
     OrdersList* proof1 = dynamic_cast<OrdersList*>(log);
     OrdersList* proof2 = dynamic_cast<OrdersList*>(sub);
