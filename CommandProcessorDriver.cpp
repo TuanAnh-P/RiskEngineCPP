@@ -15,7 +15,7 @@ void testCommandProcessor(int argc, char* argv[]) {
 
     string input = argv[1];
 
-    GameEngine* game;
+    GameEngine* game = nullptr;
 
     if (input == "-file") {
         // Read commands from a file
