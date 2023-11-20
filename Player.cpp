@@ -1,5 +1,6 @@
 #include "Player.h"
 
+
 // Constructor
 Player::Player(const std::string& playerID)
         : playerID(new std::string(playerID)), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0)) {
@@ -40,6 +41,7 @@ Player& Player::operator=(const Player& other) {
         delete hand;
         delete ordersList;
         delete negotiatedPlayers;
+        delete strategy;
 
         hand = new Hand(*other.hand);
         ordersList = new OrdersList(*other.ordersList);
@@ -269,6 +271,12 @@ void Player::addToNegotiatedPlayers(Player* player)
 {
     if (player != NULL && player != this) this->negotiatedPlayers->push_back(player);
     else std::cout << "NULL player pointer or passing self into parameters, cannot add player to negotiated players' list!" << std::endl;
+}
+
+// Get the player strategy
+const PlayerStrategy* Player::getStrategy() const
+{
+    return strategy;
 }
 
 // Stream insertion operator

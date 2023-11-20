@@ -8,6 +8,8 @@
 #include "map.h"    // Header for the Territory class
 #include "Cards.h"  // Header for the Cards class
 #include "Orders.h" // Header for the Orders class
+#include "PlayerStrategies.h"
+
 
 class Player {
 public:
@@ -56,6 +58,10 @@ public:
     void addReinforcementPool(const int& amount);
     void removeReinforcementPool(const int& amount);
 
+    // Methods realted to player strategy
+    const PlayerStrategy* getStrategy() const;
+
+
 private:
     // Attributes related to a Player's instance
     std::string* playerID;          // The name of the player
@@ -64,4 +70,5 @@ private:
     OrdersList* ordersList;          // The list of orders issued by the player
     std::vector<Player*>* negotiatedPlayers; // The list of negotiated players that the player cannot attack
     int* reinforcementPool;
+    PlayerStrategy* strategy; // The player's strategy 
 };
