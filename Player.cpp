@@ -47,6 +47,32 @@ Player::Player(const Player& other)
     for (const Player* player : *other.negotiatedPlayers) {
         negotiatedPlayers->push_back(new Player(*player));
     }
+
+    // Deep copy strategy 
+    if (m_strategy != nullptr)
+        delete m_strategy;
+    StrategyType strategyType = other.m_strategy->getStrategyType();
+
+    switch (strategyType)
+    {
+    case StrategyType::HumanPlayer:
+        m_strategy = new HumanPlayerStrategy();
+        break;
+    case StrategyType::AggressivePlayer:
+        m_strategy = new AggressivePlayerStrategy();
+        break;
+    case StrategyType::BenevolentPlayer:
+        m_strategy = new BenevolentPlayerStrategy();
+        break;
+    case StrategyType::NeutralPlayer:
+        m_strategy = new NeutralPlayerStrategy();
+        break;
+    case StrategyType::CheaterPlayer:
+        m_strategy = new CheaterPlayerStrategy();
+        break;
+    default:
+        break;
+    }
 }
 
 // Assignment operator
@@ -63,14 +89,38 @@ Player& Player::operator=(const Player& other) {
             ownedTerritories.push_back(new Territory(*territory));
         }
 
-        // Deep copy hand and orders list
+
+         // Deep copy hand and orders list
         delete hand;
         delete ordersList;
         delete negotiatedPlayers;
 
+        // Deep copy strategy 
         if(m_strategy != nullptr)
-        delete m_strategy;
+            delete m_strategy;
+        StrategyType strategyType = other.m_strategy->getStrategyType();
 
+        switch (strategyType)
+        {
+        case StrategyType::HumanPlayer:
+            m_strategy = new HumanPlayerStrategy();
+            break;
+        case StrategyType::AggressivePlayer:
+            m_strategy = new AggressivePlayerStrategy();
+            break;
+        case StrategyType::BenevolentPlayer:
+            m_strategy = new BenevolentPlayerStrategy();
+            break;
+        case StrategyType::NeutralPlayer:
+            m_strategy = new NeutralPlayerStrategy();
+            break;
+        case StrategyType::CheaterPlayer:
+            m_strategy = new CheaterPlayerStrategy();
+            break;
+        default:
+            break;
+        }
+       
         hand = new Hand(*other.hand);
         ordersList = new OrdersList(*other.ordersList);
         negotiatedPlayers = new std::vector<Player*>(*other.negotiatedPlayers);

@@ -2,11 +2,24 @@
 
 // --------------- PlayerStrategy class ---------------
 
-const StrategyType PlayerStrategy::getStrategyType()
+// Default Constructor
+PlayerStrategy::PlayerStrategy()
+{}
+
+// Copy Constructor
+PlayerStrategy::PlayerStrategy(PlayerStrategy& other)
 {
-	return m_strategyType;
+	m_strategyType = other.m_strategyType;
 }
 
+// Assignment operator
+PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy& playerStrategy)
+{
+	m_strategyType = playerStrategy.m_strategyType;
+	return *this;
+}
+
+// Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const PlayerStrategy& strategy)
 {
 	switch (strategy.m_strategyType)
@@ -33,6 +46,12 @@ std::ostream& operator<<(std::ostream& os, const PlayerStrategy& strategy)
 	}
 
 	return os;
+}
+
+// Strategy type getter
+const StrategyType PlayerStrategy::getStrategyType()
+{
+	return m_strategyType;
 }
 
 // --------------- HumanPlayerStrategy class ---------------
