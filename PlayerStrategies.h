@@ -17,22 +17,29 @@ class PlayerStrategy
 {
 public:
 
+	// Default Constructor
+	PlayerStrategy();
+
+	// Copy Constructor
+	PlayerStrategy(PlayerStrategy& other);
+
 	// Destructor
 	virtual ~PlayerStrategy() = default;	
 
-
 	// Override ostream operator
 	friend std::ostream& operator<< (std::ostream& os, const PlayerStrategy& strategy);
+
+	// Assignment operator
+	PlayerStrategy& operator=(const PlayerStrategy& playerStrategy);
+
+	// Type getter
+	const StrategyType getStrategyType();
 
 protected:
 	virtual void issueOrder() = 0;
 	virtual void toAttack() = 0;
 	virtual void toDefend() = 0;
 	StrategyType m_strategyType; 
-
-private: 
-	const StrategyType getStrategyType(); 
-
 };
 
 
@@ -49,6 +56,8 @@ public:
 	void issueOrder();
 	void toAttack();
 	void toDefend();
+
+	using PlayerStrategy::operator=;
 };
 
 // Aggressive concrete strategy class 
@@ -64,6 +73,8 @@ public:
 	void issueOrder();
 	void toAttack();
 	void toDefend();
+
+	using PlayerStrategy::operator=;
 };
 
 // Benevolent concrete strategy class 
@@ -79,6 +90,8 @@ public:
 	void issueOrder();
 	void toAttack();
 	void toDefend();
+
+	using PlayerStrategy::operator=;
 };
 
 // Neutral concrete strategy class 
@@ -94,6 +107,8 @@ public:
 	void issueOrder();
 	void toAttack();
 	void toDefend();
+
+	using PlayerStrategy::operator=;
 };
 
 // Cheater concrete strategy class 
@@ -109,4 +124,6 @@ public:
 	void issueOrder();
 	void toAttack();
 	void toDefend();
+
+	using PlayerStrategy::operator=;
 };

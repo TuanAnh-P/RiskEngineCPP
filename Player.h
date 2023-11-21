@@ -8,7 +8,7 @@
 #include "map.h"    // Header for the Territory class
 #include "Cards.h"  // Header for the Cards class
 #include "Orders.h" // Header for the Orders class
-#include "PlayerStrategies.h"
+#include "PlayerStrategies.h" // Header for the Player Strategies class
 
 
 class Player {
