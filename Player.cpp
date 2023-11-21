@@ -3,8 +3,34 @@
 
 // Constructor
 Player::Player(const std::string& playerID)
-        : playerID(new std::string(playerID)), hand(new Hand()), ordersList(new OrdersList()), negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0)) {
+        : playerID(new std::string(playerID)),hand(new Hand()),ordersList(new OrdersList()),negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0))          
+{
 //    std::cout << "Player " << *this->playerID << " has arrived!" << std::endl;
+}
+
+Player::Player(const std::string& playerID, StrategyType strategy)
+    : playerID(new std::string(playerID)),hand(new Hand()),ordersList(new OrdersList()),negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0))
+{
+    switch (strategy)
+    {
+    case StrategyType::HumanPlayer:
+        m_strategy = new HumanPlayerStrategy();
+        break;
+    case StrategyType::AggressivePlayer:
+        m_strategy = new AggressivePlayerStrategy();
+        break;
+    case StrategyType::BenevolentPlayer:
+        m_strategy = new BenevolentPlayerStrategy();
+        break;
+    case StrategyType::NeutralPlayer:
+        m_strategy = new NeutralPlayerStrategy();
+        break;
+    case StrategyType::CheaterPlayer:
+        m_strategy = new CheaterPlayerStrategy();
+        break;
+    default:
+        break;
+    }
 }
 
 // Copy constructor
@@ -41,7 +67,9 @@ Player& Player::operator=(const Player& other) {
         delete hand;
         delete ordersList;
         delete negotiatedPlayers;
-        delete strategy;
+
+        if(m_strategy != nullptr)
+        delete m_strategy;
 
         hand = new Hand(*other.hand);
         ordersList = new OrdersList(*other.ordersList);
@@ -71,11 +99,16 @@ Player::~Player() {
     delete hand;
     delete ordersList;
 
+    // Delete strategy
+    if (m_strategy != nullptr)
+    delete m_strategy;
+
     // Set the pointers to nullptr after deletion
     playerID = nullptr;
     reinforcementPool = nullptr;
     hand = nullptr;
     ordersList = nullptr;
+    m_strategy = nullptr;
 
     // Delete negotiatedPlayers and set the pointer to nullptr
     if (negotiatedPlayers) {
@@ -276,7 +309,15 @@ void Player::addToNegotiatedPlayers(Player* player)
 // Get the player strategy
 const PlayerStrategy* Player::getStrategy() const
 {
-    return strategy;
+    return m_strategy;
+}
+
+// Set the player strategy
+void Player::setPlayerStrategy(PlayerStrategy* strategy)
+{
+    // Free previous strategy
+    delete m_strategy;
+    m_strategy = strategy;
 }
 
 // Stream insertion operator

@@ -16,6 +16,8 @@ public:
     // Constructor
     explicit Player(const std::string& playerID);
 
+    Player(const std::string& playerID, StrategyType strategy);
+
     // Copy constructor
     Player(const Player& other);
 
@@ -39,7 +41,7 @@ public:
 
     // Methods related to managing cards
     Hand& getHand(); // Get the player's hand of cards
-    bool hasDrawn; // whether or not a player has drawn a card
+    bool hasDrawn = false; // whether or not a player has drawn a card
 
     // Method related to managing the player id
     std::string getPlayerID() const; // Get the player id
@@ -60,7 +62,7 @@ public:
 
     // Methods realted to player strategy
     const PlayerStrategy* getStrategy() const;
-
+    void setPlayerStrategy(PlayerStrategy* strategy);
 
 private:
     // Attributes related to a Player's instance
@@ -70,5 +72,5 @@ private:
     OrdersList* ordersList;          // The list of orders issued by the player
     std::vector<Player*>* negotiatedPlayers; // The list of negotiated players that the player cannot attack
     int* reinforcementPool;
-    PlayerStrategy* strategy; // The player's strategy 
+    PlayerStrategy* m_strategy = nullptr; // The player's strategy 
 };

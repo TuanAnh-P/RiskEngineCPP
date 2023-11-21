@@ -1,22 +1,40 @@
 #pragma once
 
+#include <ostream>
+
+// Strategy enum type
+enum class StrategyType
+{
+	HumanPlayer,
+	AggressivePlayer,
+	BenevolentPlayer,
+	NeutralPlayer,
+	CheaterPlayer
+};
+
 // Player Strategy abstraction base class 
 class PlayerStrategy
 {
 public:
-	// Constructor
-	PlayerStrategy();
 
 	// Destructor
-	virtual ~PlayerStrategy() = default;
-	
+	virtual ~PlayerStrategy() = default;	
+
+
+	// Override ostream operator
+	friend std::ostream& operator<< (std::ostream& os, const PlayerStrategy& strategy);
 
 protected:
 	virtual void issueOrder() = 0;
 	virtual void toAttack() = 0;
 	virtual void toDefend() = 0;
+	StrategyType m_strategyType; 
+
+private: 
+	const StrategyType getStrategyType(); 
 
 };
+
 
 // Human concrete strategy class 
 class HumanPlayerStrategy : public PlayerStrategy
@@ -88,7 +106,7 @@ public:
 	// Constructor
 	CheaterPlayerStrategy();
 
-	virtual void issueOrder();
-	virtual void toAttack();
-	virtual void toDefend();
+	void issueOrder();
+	void toAttack();
+	void toDefend();
 };

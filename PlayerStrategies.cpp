@@ -2,13 +2,46 @@
 
 // --------------- PlayerStrategy class ---------------
 
-//Constructor 
-PlayerStrategy::PlayerStrategy() {}
+const StrategyType PlayerStrategy::getStrategyType()
+{
+	return m_strategyType;
+}
+
+std::ostream& operator<<(std::ostream& os, const PlayerStrategy& strategy)
+{
+	switch (strategy.m_strategyType)
+	{
+	case StrategyType::HumanPlayer:
+		os << " this is a Human Player Strategy!";
+		break;
+	case StrategyType::AggressivePlayer:
+		os << " this is a AggressivePlayer Strategy!";
+		break;
+	case StrategyType::BenevolentPlayer:
+		os << " this is a BenevolentPlayer Strategy!";
+		break;
+	case StrategyType::NeutralPlayer:
+		os << " this is a NeutralPlayer Strategy!";
+		break;
+	case StrategyType::CheaterPlayer:
+		os << " this is a CheaterPlayer Strategy!";
+		break;
+
+	default:
+		os << "ERROR: Invalid strategy type!";
+		break;
+	}
+
+	return os;
+}
 
 // --------------- HumanPlayerStrategy class ---------------
 
 // Constructor
-HumanPlayerStrategy::HumanPlayerStrategy() {}
+HumanPlayerStrategy::HumanPlayerStrategy()
+{
+	m_strategyType = (StrategyType::HumanPlayer);	
+}
 
 void HumanPlayerStrategy::issueOrder()
 {
@@ -28,7 +61,10 @@ void HumanPlayerStrategy::toDefend()
 // --------------- AggressivePlayerStrategy class ---------------
 
 // Constructor
-AggressivePlayerStrategy::AggressivePlayerStrategy() {}
+AggressivePlayerStrategy::AggressivePlayerStrategy() 
+{
+	m_strategyType = (StrategyType::AggressivePlayer);
+}
 
 void AggressivePlayerStrategy::issueOrder()
 {
@@ -48,7 +84,10 @@ void AggressivePlayerStrategy::toDefend()
 // --------------- BenevolentPlayerStrategy class ---------------
 
 // Constructor
-BenevolentPlayerStrategy::BenevolentPlayerStrategy() {}
+BenevolentPlayerStrategy::BenevolentPlayerStrategy()
+{
+	m_strategyType = (StrategyType::BenevolentPlayer);
+}
 
 void BenevolentPlayerStrategy::issueOrder()
 {
@@ -69,7 +108,10 @@ void BenevolentPlayerStrategy::toDefend()
 // --------------- NeutralPlayerStrategy class ---------------
 
 // Constructor
-NeutralPlayerStrategy::NeutralPlayerStrategy() {}
+NeutralPlayerStrategy::NeutralPlayerStrategy()
+{
+	m_strategyType = (StrategyType::NeutralPlayer);
+}
 
 void NeutralPlayerStrategy::issueOrder()
 {
@@ -89,7 +131,10 @@ void NeutralPlayerStrategy::toDefend()
 // --------------- CheaterPlayerStrategy class ---------------
 
 // Constructor
-CheaterPlayerStrategy::CheaterPlayerStrategy() {}
+CheaterPlayerStrategy::CheaterPlayerStrategy()
+{
+	m_strategyType = (StrategyType::CheaterPlayer);
+}
 
 void CheaterPlayerStrategy::issueOrder()
 {
