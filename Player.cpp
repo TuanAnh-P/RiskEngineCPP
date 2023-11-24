@@ -14,19 +14,19 @@ Player::Player(const std::string& playerID, StrategyType strategy)
     switch (strategy)
     {
     case StrategyType::HumanPlayer:
-        m_strategy = new HumanPlayerStrategy();
+        m_strategy = new HumanPlayerStrategy(this);
         break;
     case StrategyType::AggressivePlayer:
-        m_strategy = new AggressivePlayerStrategy();
+        m_strategy = new AggressivePlayerStrategy(this);
         break;
     case StrategyType::BenevolentPlayer:
-        m_strategy = new BenevolentPlayerStrategy();
+        m_strategy = new BenevolentPlayerStrategy(this);
         break;
     case StrategyType::NeutralPlayer:
-        m_strategy = new NeutralPlayerStrategy();
+        m_strategy = new NeutralPlayerStrategy(this);
         break;
     case StrategyType::CheaterPlayer:
-        m_strategy = new CheaterPlayerStrategy();
+        m_strategy = new CheaterPlayerStrategy(this);
         break;
     default:
         break;
@@ -56,19 +56,19 @@ Player::Player(const Player& other)
     switch (strategyType)
     {
     case StrategyType::HumanPlayer:
-        m_strategy = new HumanPlayerStrategy();
+        m_strategy = new HumanPlayerStrategy(this);
         break;
     case StrategyType::AggressivePlayer:
-        m_strategy = new AggressivePlayerStrategy();
+        m_strategy = new AggressivePlayerStrategy(this);
         break;
     case StrategyType::BenevolentPlayer:
-        m_strategy = new BenevolentPlayerStrategy();
+        m_strategy = new BenevolentPlayerStrategy(this);
         break;
     case StrategyType::NeutralPlayer:
-        m_strategy = new NeutralPlayerStrategy();
+        m_strategy = new NeutralPlayerStrategy(this);
         break;
     case StrategyType::CheaterPlayer:
-        m_strategy = new CheaterPlayerStrategy();
+        m_strategy = new CheaterPlayerStrategy(this);
         break;
     default:
         break;
@@ -103,19 +103,19 @@ Player& Player::operator=(const Player& other) {
         switch (strategyType)
         {
         case StrategyType::HumanPlayer:
-            m_strategy = new HumanPlayerStrategy();
+            m_strategy = new HumanPlayerStrategy(this);
             break;
         case StrategyType::AggressivePlayer:
-            m_strategy = new AggressivePlayerStrategy();
+            m_strategy = new AggressivePlayerStrategy(this);
             break;
         case StrategyType::BenevolentPlayer:
-            m_strategy = new BenevolentPlayerStrategy();
+            m_strategy = new BenevolentPlayerStrategy(this);
             break;
         case StrategyType::NeutralPlayer:
-            m_strategy = new NeutralPlayerStrategy();
+            m_strategy = new NeutralPlayerStrategy(this);
             break;
         case StrategyType::CheaterPlayer:
-            m_strategy = new CheaterPlayerStrategy();
+            m_strategy = new CheaterPlayerStrategy(this);
             break;
         default:
             break;
@@ -277,21 +277,25 @@ std::vector<Territory*> Player::getOwnedTerritories()
 }
 
 void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) {
-    Order* newOrder = nullptr;
 
-    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
-    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
-    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
-    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
-    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
-    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
+    return this->m_strategy->issueOrder(orderType, source, target, num, targetPlayer, deck, gameEngine);
 
-    if (newOrder) {
-        // Add the created order to the player's list of orders
-        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
-        ordersList->orders.push_back(newOrder);
-    }
-    else std::cout << "Invalid order type." << std::endl;
+    // Colton - Moved this into the Human Strategy 
+    //Order* newOrder = nullptr;
+
+    //if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
+    //else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
+    //else if (orderType == "Bomb") newOrder = new Bomb(this, target);
+    //else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
+    //else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
+    //else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
+
+    //if (newOrder) {
+    //    // Add the created order to the player's list of orders
+    //    std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
+    //    ordersList->orders.push_back(newOrder);
+    //}
+    //else std::cout << "Invalid order type." << std::endl;
 }
 
 bool Player::isTerritoryOwned(Territory* territory)
