@@ -44,6 +44,8 @@ void printInvalidCommandError()
     cout << "\nInvalid Command entered..." << endl;
 };
 
+
+
 // Implementation of the GameEngine class methods / constructors
 GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string *name):
     _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
@@ -95,6 +97,9 @@ void GameEngine::startupPhase() {
         bool stateValidated = commandProcessor.validate(command, gameState);
 
         //do the appropriate sequence
+        if (commandStr.rfind("tournament", 0) == 0 && stateValidated){
+
+        }
         if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
             //load  map
             string filename = "./maps/" + commandStr.substr(8);
@@ -569,8 +574,14 @@ StartState::StartState(GameEngine &gameEngine)
         : GameState(gameEngine, new GameStateType(GameStateType::START), new string("Start")){};
 
 void StartState::update(Command& command){
-    command.saveEffect("* transitioning to Map Loaded state");
-    _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
+    if(command.getCommand() == "loadmap")
+    {
+        command.saveEffect("* transitioning to Map Loaded state");
+        _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
+    }
+    if(command.getCommand() == "tournament") {
+
+    }
 }
 
 // Map Loaded state class implementation
