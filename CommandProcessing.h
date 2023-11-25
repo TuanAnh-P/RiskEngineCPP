@@ -8,10 +8,12 @@
 #include "LoggingObserver.h"
 
 using std::string;
+using std::vector;
 
 enum class GameStateType;
 
 string getFirstSubstring(const string& string);
+
 class Command : public ILoggable, public Subject {
 private: 
     string *_command;
@@ -46,6 +48,42 @@ public:
     string& getCommandEffect();
 
     string stringToLog() override;
+};
+
+class TournamentConfiguration {
+private: 
+    int *_numberOfGames;
+    int *_maxTurns;
+    vector<string> *_mapFiles;
+    vector<string> *_playerStrategies;
+
+public: 
+    // non default constructor
+    TournamentConfiguration(int &numberOfGames, int &maxTurns, vector<string> &mapsFiles, vector<string> &playerStrategies);
+
+    // copy constructor
+    TournamentConfiguration(const TournamentConfiguration &tc);
+
+    // destructor
+    ~TournamentConfiguration();
+
+    // Assignment operator
+    TournamentConfiguration& operator=(const TournamentConfiguration &rhs);
+
+    // Stream ingestion operator
+    friend std::ostream& operator<<(std::ostream& out, const TournamentConfiguration &tc);
+
+    // getters
+    int& getNumberOfGames();
+    int& getMaxTurns();
+    vector<string>& getMapsFiles();
+    vector<string>& getPlayerStrategies();
+
+    // method that validates the parameters of the tournament command
+    static bool validateCommand(Command& command);
+
+    // method that parses the parameters of the tournament command
+    static TournamentConfiguration& parseCommand(Command& command);
 };
 
 class CommandProcessor : public ILoggable, public Subject {
