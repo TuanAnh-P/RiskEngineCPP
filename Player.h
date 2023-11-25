@@ -62,8 +62,10 @@ public:
     void removeReinforcementPool(const int& amount);
 
     // Methods realted to player strategy
-    const PlayerStrategy* getStrategy() const;
+    PlayerStrategy* getStrategy();
+    const StrategyType getStrategyType();
     void setPlayerStrategy(PlayerStrategy* strategy);
+
 
 private:
     // Attributes related to a Player's instance

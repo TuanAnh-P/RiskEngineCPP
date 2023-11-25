@@ -278,7 +278,7 @@ std::vector<Territory*> Player::getOwnedTerritories()
 
 void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) {
 
-    return this->m_strategy->issueOrder(orderType, source, target, num, targetPlayer, deck, gameEngine);
+    return this->m_strategy->issueOrder();
 
     // Colton - Moved this into the Human Strategy 
     //Order* newOrder = nullptr;
@@ -361,9 +361,14 @@ void Player::addToNegotiatedPlayers(Player* player)
 }
 
 // Get the player strategy
-const PlayerStrategy* Player::getStrategy() const
+PlayerStrategy* Player::getStrategy()
 {
     return m_strategy;
+}
+
+const StrategyType Player::getStrategyType()
+{
+    return m_strategy->getStrategyType();
 }
 
 // Set the player strategy

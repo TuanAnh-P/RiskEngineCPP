@@ -1,11 +1,11 @@
 #pragma once
 
+#include "map.h"
 #include <ostream>
-#include "map.h"    // Header for the Territory class
-#include "Cards.h"  // Header for the Cards class
-#include "Orders.h" // Header for the Orders class
 
 class Player; // Forward declaration
+class Deck;
+class GameEngine;
 
 // Strategy enum type
 enum class StrategyType
@@ -36,9 +36,7 @@ public:
 	virtual ~PlayerStrategy() = default;	
 
 	// Override ostream operator
-	friend std::ostream& operator<< (std::ostream& os, const PlayerStrategy& strategy);
-
-	const Player& getPlayer();
+	friend std::ostream& operator<< (std::ostream& os, const PlayerStrategy& strategy);	
 
 	// Assignment operator
 	PlayerStrategy& operator=(const PlayerStrategy& playerStrategy);
@@ -47,13 +45,16 @@ public:
 	const StrategyType getStrategyType();
 
 	// Pure virtual functions
-	virtual void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) = 0;
+	virtual void issueOrder() = 0;
 	virtual void toAttack() = 0;
-	virtual void toDefend() = 0;
+	virtual void toDefend() = 0;	
 
 protected:
 	StrategyType m_strategyType = StrategyType::None; 
-	Player* m_player = nullptr;
+	const Player* getPlayer();	
+
+private:
+	Player* m_player;
 
 };
 
@@ -68,7 +69,7 @@ public:
 	// Constructor
 	HumanPlayerStrategy(Player* player);
 
-	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+	void issueOrder();
 	void toAttack();
 	void toDefend();
 
@@ -85,7 +86,7 @@ public:
 	// Constructor
 	AggressivePlayerStrategy(Player* player);
 
-	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+	void issueOrder();
 	void toAttack();
 	void toDefend();
 
@@ -102,7 +103,7 @@ public:
 	// Constructor
 	BenevolentPlayerStrategy(Player* player);
 
-	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+	void issueOrder();
 	void toAttack();
 	void toDefend();
 
@@ -119,7 +120,7 @@ public:
 	// Constructor
 	NeutralPlayerStrategy(Player* player);
 
-	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+	void issueOrder();
 	void toAttack();
 	void toDefend();
 
@@ -136,7 +137,7 @@ public:
 	// Constructor
 	CheaterPlayerStrategy(Player* player);
 
-	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+	void issueOrder();
 	void toAttack();
 	void toDefend();
 

@@ -1,5 +1,12 @@
 #include "PlayerStrategies.h"
 
+
+#include "map.h"
+#include <iostream>
+#include "Player.h"
+#include "Cards.h"
+#include "GameEngine.h"
+
 // --------------- PlayerStrategy class ---------------
 
 // Default Constructor
@@ -32,9 +39,9 @@ PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy& other)
 }
 
 // Player pointer getter
-const Player& PlayerStrategy::getPlayer()
+const Player* PlayerStrategy::getPlayer()
 {
-	return *m_player;
+	return m_player;
 }
 
 // Strategy type getter
@@ -83,23 +90,9 @@ HumanPlayerStrategy::HumanPlayerStrategy(Player* player)
 	m_strategyType = (StrategyType::HumanPlayer);	
 }
 
-void HumanPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void HumanPlayerStrategy::issueOrder()
 {
-	Order* newOrder = nullptr;
-
-	if (orderType == "Deploy") newOrder = new Deploy(m_player, target, num);
-	else if (orderType == "Advance") newOrder = new Advance(m_player, target, source, num, deck, gameEngine);
-	else if (orderType == "Bomb") newOrder = new Bomb(m_player, target);
-	else if (orderType == "Blockade") newOrder = new Blockade(m_player, target, gameEngine);
-	else if (orderType == "Airlift") newOrder = new Airlift(m_player, source, target, num);
-	else if (orderType == "Negotiate") newOrder = new Negotiate(m_player, targetPlayer);
-
-	if (newOrder) {
-		// Add the created order to the player's list of orders
-		/*std::cout << m_player->getPlayerID() << " issued a " << orderType << " order" << std::endl;
-		m_player->getOrdersList().orders.push_back(newOrder);*/
-	}
-	else std::cout << "Invalid order type." << std::endl;
+	
 }
 
 void HumanPlayerStrategy::toAttack()
@@ -116,13 +109,20 @@ void HumanPlayerStrategy::toDefend()
 
 // Constructor
 AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player) 
+	: PlayerStrategy(player)
 {
 	m_strategyType = (StrategyType::AggressivePlayer);
 }
 
-void AggressivePlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void AggressivePlayerStrategy::issueOrder()
 {
+	// Deploy
+	
 
+	// Advance 
+
+	
+	
 }
 
 void AggressivePlayerStrategy::toAttack()
@@ -143,7 +143,7 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player)
 	m_strategyType = (StrategyType::BenevolentPlayer);
 }
 
-void BenevolentPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void BenevolentPlayerStrategy::issueOrder()
 {
 
 }
@@ -167,7 +167,7 @@ NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player)
 	m_strategyType = (StrategyType::NeutralPlayer);
 }
 
-void NeutralPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void NeutralPlayerStrategy::issueOrder()
 {
 
 }
@@ -190,7 +190,7 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player)
 	m_strategyType = (StrategyType::CheaterPlayer);
 }
 
-void CheaterPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void CheaterPlayerStrategy::issueOrder()
 {
 
 }

@@ -270,6 +270,30 @@ void GameEngine::issueOrdersPhase() {
     cout << "<----------The orders issuing phase begins---------->" << endl;
     for(Player* player: players) {
 
+        PlayerStrategy* strat = player->getStrategy();
+        const StrategyType stratType = player->getStrategyType();
+
+        // Check if Player Strategy 
+        switch (stratType)
+        {
+        case StrategyType::HumanPlayer:
+            break;
+        case StrategyType::AggressivePlayer:
+            
+            break;
+        case StrategyType::BenevolentPlayer:
+            
+            break;
+        case StrategyType::NeutralPlayer:
+            
+            break;
+        case StrategyType::CheaterPlayer:
+            
+            break;
+        default:
+            break;
+        }
+
         // Player must deploy all his reinforcement pool to proceed with Advance order
         while (player->getReinforcementPool() > 0) {
             string order;
