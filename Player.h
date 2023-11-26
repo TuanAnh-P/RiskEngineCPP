@@ -61,7 +61,7 @@ public:
     void addReinforcementPool(const int& amount);
     void removeReinforcementPool(const int& amount);
 
-    // Methods realted to player strategy
+    // Methods related to player strategy
     PlayerStrategy* getStrategy();
     const StrategyType getStrategyType();
     void setPlayerStrategy(PlayerStrategy* strategy);

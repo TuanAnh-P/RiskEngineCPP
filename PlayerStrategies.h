@@ -45,16 +45,14 @@ public:
 	const StrategyType getStrategyType();
 
 	// Pure virtual functions
-	virtual void issueOrder() = 0;
-	virtual void toAttack() = 0;
-	virtual void toDefend() = 0;	
+	virtual void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) = 0;
+	virtual std::vector<Territory*> toAttack() = 0;
+	virtual std::vector<Territory*> toDefend() = 0;
 
 protected:
 	StrategyType m_strategyType = StrategyType::None; 
-	const Player* getPlayer();	
-
-private:
-	Player* m_player;
+	const Player* getPlayer();
+    Player* m_player;
 
 };
 
@@ -69,9 +67,9 @@ public:
 	// Constructor
 	HumanPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -86,9 +84,9 @@ public:
 	// Constructor
 	AggressivePlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -103,9 +101,9 @@ public:
 	// Constructor
 	BenevolentPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -120,9 +118,9 @@ public:
 	// Constructor
 	NeutralPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -137,9 +135,9 @@ public:
 	// Constructor
 	CheaterPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
