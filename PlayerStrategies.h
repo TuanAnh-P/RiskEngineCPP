@@ -52,7 +52,7 @@ public:
 protected:
 	StrategyType m_strategyType = StrategyType::None; 
 	const Player* getPlayer();
-    Player* m_player;
+    Player* m_player = nullptr;
 
 };
 

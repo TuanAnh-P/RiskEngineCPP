@@ -432,28 +432,8 @@ void GameEngine::issueOrdersPhase() {
                 }
                 break;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             case StrategyType::AggressivePlayer:
+            {
                 // Aggressive Player will deploy all of his armies on its strongest territory
                 while (player->getReinforcementPool() > 0) {
                     // Get territories he that can deploy to (territories from toDefend())
@@ -476,11 +456,16 @@ void GameEngine::issueOrdersPhase() {
                     cout << player->getPlayerID() << " has " << player->getReinforcementPool() << " army units left to deploy" << endl;
                 }
 
+
                 // Aggressive Player will then advance from its strongest territory until he can't no longer do so (when toAttack() return an empty vector)
                 cout << player->getPlayerID() << " can make Advance Order" << endl;
+                std::vector<Territory*> attackTerritoies = player->toAttack();
+
                 while (true) {
-                    if (player->toAttack().empty()) break;
-                    else{
+
+                    if (attackTerritoies.empty()) break;
+
+                    else {
                         // Get territories to defend
                         std::cout << "Territories " << player->getPlayerID() << " can Defend:" << std::endl;
                         for (Territory* territory : player->toDefend()) {
@@ -488,7 +473,7 @@ void GameEngine::issueOrdersPhase() {
                         }
                         // Get territories to attack
                         std::cout << "Territories " << player->getPlayerID() << " can Attack:" << std::endl;
-                        for (Territory* territory : player->toAttack()) {
+                        for (Territory* territory : attackTerritoies) {
                             std::cout << territory->getName() << std::endl;
                         }
                         // Get the source territory that has the most number of armies as source territory
@@ -496,14 +481,17 @@ void GameEngine::issueOrdersPhase() {
                         for (Territory* territory : player->toDefend()) {
                             if (territory->getNumberOfArmies() > sourceTerritory->getNumberOfArmies()) sourceTerritory = territory;
                         }
-                        Territory* targetTerritory = player->toAttack().empty() ? nullptr : player->toAttack().at(0);
+                        Territory* targetTerritory = attackTerritoies.empty() ? nullptr : attackTerritoies.at(0);
                         cout << player->getPlayerID() << " enters source territory: " << sourceTerritory->getName() << endl;
                         cout << player->getPlayerID() << " enters target territory: " << targetTerritory->getName() << endl;
-                        cout << player->getPlayerID() << " enters number of army units to advance: " << sourceTerritory->getNumberOfArmies()<< endl;
+                        cout << player->getPlayerID() << " enters number of army units to advance: " << sourceTerritory->getNumberOfArmies() << endl;
                         player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(sourceTerritory->getNumberOfArmies()), nullptr, deck, this);
+
+                        attackTerritoies.erase(std::remove(attackTerritoies.begin(), attackTerritoies.end(), targetTerritory), attackTerritoies.end());
+
                         // Converting Neutral Player to Aggressive Player if needed
-                        for (Player* otherPlayer : getPlayers()){
-                            if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer){
+                        for (Player* otherPlayer : getPlayers()) {
+                            if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
                                 otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
                                 cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
                             }
@@ -514,8 +502,8 @@ void GameEngine::issueOrdersPhase() {
                 // Aggressive Player will play any cards with an aggressive intent (doing the most damage possible)
                 cout << player->getPlayerID() << " plays a card from their hand contents below" << endl;
                 cout << player->getHand() << endl;
-                if (not player->getHand().cards.empty()){
-                    if (player->getHand().cards.at(0)->getType() == CardType::Airlift){
+                if (not player->getHand().cards.empty()) {
+                    if (player->getHand().cards.at(0)->getType() == CardType::Airlift) {
                         // Get the source territory that has the most number of armies as source territory
                         Territory* sourceTerritory = player->toDefend().empty() ? nullptr : player->toDefend().at(0);
                         for (Territory* territory : player->toDefend()) {
@@ -531,14 +519,14 @@ void GameEngine::issueOrdersPhase() {
                         cout << "Airlift - Enter the number of army units: " << sourceTerritory->getNumberOfArmies() << endl;
                         player->issueOrder("Airlift", sourceTerritory, targetTerritory, new int(sourceTerritory->getNumberOfArmies()), nullptr, nullptr, nullptr);
                         // Converting Neutral Player to Aggressive Player if needed
-                        for (Player* otherPlayer : getPlayers()){
-                            if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer){
+                        for (Player* otherPlayer : getPlayers()) {
+                            if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
                                 otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
                                 cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
                             }
                         }
                     }
-                    else if (player->getHand().cards.at(0)->getType() == CardType::Bomb){
+                    else if (player->getHand().cards.at(0)->getType() == CardType::Bomb) {
                         // Get the target territory that has the most number of armies as source territory
                         Territory* targetTerritory = player->toAttack().empty() ? nullptr : player->toAttack().at(0);
                         for (Territory* territory : player->toAttack()) {
@@ -546,54 +534,29 @@ void GameEngine::issueOrdersPhase() {
                         }
                         // Get the player that has that territory
                         Player* targetPlayer = nullptr;
-                        for (Player* otherPlayer : getPlayers()){
-                            if (otherPlayer->isTerritoryOwned(targetTerritory)) targetPlayer=otherPlayer;
+                        for (Player* otherPlayer : getPlayers()) {
+                            if (otherPlayer->isTerritoryOwned(targetTerritory)) targetPlayer = otherPlayer;
                         }
                         cout << "Bomb - Enter the target player: " << targetPlayer->getPlayerID() << endl;
-                        cout << "Bomb - Enter the target territory: " << targetTerritory->getName()<< endl;
+                        cout << "Bomb - Enter the target territory: " << targetTerritory->getName() << endl;
                         player->issueOrder("Bomb", nullptr, targetTerritory, nullptr, targetPlayer, nullptr, nullptr);
                         // Converting Neutral Player to Aggressive Player if needed
-                        for (Player* otherPlayer : getPlayers()){
-                            if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer){
+                        for (Player* otherPlayer : getPlayers()) {
+                            if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
                                 otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
                                 cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
                             }
                         }
                     }
-                    else if (player->getHand().cards.at(0)->getType() == CardType::Blockade){
+                    else if (player->getHand().cards.at(0)->getType() == CardType::Blockade) {
                         cout << player->getPlayerID() << " won't play his Blockade card" << endl;
                     }
-                    else if (player->getHand().cards.at(0)->getType() == CardType::Diplomacy){
+                    else if (player->getHand().cards.at(0)->getType() == CardType::Diplomacy) {
                         cout << player->getPlayerID() << " won't play his Diplomacy card" << endl;
                     }
                 }
                 break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            }
 
             case StrategyType::BenevolentPlayer:
                 // Benevolent Player will deploy all of his armies on its weakest territory
