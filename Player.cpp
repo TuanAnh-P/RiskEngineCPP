@@ -277,25 +277,21 @@ std::vector<Territory*> Player::getOwnedTerritories()
 }
 
 void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) {
+    Order* newOrder = nullptr;
 
-    return this->m_strategy->issueOrder();
+    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
+    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
+    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
+    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
+    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
+    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
 
-    // Colton - Moved this into the Human Strategy 
-    //Order* newOrder = nullptr;
-
-    //if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
-    //else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
-    //else if (orderType == "Bomb") newOrder = new Bomb(this, target);
-    //else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
-    //else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
-    //else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
-
-    //if (newOrder) {
-    //    // Add the created order to the player's list of orders
-    //    std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
-    //    ordersList->orders.push_back(newOrder);
-    //}
-    //else std::cout << "Invalid order type." << std::endl;
+    if (newOrder) {
+        // Add the created order to the player's list of orders
+        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
+        ordersList->orders.push_back(newOrder);
+    }
+    else std::cout << "Invalid order type." << std::endl;
 }
 
 bool Player::isTerritoryOwned(Territory* territory)
