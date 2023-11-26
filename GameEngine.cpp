@@ -545,7 +545,7 @@ void GameEngine::issueOrdersPhase() {
                             if (territory->getNumberOfArmies() > targetTerritory->getNumberOfArmies()) targetTerritory = territory;
                         }
                         // Get the player that has that territory
-                        Player* targetPlayer;
+                        Player* targetPlayer = nullptr;
                         for (Player* otherPlayer : getPlayers()){
                             if (otherPlayer->isTerritoryOwned(targetTerritory)) targetPlayer=otherPlayer;
                         }
@@ -708,7 +708,7 @@ void GameEngine::issueOrdersPhase() {
                 // Cheating algorithm
                 for (Territory* territory : player->toAttack()) {
                     player->addTerritory(territory);
-                    Player* playerThatOwnedThatTerritory;
+                    Player* playerThatOwnedThatTerritory = nullptr;
                     for (Player* otherPlayer : getPlayers()){
                         if (otherPlayer->isTerritoryOwned(territory)) playerThatOwnedThatTerritory=otherPlayer;
                     }
