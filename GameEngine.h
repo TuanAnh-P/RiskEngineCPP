@@ -84,7 +84,7 @@ private:
 
     bool loadMap(const string& filename);
     bool validateMap();
-    void addPlayer(const string& playerName);
+    void addPlayer(const string& playerName, StrategyType strat);
     
     void gameStart();
     void distributeTerritories();
