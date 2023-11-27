@@ -276,22 +276,27 @@ std::vector<Territory*> Player::getOwnedTerritories()
     return this->ownedTerritories;
 }
 
-void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) {
-    Order* newOrder = nullptr;
+void Player::issueOrder() {
+    return this->m_strategy->issueOrder();
+//    Order* newOrder = nullptr;
+//
+//    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
+//    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
+//    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
+//    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
+//    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
+//    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
+//
+//    if (newOrder) {
+//        // Add the created order to the player's list of orders
+//        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
+//        ordersList->orders.push_back(newOrder);
+//    }
+//    else std::cout << "Invalid order type." << std::endl;
+}
 
-    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
-    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
-    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
-    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
-    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
-    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
-
-    if (newOrder) {
-        // Add the created order to the player's list of orders
-        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
-        ordersList->orders.push_back(newOrder);
-    }
-    else std::cout << "Invalid order type." << std::endl;
+int Player::executeStrategy (int a, int b){
+    return this->m_strategy->execute(a, b);
 }
 
 bool Player::isTerritoryOwned(Territory* territory)

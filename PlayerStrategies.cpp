@@ -87,12 +87,12 @@ std::ostream& operator<<(std::ostream& os, const PlayerStrategy& strategy)
 HumanPlayerStrategy::HumanPlayerStrategy(Player* player)
 	: PlayerStrategy(player)
 {
-	m_strategyType = (StrategyType::HumanPlayer);	
+	m_strategyType = (StrategyType::HumanPlayer);
+    m_player = player;
 }
 
-void HumanPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void HumanPlayerStrategy::issueOrder()
 {
-	m_player->issueOrder(orderType, source, target, num, targetPlayer, deck, gameEngine);
 }
 
 std::vector<Territory*> HumanPlayerStrategy::toAttack()
@@ -105,6 +105,10 @@ std::vector<Territory*> HumanPlayerStrategy::toDefend()
     return m_player->toDefend();
 }
 
+int HumanPlayerStrategy::execute(int a, int b) {
+    return 0;
+}
+
 // --------------- AggressivePlayerStrategy class ---------------
 
 // Constructor
@@ -112,11 +116,11 @@ AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player)
 	: PlayerStrategy(player)
 {
 	m_strategyType = (StrategyType::AggressivePlayer);
+    m_player = player;
 }
 
-void AggressivePlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void AggressivePlayerStrategy::issueOrder()
 {
-    m_player->issueOrder(orderType, source, target, num, targetPlayer, deck, gameEngine);
 }
 
 std::vector<Territory*> AggressivePlayerStrategy::toAttack()
@@ -129,18 +133,22 @@ std::vector<Territory*> AggressivePlayerStrategy::toDefend()
     return m_player->toDefend();
 }
 
+int AggressivePlayerStrategy::execute(int a, int b) {
+    return 0;
+}
+
 // --------------- BenevolentPlayerStrategy class ---------------
 
 // Constructor
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player)
 {
 	m_strategyType = (StrategyType::BenevolentPlayer);
+    m_player = player;
 }
 
 // Shouldn't be able to issue a Bomb order so remove Bomb order as an option
-void BenevolentPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void BenevolentPlayerStrategy::issueOrder()
 {
-    m_player->issueOrder(orderType, source, target, num, targetPlayer, deck, gameEngine);
 }
 
 std::vector<Territory*> BenevolentPlayerStrategy::toAttack()
@@ -153,6 +161,10 @@ std::vector<Territory*> BenevolentPlayerStrategy::toDefend()
     return m_player->toDefend();
 }
 
+int BenevolentPlayerStrategy::execute(int a, int b) {
+    return 0;
+}
+
 
 // --------------- NeutralPlayerStrategy class ---------------
 
@@ -160,10 +172,21 @@ std::vector<Territory*> BenevolentPlayerStrategy::toDefend()
 NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player)
 {
 	m_strategyType = (StrategyType::NeutralPlayer);
+    m_player = player;
 }
 
-void NeutralPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void NeutralPlayerStrategy::issueOrder()
 {
+    std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
+    for (Territory* territory : this->m_player->toDefend()) {
+        std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+    }
+    cout << this->m_player->getPlayerID() << " won't make any Deploy orders" << endl;
+    cout << this->m_player->getPlayerID() << " can make Advance Order" << endl;
+    cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
+    cout << this->m_player->getPlayerID() << " plays a card from their hand contents below" << endl;
+    cout << this->m_player->getHand() << endl;
+    cout << this->m_player->getPlayerID() << " won't play any cards" << endl;
 }
 
 std::vector<Territory*> NeutralPlayerStrategy::toAttack()
@@ -176,17 +199,21 @@ std::vector<Territory*> NeutralPlayerStrategy::toDefend()
     return m_player->toDefend();
 }
 
+int NeutralPlayerStrategy::execute(int a, int b) {
+    return a+b;
+}
+
 // --------------- CheaterPlayerStrategy class ---------------
 
 // Constructor
 CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player)
 {
 	m_strategyType = (StrategyType::CheaterPlayer);
+    m_player = player;
 }
 
-void CheaterPlayerStrategy::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine)
+void CheaterPlayerStrategy::issueOrder()
 {
-    m_player->issueOrder(orderType, source, target, num, targetPlayer, deck, gameEngine);
 }
 
 std::vector<Territory*> CheaterPlayerStrategy::toAttack()
@@ -197,6 +224,10 @@ std::vector<Territory*> CheaterPlayerStrategy::toAttack()
 std::vector<Territory*> CheaterPlayerStrategy::toDefend()
 {
     return m_player->toDefend();
+}
+
+int CheaterPlayerStrategy::execute(int a, int b) {
+    return 0;
 }
 
 
