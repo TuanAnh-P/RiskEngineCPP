@@ -44,6 +44,8 @@ void printInvalidCommandError()
     cout << "\nInvalid Command entered..." << endl;
 };
 
+
+
 // Implementation of the GameEngine class methods / constructors
 GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string *name):
     _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
@@ -95,7 +97,129 @@ void GameEngine::startupPhase() {
         bool stateValidated = commandProcessor.validate(command, gameState);
 
         //do the appropriate sequence
-        if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
+        if (commandStr.rfind("tournament", 0) == 0 && stateValidated) { //TODO wrong tournament format, and valids
+            // Find the positions of various parameters in the command
+            size_t posM = commandStr.find("-M");
+            if (posM == std::string::npos) continue;
+            size_t posP = commandStr.find("-P");
+            if (posP == std::string::npos) continue;
+            size_t posG = commandStr.find("-G");
+            if (posG == std::string::npos) continue;
+            size_t posD = commandStr.find("-D");
+            if (posD == std::string::npos) continue;
+
+            // Extract the lists of map files and player strategies
+            std::string mapFilesStr = commandStr.substr(posM + 3, posP - posM - 4);
+            std::string playerStrategiesStr = commandStr.substr(posP + 3, posG - posP - 4);
+
+            // Extract the numerical values
+            int numberOfGames = std::stoi(commandStr.substr(posG + 2, posD - posG - 2));
+            int maxNumberOfTurns = std::stoi(commandStr.substr(posD + 2));
+
+            // Create vectors to store map files and player strategies
+            std::vector<std::string> mapFiles;
+            std::vector<std::string> playerStrategies;
+
+            // Use stringstream to split comma-separated values into vectors
+            std::stringstream mapFilesStream(mapFilesStr);
+            std::stringstream playerStrategiesStream(playerStrategiesStr);
+            std::string mapFile;
+            std::string playerStrategy;
+
+            // Extract map files
+            while (std::getline(mapFilesStream, mapFile, ',')) {
+                mapFiles.push_back(mapFile);
+            }
+
+            // Extract player strategies
+            while (std::getline(playerStrategiesStream, playerStrategy, ',')) {
+                playerStrategies.push_back(playerStrategy);
+            }
+
+            // Now you have the extracted information in vectors
+            // Loop through and print the values
+//            std::cout << "Map Files: ";
+//            for (const auto& mapFile : mapFiles) {
+//                std::cout << mapFile << " ";
+//            }
+//            std::cout << "\nPlayer Strategies: ";
+//            for (const auto& strategy : playerStrategies) {
+//                std::cout << strategy << " ";
+//            }
+//            std::cout << "\nNumber of Games: " << numberOfGames << "\nMax Number of Turns: " << maxNumberOfTurns << std::endl;
+
+            if(numberOfGames < 1 || numberOfGames > 5){
+                cout << "Please enter 1-5 Games";
+                continue;
+            }
+
+            if(maxNumberOfTurns < 10 || maxNumberOfTurns > 50){
+                cout << "Please enter 10-50 Turns";
+                continue;
+            }
+
+            if(mapFiles.size() < 1 || mapFiles.size() > 5){
+                cout << "Please enter 1-5 Maps";
+                continue;
+            }
+
+            if(playerStrategies.size() < 1 || playerStrategies.size() > 4){
+                cout << "Please enter 1-4 Players";
+                continue;
+            }
+
+            for(int k = 0; k < mapFiles.size(); k++){
+                for(int i = 0; i < numberOfGames; i++){
+                    //loadmap Phase
+                    string filename = "./maps/" + mapFiles[k];
+                    bool mapLoaded = loadMap(filename);
+                    if(mapLoaded){
+                        _currentGameState->update(command);
+                        Notify(this);
+                    }
+
+                    //validatemap Phase
+                    bool mapValidated = validateMap();
+                    if (mapValidated){
+                        _currentGameState->update(command);
+                        Notify(this);
+                    }
+
+                    //add player Phase
+                    for(int j = 0; j < playerStrategies.size(); j++){
+                        string player = "player" + std::to_string(j);
+                        std::string strategy = playerStrategies[j];
+
+                        if(strategy == "Aggressive") {
+                            addPlayer(player, StrategyType::AggressivePlayer);
+                        }
+                        else if(strategy == "Benevolent") {
+                            addPlayer(player, StrategyType::BenevolentPlayer);
+                        }
+                        else if(strategy == "Neutral") {
+                            addPlayer(player, StrategyType::NeutralPlayer);
+                        }
+                        else if(strategy == "Cheater") {
+                            addPlayer(player, StrategyType::CheaterPlayer);
+                        }
+                        _currentGameState->update(command);
+                        Notify(this);
+                    }
+
+                    //start game Phase
+                    gameStart();
+                    play();
+
+                }
+
+            }
+            delete &command;
+            delete &mapFiles;
+            delete &playerStrategies;
+            return;
+
+        }
+        else if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
             //load  map
             string filename = "./maps/" + commandStr.substr(8);
             bool mapLoaded = loadMap(filename);
@@ -113,7 +237,7 @@ void GameEngine::startupPhase() {
         } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
             // Add a player
             string player = commandStr.substr(9);
-            addPlayer(player);
+            addPlayer(player, StrategyType::HumanPlayer);
             _currentGameState->update(command);
             Notify(this);
         } else if (commandStr == "gamestart" && stateValidated) {
@@ -167,11 +291,11 @@ bool GameEngine::validateMap() {
 }
 
 //just addsplayers
-void GameEngine::addPlayer(const std::string& playerName) {
+void GameEngine::addPlayer(const std::string& playerName, StrategyType strat) {
     if (players.size() >= 6) {
         std::cout << "Maximum number of players reached." << std::endl;
     } else {
-        players.push_back(new Player(playerName));
+        players.push_back(new Player(playerName, strat));
         std::cout << "Player " << playerName << " added." << std::endl;
     }
 }
@@ -268,7 +392,6 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase(string orderType) {
-
     if (orderType == "Deploy"){
         cout << "<----------The Deploy orders issuing phase begins---------->" << endl;
         for(Player* player: players) {
@@ -471,8 +594,14 @@ StartState::StartState(GameEngine &gameEngine)
         : GameState(gameEngine, new GameStateType(GameStateType::START), new string("Start")){};
 
 void StartState::update(Command& command){
-    command.saveEffect("* transitioning to Map Loaded state");
-    _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
+    if(command.getCommand() == "loadmap")
+    {
+        command.saveEffect("* transitioning to Map Loaded state");
+        _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
+    }
+    if(command.getCommand() == "tournament") {
+
+    }
 }
 
 // Map Loaded state class implementation
