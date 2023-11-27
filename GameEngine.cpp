@@ -661,7 +661,6 @@ void GameEngine::issueOrdersPhase() {
 
 
             case StrategyType::NeutralPlayer:
-//                cout << player->executeStrategy(5, 9) << endl;
                 player->issueOrder();
                 break;
 

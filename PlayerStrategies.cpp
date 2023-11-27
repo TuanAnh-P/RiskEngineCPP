@@ -105,10 +105,6 @@ std::vector<Territory*> HumanPlayerStrategy::toDefend()
     return m_player->toDefend();
 }
 
-int HumanPlayerStrategy::execute(int a, int b) {
-    return 0;
-}
-
 // --------------- AggressivePlayerStrategy class ---------------
 
 // Constructor
@@ -131,10 +127,6 @@ std::vector<Territory*> AggressivePlayerStrategy::toAttack()
 std::vector<Territory*> AggressivePlayerStrategy::toDefend()
 {
     return m_player->toDefend();
-}
-
-int AggressivePlayerStrategy::execute(int a, int b) {
-    return 0;
 }
 
 // --------------- BenevolentPlayerStrategy class ---------------
@@ -160,11 +152,6 @@ std::vector<Territory*> BenevolentPlayerStrategy::toDefend()
 {
     return m_player->toDefend();
 }
-
-int BenevolentPlayerStrategy::execute(int a, int b) {
-    return 0;
-}
-
 
 // --------------- NeutralPlayerStrategy class ---------------
 
@@ -199,10 +186,6 @@ std::vector<Territory*> NeutralPlayerStrategy::toDefend()
     return m_player->toDefend();
 }
 
-int NeutralPlayerStrategy::execute(int a, int b) {
-    return a+b;
-}
-
 // --------------- CheaterPlayerStrategy class ---------------
 
 // Constructor
@@ -224,10 +207,6 @@ std::vector<Territory*> CheaterPlayerStrategy::toAttack()
 std::vector<Territory*> CheaterPlayerStrategy::toDefend()
 {
     return m_player->toDefend();
-}
-
-int CheaterPlayerStrategy::execute(int a, int b) {
-    return 0;
 }
 
 

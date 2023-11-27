@@ -66,10 +66,6 @@ public:
     const StrategyType getStrategyType();
     void setPlayerStrategy(PlayerStrategy* strategy);
 
-    //test
-    int executeStrategy (int a, int b);
-
-
 private:
     // Attributes related to a Player's instance
     std::string* playerID;          // The name of the player

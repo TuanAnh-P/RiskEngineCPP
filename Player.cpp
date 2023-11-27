@@ -295,10 +295,6 @@ void Player::issueOrder() {
 //    else std::cout << "Invalid order type." << std::endl;
 }
 
-int Player::executeStrategy (int a, int b){
-    return this->m_strategy->execute(a, b);
-}
-
 bool Player::isTerritoryOwned(Territory* territory)
 {
     if (this->ownedTerritories.empty()) return false;

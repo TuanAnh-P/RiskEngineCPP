@@ -48,7 +48,6 @@ public:
 	virtual void issueOrder() = 0;
 	virtual std::vector<Territory*> toAttack() = 0;
 	virtual std::vector<Territory*> toDefend() = 0;
-    virtual int execute(int a, int b) = 0;
 
 protected:
 	StrategyType m_strategyType = StrategyType::None; 
@@ -71,7 +70,6 @@ public:
 	void issueOrder();
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
-    int execute(int a, int b);
 
 	using PlayerStrategy::operator=;
 };
@@ -89,7 +87,6 @@ public:
 	void issueOrder();
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
-    int execute(int a, int b);
 
 	using PlayerStrategy::operator=;
 };
@@ -107,7 +104,6 @@ public:
 	void issueOrder();
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
-    int execute(int a, int b);
 
 	using PlayerStrategy::operator=;
 };
@@ -125,7 +121,6 @@ public:
 	void issueOrder();
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
-    int execute(int a, int b);
 
 	using PlayerStrategy::operator=;
 };
@@ -143,7 +138,6 @@ public:
 	void issueOrder();
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
-    int execute(int a, int b);
 
 	using PlayerStrategy::operator=;
 };
