@@ -47,7 +47,7 @@ public:
 
     // Methods related to managing orders
     OrdersList& getOrdersList();                    // Get the player's list of orders
-    void issueOrder(Deck* deck, GameEngine* gameEngine);  // Issue a new order of a specified type
+    void issueOrder(Deck* deck, GameEngine* gameEngine, string& orderType);  // Issue a new order of a specified type
 
 
 

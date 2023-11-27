@@ -267,42 +267,62 @@ void GameEngine::reinforcementPhase() {
     }
 }
 
-void GameEngine::issueOrdersPhase() {
-    cout << "<----------The orders issuing phase begins---------->" << endl;
-    for(Player* player: players) {
-        player->issueOrder(deck, this);
+void GameEngine::issueOrdersPhase(string orderType) {
+
+    if (orderType == "Deploy"){
+        cout << "<----------The Deploy orders issuing phase begins---------->" << endl;
+        for(Player* player: players) {
+            player->issueOrder(deck, this, orderType);
+        }
+    }
+
+    if (orderType == "Else"){
+        cout << "<----------The Non-deploy orders issuing phase begins---------->" << endl;
+        for(Player* player: players) {
+            player->issueOrder(deck, this, orderType);
+        }
     }
 }
 
 
-void GameEngine::executeOrdersPhase() {
-    cout << "<----------The orders executing phase begins---------->" << endl;
-    cout << "<----------Deploy orders are executing first---------->" << endl;
-    for(Player* player: players) {
-        cout << player->getPlayerID() << " is executing orders from his order list" << endl;
-        // Display the player's orders list
-        std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
-        player->getOrdersList().print();
+void GameEngine::executeOrdersPhase(string orderType) {
 
-        cout << "The orders will be executed one by one: " << endl;
-        for (Order* order : player->getOrdersList().orders){
-            if (order->type == "Deploy") order->execute();
+    if (orderType == "Deploy"){
+        cout << "<----------The Deploy orders executing phase begins---------->" << endl;
+        for(Player* player: players) {
+            cout << player->getPlayerID() << " is executing orders from his order list" << endl;
+            // Display the player's orders list
+            std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
+            player->getOrdersList().print();
+
+            cout << "The orders will be executed one by one: " << endl;
+            for (Order* order : player->getOrdersList().orders){
+                if (order->type == "Deploy") {
+                    order->execute();
+                    player->getOrdersList().orders.erase(std::remove(player->getOrdersList().orders.begin(), player->getOrdersList().orders.end(), order), player->getOrdersList().orders.end());
+                }
+            }
+            cout << endl;
         }
-        cout << endl;
     }
 
-    cout << "<----------Non-deployed orders are executing now---------->" << endl;
-    for(Player* player: players) {
-        cout << player->getPlayerID() << " is executing orders from his order list" << endl;
-        // Display the player's orders list
-        std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
-        player->getOrdersList().print();
+    if (orderType == "Else"){
+        cout << "<----------The Non-Deploy orders executing phase begins---------->" << endl;
+        for(Player* player: players) {
+            cout << player->getPlayerID() << " is executing orders from his order list" << endl;
+            // Display the player's orders list
+            std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
+            player->getOrdersList().print();
 
-        cout << "The orders will be executed one by one: " << endl;
-        for (Order* order : player->getOrdersList().orders){
-            if (order->type != "Deploy")order->execute();
+            cout << "The orders will be executed one by one: " << endl;
+            for (Order* order : player->getOrdersList().orders){
+                if (order->type != "Deploy") {
+                    order->execute();
+                    player->getOrdersList().orders.erase(std::remove(player->getOrdersList().orders.begin(), player->getOrdersList().orders.end(), order), player->getOrdersList().orders.end());
+                }
+            }
+            cout << endl;
         }
-        cout << endl;
     }
 }
 
@@ -314,9 +334,13 @@ void GameEngine::mainGameLoop() {
         setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         reinforcementPhase();
         setCurrentGameState(GameStateType::ISSUE_ORDERS);
-        issueOrdersPhase();
+        issueOrdersPhase("Deploy");
         setCurrentGameState(GameStateType::EXECUTE_ORDERS);
-        executeOrdersPhase();
+        executeOrdersPhase("Deploy");
+        setCurrentGameState(GameStateType::ISSUE_ORDERS);
+        issueOrdersPhase("Else");
+        setCurrentGameState(GameStateType::EXECUTE_ORDERS);
+        executeOrdersPhase("Else");
         round++;
         for(Player* player: getPlayers()){
             if (player->getOwnedTerritories().size() == 0) {

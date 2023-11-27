@@ -122,8 +122,8 @@ public:
     void mainGameLoop();
     // mainGameLoop's phases
     void reinforcementPhase();
-    void issueOrdersPhase();
-    void executeOrdersPhase();
+    void issueOrdersPhase(string orderType);
+    void executeOrdersPhase(string orderType);
     // helper methods for mainGameLoop()
     Player* getPlayerByID(const string& playerId);
     Territory* getTerritoryByName(const string& territoryName);
