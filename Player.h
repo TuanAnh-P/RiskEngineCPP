@@ -10,7 +10,6 @@
 #include "Orders.h" // Header for the Orders class
 #include "PlayerStrategies.h" // Header for the Player Strategies class
 
-
 class Player {
 public:
     // Constructor
@@ -48,7 +47,9 @@ public:
 
     // Methods related to managing orders
     OrdersList& getOrdersList();                    // Get the player's list of orders
-    void issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine);  // Issue a new order of a specified type
+    void issueOrder(Deck* deck, GameEngine* gameEngine, string& orderType);  // Issue a new order of a specified type
+
+
 
     // Methods related to managing negotiated players
     const std::vector<Player*>& getNegotiatedPlayers();
@@ -60,8 +61,9 @@ public:
     void addReinforcementPool(const int& amount);
     void removeReinforcementPool(const int& amount);
 
-    // Methods realted to player strategy
-    const PlayerStrategy* getStrategy() const;
+    // Methods related to player strategy
+    PlayerStrategy* getStrategy();
+    const StrategyType getStrategyType();
     void setPlayerStrategy(PlayerStrategy* strategy);
 
 private:

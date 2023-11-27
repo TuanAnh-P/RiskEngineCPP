@@ -6,31 +6,31 @@
 void testPlayerStrategies()
 {
 	// Create instance of strategy
-	NeutralPlayerStrategy* neutralStrat = new NeutralPlayerStrategy();
+	/*NeutralPlayerStrategy* neutralStrat = new NeutralPlayerStrategy();
 	HumanPlayerStrategy* humanStrat = new HumanPlayerStrategy();
-	AggressivePlayerStrategy* aggroStrat = new AggressivePlayerStrategy();
+	AggressivePlayerStrategy* aggroStrat = new AggressivePlayerStrategy();*/
 
 	// Assignment operator test
-	*aggroStrat = *humanStrat;
+	//*aggroStrat = *humanStrat;
 
 
-	delete(neutralStrat);
-	delete(humanStrat);
-	delete(aggroStrat);
+	//delete(neutralStrat);
+	//delete(humanStrat);
+	//delete(aggroStrat);
 
-	Player player("John", StrategyType::AggressivePlayer);
-	Player player2("Sue", StrategyType::NeutralPlayer);
+	Player* player = new Player("John", StrategyType::AggressivePlayer);
+	Player* player2 = new Player("Sue", StrategyType::NeutralPlayer);
 	
-	Player player3(player2);
+	Player player3(*player2);
 
 	player2 = player;
 
 	// Test switch strategy
-	std::cout << *player.getStrategy() << std::endl;
-	player.setPlayerStrategy(new HumanPlayerStrategy());
-	std::cout << *player.getStrategy() << std::endl;	
+	std::cout << player->getStrategy() << std::endl;
+	player->setPlayerStrategy(new HumanPlayerStrategy(player));
+	std::cout << *player->getStrategy() << std::endl;	
 
-	std::cout << *player2.getStrategy() << std::endl;
+	std::cout << *player2->getStrategy() << std::endl;
 	std::cout << *player3.getStrategy() << std::endl;
 
 }
