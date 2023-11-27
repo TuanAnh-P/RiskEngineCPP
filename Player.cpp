@@ -276,8 +276,8 @@ std::vector<Territory*> Player::getOwnedTerritories()
     return this->ownedTerritories;
 }
 
-void Player::issueOrder() {
-    return this->m_strategy->issueOrder();
+void Player::issueOrder(Deck* deck, GameEngine* gameEngine) {
+    return this->m_strategy->issueOrder(deck, gameEngine);
 //    Order* newOrder = nullptr;
 //
 //    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);

@@ -91,8 +91,175 @@ HumanPlayerStrategy::HumanPlayerStrategy(Player* player)
     m_player = player;
 }
 
-void HumanPlayerStrategy::issueOrder()
+void HumanPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine)
 {
+    // Player must deploy all his reinforcement pool to proceed with Advance order
+    while (this->m_player->getReinforcementPool() > 0) {
+        string order;
+        cout << this->m_player->getPlayerID() << " enters order: ";
+        cin >> order;
+        if (order == "Deploy"){
+            // Get territories that can deploy to (territories from toDefend())
+            std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
+            for (Territory* territory : this->m_player->toDefend()) {
+                std::cout << territory->getName() << std::endl;
+            }
+            string deployTarget;
+            int numDeploy;
+            cout << this->m_player->getPlayerID() << " enters target territory to deploy army units: ";
+            cin >> deployTarget;
+            cout << this->m_player->getPlayerID() << " enters number of army units to deploy: ";
+            cin >> numDeploy;
+            Territory* deployTerritory = gameEngine->getTerritoryByName(deployTarget);
+            if (deployTerritory == nullptr) cout << "Invalid territory" << endl;
+            else if(numDeploy > this->m_player->getReinforcementPool()) cout << "Invalid number of army units to deploy" << endl;
+            else{
+//                            player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr, nullptr, nullptr);
+                Order* newOrder = new Deploy(this->m_player, deployTerritory, new int(numDeploy));
+                cout << this->m_player->getPlayerID() << " issued a Deploy order" << std::endl;
+                this->m_player->getOrdersList().orders.push_back(newOrder);
+                this->m_player->removeReinforcementPool(numDeploy);
+            }
+            cout << this->m_player->getPlayerID() << " has " << this->m_player->getReinforcementPool() << " army units left to deploy" << endl;
+        }
+        else cout << "You can only issue 'Deploy' orders when your reinforcement pool is not empty." << endl;
+    }
+
+    // Advance order
+    cout << this->m_player->getPlayerID() << " can make Advance Order" << endl;
+    char continueAdvancing;
+    do {
+
+        // Get territories to defend
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
+        for (Territory* territory : this->m_player->toDefend()) {
+            std::cout << territory->getName() << std::endl;
+        }
+
+        // Get territories to attack
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
+        for (Territory* territory : this->m_player->toAttack()) {
+            std::cout << territory->getName() << std::endl;
+        }
+
+        // Ask the player to make an Advance Order
+        string userSource;
+        string userTarget;
+        int numUnits;
+        cout << this->m_player->getPlayerID() << " enters source territory: ";
+        cout << endl;
+        cin >> userSource;
+        cout << this->m_player->getPlayerID() << " enters target territory: ";
+        cin >> userTarget;
+        cout << endl;
+        cout << this->m_player->getPlayerID() << " enters number of army units to advance: ";
+        cin >> numUnits;
+        cout << endl;
+
+        // Retrieving source and target territories
+        Territory* sourceTerritory = gameEngine->getTerritoryByName(userSource);
+        Territory* targetTerritory = gameEngine->getTerritoryByName(userTarget);
+
+        if (sourceTerritory == nullptr) cout << "Invalid source territory" << endl;
+        else if (targetTerritory == nullptr) cout << "Invalid target territory" << endl;
+        else {
+//                        player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(numUnits), nullptr, deck, this);
+            Order* newOrder = new Advance(this->m_player, targetTerritory, sourceTerritory, new int(numUnits), deck, gameEngine);
+            cout << this->m_player->getPlayerID() << " issued an Advance order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+            // Converting Neutral Player to Aggressive Player if needed
+            for (Player* otherPlayer : gameEngine->getPlayers()){
+                if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer){
+                    otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                    cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
+                }
+            }
+        }
+
+        // Ask if the player wants to make another Advance Order
+        cout << "Do you want to make another Advance Order? (y/n): ";
+        cin >> continueAdvancing;
+    } while (continueAdvancing == 'y' || continueAdvancing == 'Y');
+
+    // Player plays a card from their hand
+    cout << this->m_player->getPlayerID() << " plays a card from their hand contents below" << endl;
+    cout << this->m_player->getHand() << endl;
+    int cardSelection;
+    cout << "Enter the card's index you wish to use (1st card has an index of 0): ";
+    cin >> cardSelection;
+    if (cardSelection>this->m_player->getHand().cards.size()-1 || cardSelection<0){
+        cout << "Invalid index ";
+    }
+    else if (this->m_player->getHand().cards[cardSelection]->getType() == CardType::Airlift){
+        string source;
+        string target;
+        int num;
+        cout << "Airlift - Enter the source territory: ";
+        cin >> source;
+        cout << "Airlift - Enter the target territory: ";
+        cin >> target;
+        cout << "Airlift - Enter the number of army units: ";
+        cin >> num;
+        Territory* sourceTerritory = gameEngine->getTerritoryByName(source);
+        Territory* targetTerritory = gameEngine->getTerritoryByName(target);
+        if (sourceTerritory == nullptr) cout << "Source territory is invalid" << endl;
+        else if (targetTerritory == nullptr) cout << "Source territory is invalid" << endl;
+        else {
+//                        player->issueOrder("Airlift", sourceTerritory, targetTerritory, new int(num), nullptr, nullptr, nullptr);
+            Order* newOrder = new Airlift(this->m_player, sourceTerritory, targetTerritory, new int(num));
+            cout << this->m_player->getPlayerID() << " issued an Airlift order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+            // Converting Neutral Player to Aggressive Player if needed
+            for (Player* otherPlayer : gameEngine->getPlayers()){
+                if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer){
+                    otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                    cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
+                }
+            }
+        }
+    }
+    else if (this->m_player->getHand().cards[cardSelection]->getType() == CardType::Bomb){
+        string target;
+        cout << "Bomb - Enter the target territory: ";
+        cin >> target;
+        Territory* targetTerritory = gameEngine->getTerritoryByName(target);
+        if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
+        else {
+//                        player->issueOrder("Bomb", nullptr, targetTerritory, nullptr, p, nullptr, nullptr);
+            Order* newOrder = new Bomb(this->m_player, targetTerritory);
+            cout << this->m_player->getPlayerID() << " issued a Bomb order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+            // Converting Neutral Player to Aggressive Player if needed
+            for (Player* otherPlayer : gameEngine->getPlayers()){
+                if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer){
+                    otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                    cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
+                }
+            }
+        }
+    }
+    else if (this->m_player->getHand().cards[cardSelection]->getType() == CardType::Blockade){
+        string target;
+        cout << "Blockade - Enter the target territory: ";
+        cin >> target;
+        Territory* targetTerritory = gameEngine->getTerritoryByName(target);
+        if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
+//                    else player->issueOrder("Blockade", nullptr, targetTerritory, nullptr, nullptr, nullptr, this);
+        Order* newOrder = new Blockade(this->m_player, targetTerritory, gameEngine);
+        cout << this->m_player->getPlayerID() << " issued a Blockade order" << std::endl;
+        this->m_player->getOrdersList().orders.push_back(newOrder);
+    }
+    else if (this->m_player->getHand().cards[cardSelection]->getType() == CardType::Diplomacy){
+        string targetPlayer;
+        cout << "Diplomacy/Negotiate - Enter the target player: ";
+        cin >> targetPlayer;
+        Player* p = gameEngine->getPlayerByID(targetPlayer);
+        if (p == nullptr) cout << "Player is invalid" << endl;
+//                    else player->issueOrder("Negotiate", nullptr, nullptr, nullptr, p, nullptr, nullptr);
+        Order* newOrder = new Negotiate(this->m_player, p);
+        cout << this->m_player->getPlayerID() << " issued a Negotiate order" << std::endl;
+        this->m_player->getOrdersList().orders.push_back(newOrder);
+    }
 }
 
 std::vector<Territory*> HumanPlayerStrategy::toAttack()
@@ -115,8 +282,141 @@ AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player)
     m_player = player;
 }
 
-void AggressivePlayerStrategy::issueOrder()
+void AggressivePlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine)
 {
+    // Aggressive Player will deploy all of his armies on its strongest territory
+    while (this->m_player->getReinforcementPool() > 0) {
+        // Get territories he that can deploy to (territories from toDefend())
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
+        for (Territory* territory : this->m_player->toDefend()) {
+            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+        }
+        // Get the territory that has the most number of armies
+        Territory* deployTerritory = this->m_player->toDefend().at(0);
+        for (Territory* territory : this->m_player->toDefend()) {
+            if (territory->getNumberOfArmies() > deployTerritory->getNumberOfArmies()) deployTerritory = territory;
+        }
+        cout << this->m_player->getPlayerID() << " enters target territory to deploy army units: " << deployTerritory->getName() << endl;
+        cout << this->m_player->getPlayerID() << " enters number of army units to deploy: " << this->m_player->getReinforcementPool() << endl;
+
+
+//                    player->issueOrder("Deploy", nullptr, deployTerritory, new int(player->getReinforcementPool()), nullptr, nullptr, nullptr);
+        Order* newOrder = new Deploy(this->m_player, deployTerritory, new int(this->m_player->getReinforcementPool()));
+        cout << this->m_player->getPlayerID() << " issued a Deploy order" << std::endl;
+        this->m_player->getOrdersList().orders.push_back(newOrder);
+        this->m_player->removeReinforcementPool(this->m_player->getReinforcementPool());
+
+        cout << this->m_player->getPlayerID() << " has " << this->m_player->getReinforcementPool() << " army units left to deploy" << endl;
+    }
+
+
+    // Aggressive Player will then advance from its strongest territory until he can't no longer do so (when toAttack() return an empty vector)
+    cout << this->m_player->getPlayerID() << " can make Advance Order" << endl;
+    std::vector<Territory*> attackTerritories = this->m_player->toAttack();
+
+    while (true) {
+
+        if (attackTerritories.empty()) break;
+
+        else {
+            // Get territories to defend
+            std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
+            for (Territory* territory : this->m_player->toDefend()) {
+                std::cout << territory->getName() << std::endl;
+            }
+            // Get territories to attack
+            std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
+            for (Territory* territory : attackTerritories) {
+                std::cout << territory->getName() << std::endl;
+            }
+            // Get the source territory that has the most number of armies as source territory
+            Territory* sourceTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
+            for (Territory* territory : this->m_player->toDefend()) {
+                if (territory->getNumberOfArmies() > sourceTerritory->getNumberOfArmies()) sourceTerritory = territory;
+            }
+            Territory* targetTerritory = attackTerritories.empty() ? nullptr : attackTerritories.at(0);
+            cout << this->m_player->getPlayerID() << " enters source territory: " << sourceTerritory->getName() << endl;
+            cout << this->m_player->getPlayerID() << " enters target territory: " << targetTerritory->getName() << endl;
+            cout << this->m_player->getPlayerID() << " enters number of army units to advance: " << sourceTerritory->getNumberOfArmies() << endl;
+//                        player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(sourceTerritory->getNumberOfArmies()), nullptr, deck, this);
+            Order* newOrder = new Advance(this->m_player, targetTerritory, sourceTerritory, new int(sourceTerritory->getNumberOfArmies()), deck, gameEngine);
+            cout << this->m_player->getPlayerID() << " issued an Advance order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+
+            attackTerritories.erase(std::remove(attackTerritories.begin(), attackTerritories.end(), targetTerritory), attackTerritories.end());
+
+            // Converting Neutral Player to Aggressive Player if needed
+            for (Player* otherPlayer : gameEngine->getPlayers()) {
+                if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
+                    otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                    cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
+                }
+            }
+        }
+    }
+
+    // Aggressive Player will play any cards with an aggressive intent (doing the most damage possible)
+    cout << this->m_player->getPlayerID() << " plays a card from their hand contents below" << endl;
+    cout << this->m_player->getHand() << endl;
+    if (not this->m_player->getHand().cards.empty()) {
+        if (this->m_player->getHand().cards.at(0)->getType() == CardType::Airlift) {
+            // Get the source territory that has the most number of armies as source territory
+            Territory* sourceTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
+            for (Territory* territory : this->m_player->toDefend()) {
+                if (territory->getNumberOfArmies() > sourceTerritory->getNumberOfArmies()) sourceTerritory = territory;
+            }
+            // Get the target territory that has the most number of armies as source territory
+            Territory* targetTerritory = this->m_player->toAttack().empty() ? nullptr : this->m_player->toAttack().at(0);
+            for (Territory* territory : this->m_player->toAttack()) {
+                if (territory->getNumberOfArmies() > targetTerritory->getNumberOfArmies()) targetTerritory = territory;
+            }
+            cout << "Airlift - Enter the source territory: " << sourceTerritory->getName() << endl;
+            cout << "Airlift - Enter the target territory: " << targetTerritory->getName() << endl;
+            cout << "Airlift - Enter the number of army units: " << sourceTerritory->getNumberOfArmies() << endl;
+//                        player->issueOrder("Airlift", sourceTerritory, targetTerritory, new int(sourceTerritory->getNumberOfArmies()), nullptr, nullptr, nullptr);
+            Order* newOrder = new Airlift(this->m_player, sourceTerritory, targetTerritory, new int(sourceTerritory->getNumberOfArmies()));
+            cout << this->m_player->getPlayerID() << " issued an Airlift order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+            // Converting Neutral Player to Aggressive Player if needed
+            for (Player* otherPlayer : gameEngine->getPlayers()) {
+                if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
+                    otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                    cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
+                }
+            }
+        }
+        else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Bomb) {
+            // Get the target territory that has the most number of armies as source territory
+            Territory* targetTerritory = this->m_player->toAttack().empty() ? nullptr : this->m_player->toAttack().at(0);
+            for (Territory* territory : this->m_player->toAttack()) {
+                if (territory->getNumberOfArmies() > targetTerritory->getNumberOfArmies()) targetTerritory = territory;
+            }
+            // Get the player that has that territory
+            Player* targetPlayer = nullptr;
+            for (Player* otherPlayer : gameEngine->getPlayers()) {
+                if (otherPlayer->isTerritoryOwned(targetTerritory)) targetPlayer = otherPlayer;
+            }
+            cout << "Bomb - Enter the target player: " << targetPlayer->getPlayerID() << endl;
+            cout << "Bomb - Enter the target territory: " << targetTerritory->getName() << endl;
+//                        player->issueOrder("Bomb", nullptr, targetTerritory, nullptr, nullptr, nullptr, nullptr);
+            Order* newOrder = new Bomb(this->m_player, targetTerritory);
+            cout << this->m_player->getPlayerID() << " issued a Bomb order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+            // Converting Neutral Player to Aggressive Player if needed
+            for (Player* otherPlayer : gameEngine->getPlayers()) {
+                if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
+                    otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                    cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
+                }
+            }
+        }
+        else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Blockade) {
+            cout << this->m_player->getPlayerID() << " won't play his Blockade card" << endl;
+        }
+        else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Diplomacy) {
+            cout << this->m_player->getPlayerID() << " won't play his Diplomacy card" << endl;
+        }
+    }
 }
 
 std::vector<Territory*> AggressivePlayerStrategy::toAttack()
@@ -139,8 +439,103 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player)
 }
 
 // Shouldn't be able to issue a Bomb order so remove Bomb order as an option
-void BenevolentPlayerStrategy::issueOrder()
+void BenevolentPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine)
 {
+    // Benevolent Player will deploy all of his armies on its weakest territory
+    while (this->m_player->getReinforcementPool() > 0) {
+        // Get territories that he can deploy to (territories from toDefend())
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
+        for (Territory* territory : this->m_player->toDefend()) {
+            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+        }
+        // Get the territory that has the least number of armies
+        Territory* deployTerritory = this->m_player->toDefend().at(0);
+        for (Territory* territory : this->m_player->toDefend()) {
+            if (territory->getNumberOfArmies() < deployTerritory->getNumberOfArmies()) deployTerritory = territory;
+        }
+        cout << this->m_player->getPlayerID() << " enters target territory to deploy army units: " << deployTerritory->getName() << endl;
+        cout << this->m_player->getPlayerID() << " enters number of army units to deploy: " << this->m_player->getReinforcementPool() << endl;
+
+
+//                    player->issueOrder("Deploy", nullptr, deployTerritory, new int(player->getReinforcementPool()), nullptr, nullptr, nullptr);
+        Order* newOrder = new Deploy(this->m_player, deployTerritory, new int(this->m_player->getReinforcementPool()));
+        cout << this->m_player->getPlayerID() << " issued a Deploy order" << std::endl;
+        this->m_player->getOrdersList().orders.push_back(newOrder);
+        this->m_player->removeReinforcementPool(this->m_player->getReinforcementPool());
+
+        cout << this->m_player->getPlayerID() << " has " << this->m_player->getReinforcementPool() << " army units left to deploy" << endl;
+    }
+
+    // Benevolent Player will then make one advance order to move half of the armies from its strongest territory to its weakest territory
+    cout << this->m_player->getPlayerID() << " can make Advance Order" << endl;
+    if (this->m_player->toDefend().size()<2) {
+        cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
+    }
+    else{
+        // Get territories to defend
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
+        for (Territory* territory : this->m_player->toDefend()) {
+            std::cout << territory->getName() << std::endl;
+        }
+        // Get territories to attack
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
+        for (Territory* territory : this->m_player->toAttack()) {
+            std::cout << territory->getName() << std::endl;
+        }
+        // Get the source territory that has the most number of armies
+        Territory* sourceTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
+        for (Territory* territory : this->m_player->toDefend()) {
+            if (territory->getNumberOfArmies() > sourceTerritory->getNumberOfArmies()) sourceTerritory = territory;
+        }
+        // Get the target territory that has the least number of armies
+        Territory* targetTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
+        for (Territory* territory : this->m_player->toDefend()) {
+            if (territory->getNumberOfArmies() < targetTerritory->getNumberOfArmies()) targetTerritory = territory;
+        }
+        cout << this->m_player->getPlayerID() << " enters source territory: " << sourceTerritory->getName() << endl;
+        cout << this->m_player->getPlayerID() << " enters target territory: " << targetTerritory->getName() << endl;
+        cout << this->m_player->getPlayerID() << " enters number of army units to advance: " << static_cast<int>(sourceTerritory->getNumberOfArmies() / 2)<< endl;
+//                    player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(static_cast<int>(sourceTerritory->getNumberOfArmies() / 2)), nullptr, deck, this);
+        Order* newOrder = new Advance(this->m_player, targetTerritory, sourceTerritory, new int(static_cast<int>(sourceTerritory->getNumberOfArmies() / 2)), deck, gameEngine);
+        cout << this->m_player->getPlayerID() << " issued an Advance order" << std::endl;
+        this->m_player->getOrdersList().orders.push_back(newOrder);
+    }
+
+    // Benevolent Player won't play any cards with an aggressive intent
+    cout << this->m_player->getPlayerID() << " plays a card from their hand contents below" << endl;
+    cout << this->m_player->getHand() << endl;
+    if (not this->m_player->getHand().cards.empty()){
+        // Benevolent Player will use his Blockage card to move half of the armies from its strongest territory to its weakest territory
+        if (this->m_player->getHand().cards.at(0)->getType() == CardType::Airlift && this->m_player->toDefend().size()<2){
+            // Get the source territory that has the most number of armies as source territory
+            Territory* sourceTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
+            for (Territory* territory : this->m_player->toDefend()) {
+                if (territory->getNumberOfArmies() > sourceTerritory->getNumberOfArmies()) sourceTerritory = territory;
+            }
+            // Get the target territory that has the least number of armies as source territory
+            Territory* targetTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
+            for (Territory* territory : this->m_player->toDefend()) {
+                if (territory->getNumberOfArmies() < targetTerritory->getNumberOfArmies()) targetTerritory = territory;
+            }
+            cout << "Airlift - Enter the source territory: " << sourceTerritory->getName() << endl;
+            cout << "Airlift - Enter the target territory: " << targetTerritory->getName() << endl;
+            cout << "Airlift - Enter the number of army units: " << sourceTerritory->getNumberOfArmies() << endl;
+//                        player->issueOrder("Airlift", sourceTerritory, targetTerritory, new int(static_cast<int>(sourceTerritory->getNumberOfArmies() / 2)), nullptr, nullptr, nullptr);
+            Order* newOrder = new Airlift(this->m_player, sourceTerritory, targetTerritory, new int(static_cast<int>(sourceTerritory->getNumberOfArmies() / 2)));
+            cout << this->m_player->getPlayerID() << " issued an Airlift order" << std::endl;
+            this->m_player->getOrdersList().orders.push_back(newOrder);
+        }
+        else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Bomb){
+            cout << this->m_player->getPlayerID() << " won't play his Bomb card" << endl;
+        }
+        else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Blockade){
+            cout << this->m_player->getPlayerID() << " won't play his Blockade card" << endl;
+        }
+        else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Diplomacy){
+            cout << this->m_player->getPlayerID() << " won't play his Diplomacy card" << endl;
+        }
+    }
+    else cout << this->m_player->getPlayerID() << " won't play any cards" << endl;
 }
 
 std::vector<Territory*> BenevolentPlayerStrategy::toAttack()
@@ -162,7 +557,7 @@ NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player)
     m_player = player;
 }
 
-void NeutralPlayerStrategy::issueOrder()
+void NeutralPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine)
 {
     std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
     for (Territory* territory : this->m_player->toDefend()) {
@@ -195,8 +590,32 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player)
     m_player = player;
 }
 
-void CheaterPlayerStrategy::issueOrder()
+void CheaterPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine)
 {
+    std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
+    for (Territory* territory : this->m_player->toDefend()) {
+        std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+    }
+    cout << this->m_player->getPlayerID() << " won't make any Deploy orders" << endl;
+    cout << this->m_player->getPlayerID() << " can make Advance Order" << endl;
+    cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
+    // Cheating algorithm
+    for (Territory* territory : this->m_player->toAttack()) {
+        this->m_player->addTerritory(territory);
+        Player* playerThatOwnedThatTerritory = nullptr;
+        for (Player* otherPlayer : gameEngine->getPlayers()){
+            if (otherPlayer->isTerritoryOwned(territory)) playerThatOwnedThatTerritory=otherPlayer;
+        }
+        playerThatOwnedThatTerritory->removeTerritory(territory);
+        // Converting Neutral Player to Aggressive Player if needed
+        if (playerThatOwnedThatTerritory->getStrategyType() == StrategyType::NeutralPlayer){
+            playerThatOwnedThatTerritory->setPlayerStrategy(new AggressivePlayerStrategy(playerThatOwnedThatTerritory));
+            cout << playerThatOwnedThatTerritory->getPlayerID() << " becomes an Aggressive Player" << endl;
+        }
+    }
+    cout << this->m_player->getPlayerID() << " plays a card from their hand contents below" << endl;
+    cout << this->m_player->getHand() << endl;
+    cout << this->m_player->getPlayerID() << " won't play any cards" << endl;
 }
 
 std::vector<Territory*> CheaterPlayerStrategy::toAttack()

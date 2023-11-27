@@ -45,7 +45,7 @@ public:
 	const StrategyType getStrategyType();
 
 	// Pure virtual functions
-	virtual void issueOrder() = 0;
+	virtual void issueOrder(Deck* deck, GameEngine* gameEngine) = 0;
 	virtual std::vector<Territory*> toAttack() = 0;
 	virtual std::vector<Territory*> toDefend() = 0;
 
@@ -67,7 +67,7 @@ public:
 	// Constructor
 	HumanPlayerStrategy(Player* player);
 
-	void issueOrder();
+	void issueOrder(Deck* deck, GameEngine* gameEngine);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
@@ -84,7 +84,7 @@ public:
 	// Constructor
 	AggressivePlayerStrategy(Player* player);
 
-	void issueOrder();
+	void issueOrder(Deck* deck, GameEngine* gameEngine);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
@@ -101,7 +101,7 @@ public:
 	// Constructor
 	BenevolentPlayerStrategy(Player* player);
 
-	void issueOrder();
+	void issueOrder(Deck* deck, GameEngine* gameEngine);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
@@ -118,7 +118,7 @@ public:
 	// Constructor
 	NeutralPlayerStrategy(Player* player);
 
-	void issueOrder();
+	void issueOrder(Deck* deck, GameEngine* gameEngine);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
@@ -135,7 +135,7 @@ public:
 	// Constructor
 	CheaterPlayerStrategy(Player* player);
 
-	void issueOrder();
+	void issueOrder(Deck* deck, GameEngine* gameEngine);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
