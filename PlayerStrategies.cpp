@@ -103,7 +103,7 @@ void HumanPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, string&
                 // Get territories that can deploy to (territories from toDefend())
                 std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
                 for (Territory* territory : this->m_player->toDefend()) {
-                    std::cout << territory->getName() << std::endl;
+                    std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
                 }
                 string deployTarget;
                 int numDeploy;
@@ -136,13 +136,13 @@ void HumanPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, string&
             // Get territories to defend
             std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
             for (Territory* territory : this->m_player->toDefend()) {
-                std::cout << territory->getName() << std::endl;
+                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
 
             // Get territories to attack
             std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
             for (Territory* territory : this->m_player->toAttack()) {
-                std::cout << territory->getName() << std::endl;
+                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
 
             // Ask the player to make an Advance Order
@@ -294,7 +294,7 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
             // Get territories he that can deploy to (territories from toDefend())
             std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
             for (Territory* territory : this->m_player->toDefend()) {
-                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
             // Get the territory that has the most number of armies and making sure that territory has adjacent territories to attack
             Territory* deployTerritory = nullptr;  // Initialize to nullptr
@@ -336,12 +336,12 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
                 // Get territories to defend
                 std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
                 for (Territory* territory : this->m_player->toDefend()) {
-                    std::cout << territory->getName() << std::endl;
+                    std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
                 }
                 // Get territories to attack
                 std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
                 for (Territory* territory : attackTerritories) {
-                    std::cout << territory->getName() << std::endl;
+                    std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
                 }
                 // Get the source territory that has the most number of armies as source territory
                 Territory* sourceTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
@@ -462,7 +462,7 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
             // Get territories that he can deploy to (territories from toDefend())
             std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
             for (Territory* territory : this->m_player->toDefend()) {
-                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
             // Get the territory that has the least number of armies
             Territory* deployTerritory = this->m_player->toDefend().at(0);
@@ -493,12 +493,12 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
             // Get territories to defend
             std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
             for (Territory* territory : this->m_player->toDefend()) {
-                std::cout << territory->getName() << std::endl;
+                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
             // Get territories to attack
             std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
             for (Territory* territory : this->m_player->toAttack()) {
-                std::cout << territory->getName() << std::endl;
+                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
             // Get the source territory that has the most number of armies
             Territory* sourceTerritory = this->m_player->toDefend().empty() ? nullptr : this->m_player->toDefend().at(0);
@@ -581,7 +581,7 @@ void NeutralPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, strin
     if (orderType == "Deploy"){
         std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
         for (Territory* territory : this->m_player->toDefend()) {
-            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
         }
         cout << this->m_player->getPlayerID() << " won't make any Deploy orders" << endl;
     }
@@ -619,7 +619,7 @@ void CheaterPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, strin
     if (orderType == "Deploy"){
         std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
         for (Territory* territory : this->m_player->toDefend()) {
-            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
+            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
         }
         cout << this->m_player->getPlayerID() << " won't make any Deploy orders" << endl;
     }

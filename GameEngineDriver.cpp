@@ -102,8 +102,8 @@ void testMainGameLoop(){
     game->gameMap=map;
 
     // Initializing 2 players
-    Player* player1 = new Player("John", StrategyType::HumanPlayer);
-    Player* player2 = new Player("Jose", StrategyType::HumanPlayer);
+    Player* player1 = new Player("Aggr1", StrategyType::AggressivePlayer);
+    Player* player2 = new Player("Aggr2", StrategyType::AggressivePlayer);
     std::vector<Player*> playerList;
     playerList.push_back(player1);
     playerList.push_back(player2);
@@ -127,7 +127,7 @@ void testMainGameLoop(){
     game->deck->draw(player2->getHand());
 
     // Calling the mainGameLoop()
-    game->mainGameLoop();
+    game->mainGameLoop(3);
 }
 
 int main()
