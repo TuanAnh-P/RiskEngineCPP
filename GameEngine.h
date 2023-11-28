@@ -6,7 +6,7 @@
 #include <string>
 
 #include "Player.h"
-#include "map.h" 
+#include "map.h"
 #include "Cards.h"
 #include "MapLoader.h"
 #include <vector>
@@ -49,8 +49,8 @@ protected:
 public:
     // constructors
     explicit GameState(GameEngine &gameEngine,
-                        GameStateType *gameStateId,
-                        string *name);
+                       GameStateType *gameStateId,
+                       string *name);
 
     explicit GameState(GameState &gameState);
 
@@ -62,10 +62,10 @@ public:
 
     // stream ingestion operator
     friend ostream & operator << (ostream &out, GameState &state);
-    
+
     // method that returns the Id of the game state
     GameStateType getGameStateId();
-    
+
     void enter();
 
     // method for updating the game state
@@ -85,14 +85,14 @@ private:
     bool loadMap(const string& filename);
     bool validateMap();
     void addPlayer(const string& playerName, StrategyType strat);
-    
+
     void gameStart();
     void distributeTerritories();
     void randomizePlayerOrder();
     void initializeReinforcementPools();
     void drawInitialCards();
 
-    void play();
+    void play(int turns);
 
 protected:
     // All GameStates of the game
@@ -111,7 +111,7 @@ public:
     Deck* deck;
 
     Player* neutralPlayer;
-    
+
     //getter
     const std::vector<Player*>& getPlayers() const;
 
@@ -119,7 +119,7 @@ public:
     void startupPhase();
 
     // mainGameLoop
-    void mainGameLoop();
+    void mainGameLoop(int turns);
     // mainGameLoop's phases
     void reinforcementPhase();
     void issueOrdersPhase(string orderType);
@@ -143,7 +143,7 @@ public:
 
     // Assignment operator
     void operator=(const GameEngine &gameEngine);
-    
+
     // Getter for command processor 
     CommandProcessor& getCommandProcessor();
 
@@ -236,7 +236,7 @@ public:
 class WinState : public GameState
 {
 public:
-    WinState(GameEngine &gameEngine); 
+    WinState(GameEngine &gameEngine);
 
     void update(Command& command);
 };
