@@ -352,6 +352,8 @@ void Advance::execute()
 		if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
 		{
 			std::cout << "-- Move Advance order --" << std::endl;
+
+			// Check if the requested move amount is greater then the source territory army amount
 			if (*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies())
 			{
 				std::cout << " Reuqest move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
@@ -580,8 +582,6 @@ void Bomb::print()
 {
 	if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
 
-
-
 	std::cout << " -- " << this->type << " Order-- " << std::endl;
 	std::string target = m_targetTerritory->getName();
 
@@ -703,10 +703,18 @@ void Airlift::execute()
 	{
 		std::cout << "Executing " << this->type << " Order.." << std::endl;
 
-		// Move armies to target territory
-		m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
-
-		m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+		// Check if the requested move amount is greater then the source territory army amount
+		if (*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies())
+		{
+			std::cout << " Reuqest move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
+			m_sourceTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies());
+			m_targetTerritory->setNumberOfArmies(0);
+		}
+		else
+		{
+			m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+			m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+		}
 
 		this->print();
         Notify(this);
