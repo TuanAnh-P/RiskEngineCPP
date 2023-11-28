@@ -316,6 +316,15 @@ bool Player::isContinentOwned(Continent* continent) {
     return true; // Player owns all territories in the continent
 }
 
+bool Player::doesHaveAdjacentTerritoriesToAttack(Territory* territory) {
+    for (Territory* territoryToAttack : territory->getAdjacentTerritories()){
+        if (!this->isTerritoryOwned(territoryToAttack)){
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string Player::getPlayerID() const {
     return *playerID;
 }

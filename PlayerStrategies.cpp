@@ -296,10 +296,18 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
             for (Territory* territory : this->m_player->toDefend()) {
                 std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << std::endl;
             }
-            // Get the territory that has the most number of armies
-            Territory* deployTerritory = this->m_player->toDefend().at(0);
+            // Get the territory that has the most number of armies and making sure that territory has adjacent territories to attack
+            Territory* deployTerritory = nullptr;  // Initialize to nullptr
+            int maxArmies = 0;
+
             for (Territory* territory : this->m_player->toDefend()) {
-                if (territory->getNumberOfArmies() > deployTerritory->getNumberOfArmies()) deployTerritory = territory;
+                if (this->m_player->doesHaveAdjacentTerritoriesToAttack(territory)) {
+                    if (territory->getNumberOfArmies() >= maxArmies){
+                        maxArmies = territory->getNumberOfArmies();  // Update the maxArmies
+                        deployTerritory = territory;  // Update only after checking all adjacent territories
+                        break;
+                    }
+                }
             }
             cout << this->m_player->getPlayerID() << " enters target territory to deploy army units: " << deployTerritory->getName() << endl;
             cout << this->m_player->getPlayerID() << " enters number of army units to deploy: " << this->m_player->getReinforcementPool() << endl;
