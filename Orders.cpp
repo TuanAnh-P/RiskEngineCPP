@@ -374,6 +374,7 @@ void Advance::execute()
 		// Simulate attack
 		else
 		{
+
 			bool attackersTurn = true;
 			bool attackersWon = true;
 			Player* enemyPlayer = nullptr;
@@ -401,6 +402,8 @@ void Advance::execute()
 
 			if (canAttack)
 			{
+				m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+
 				std::cout << "-- Attack Advance order --" << std::endl;
 
 				bool attackersTurn = true;
@@ -457,6 +460,8 @@ void Advance::execute()
 							}
 						}
 					}
+
+					
 
 					// Check if the issuing player has drawn a card this turn after taking an territory			
 					if (!this->getIssuingPlayer()->hasDrawn)
