@@ -330,7 +330,18 @@ Advance::Advance(Advance& other)
 // Advance validate checks if source territory and target territory.  
 bool Advance::validate()
 {
-	if (this->getIssuingPlayer() == nullptr || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory)) return false;
+	if (this->getIssuingPlayer() == nullptr || !this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory))
+	{
+		std::cout << "Invalid Advance Order - Issuing player is null or Territory is not owned by issuing player!" << std::endl;
+		return false;
+	}
+
+	if (m_sourceTerritory->getNumberOfArmies() == 0)
+	{
+		std::cout << " Invalid Advance Order - Source territory has no armies to Advance!" << std::endl;
+		return false;
+
+	}
 
 	// Check that target territory is adjacent to a player owned territory
 	for (Territory* adjacentTerritory : m_targetTerritory->getAdjacentTerritories())
@@ -338,6 +349,8 @@ bool Advance::validate()
 		if (m_sourceTerritory == adjacentTerritory) return true;
 	}
 
+
+	std::cout << " Invalid Advance Order - Source territory and Target are not adjacent Territories" << std::endl;
 	return false;
 }
 
@@ -450,15 +463,19 @@ void Advance::execute()
 					std::vector<Player*> players = m_gameEngineRef->getPlayers();
 					for (Player* player : players)
 					{
-						for (Territory* territory : player->getOwnedTerritories())
+						if (player != this->getIssuingPlayer())
 						{
-							if (territory == m_targetTerritory)
+							for (Territory* territory : player->getOwnedTerritories())
 							{
-								player->removeTerritory(territory);
-								this->getIssuingPlayer()->addTerritory(territory);
-								territory->setNumberOfArmies(*m_numOfArmyUnits);
+								if (territory == m_targetTerritory)
+								{
+									player->removeTerritory(territory);
+									this->getIssuingPlayer()->addTerritory(territory);
+									territory->setNumberOfArmies(*m_numOfArmyUnits);
+								}
 							}
 						}
+
 					}
 
 					
@@ -480,7 +497,7 @@ void Advance::execute()
 
 			else
 			{
-				std::cout << "Invalid " << this->type << " - Enemy player is a negiaoted player" << std::endl;
+				std::cout << "Invalid " << this->type << " - Enemy player is a negioated player" << std::endl;
 				std::cout << std::endl;
 			}
 			
@@ -490,8 +507,7 @@ void Advance::execute()
 
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Source territory does not belongs to " << this->getIssuingPlayer()->getPlayerID() 
-			<< "or Source and Target territories are not adjacent territories" << std::endl;
+		std::cout << "Failed to execute Advance order!" << std::endl;
 		std::cout << std::endl;
 
 	}
@@ -692,11 +708,31 @@ Airlift::Airlift(Airlift& other)
 // Airlift validate checks if the number of armies, target, source territory is validate
 bool Airlift::validate()
 {
-	if (this->getIssuingPlayer() == nullptr) { return false; }
+	if (this->getIssuingPlayer() == nullptr) 
+	{ 
+		std::cout << "Invalid Airlift - Issuing player is null" << std::endl;
+		return false; 
+	}
 
 	std::vector<Territory*> ownedTerritories = this->getIssuingPlayer()->getOwnedTerritories();
 	
-	if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory)) return true;
+	if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory))
+	{
+		if (this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
+		{
+			return true;
+		}
+		else
+		{
+			std::cout << "Invalid Airlift - Issuing player is does not own Target Territory" << std::endl;
+		}
+
+	}
+	else
+	{
+		std::cout << "Invalid Airlift - Issuing player is does not own Source Territory" << std::endl;
+	}
+
 
 	return false;
 }
@@ -711,7 +747,7 @@ void Airlift::execute()
 		// Check if the requested move amount is greater then the source territory army amount
 		if (*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies())
 		{
-			std::cout << " Reuqest move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
+			std::cout << " Request move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
 			m_sourceTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies());
 			m_targetTerritory->setNumberOfArmies(0);
 		}
@@ -724,10 +760,12 @@ void Airlift::execute()
 		this->print();
         Notify(this);
 	}
+
 	else
 	{
-		std::cout << "Invalid " << this->type << " - Target or Source territory does not belong to " << this->getIssuingPlayer()->getPlayerID() << std::endl;
+		std::cout << "Failed to execute Airlift order!" << std::endl;
 		std::cout << std::endl;
+
 	}
 
 }

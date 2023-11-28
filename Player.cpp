@@ -178,7 +178,7 @@ Player::~Player() {
 void Player::addTerritory(Territory* territory) {
     if (territory) {
         ownedTerritories.push_back(territory);
-        std::cout << "Territory " << territory->getName() << " was added!" << std::endl;
+        std::cout << "Territory " << territory->getName() << " was added to " << this->getPlayerID() << std::endl;
     } else {
         std::cout << "Error: Attempted to add a null territory." << std::endl;
     }
@@ -190,7 +190,7 @@ void Player::removeTerritory(Territory* territory) {
     for (size_t i = 0; i < ownedTerritories.size(); i++) {
         if (ownedTerritories[i] == territory) {
             ownedTerritories.erase(ownedTerritories.begin() + i);
-            std::cout << "Territory " << territory->getName() << " was removed!" << std::endl;
+            std::cout << "Territory " << territory->getName() << " was removed from " << this->getPlayerID() << std::endl;
             return; // Exit the function once the territory is found and removed
         }
     }
