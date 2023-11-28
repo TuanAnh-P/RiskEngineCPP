@@ -106,7 +106,7 @@ void testPlayerStrategies()
     game->deck->draw(benevolent_Player->getHand());
 
     // Start game loop
-    game->mainGameLoop(2);
+    game->mainGameLoop(5);
 
     // Reset the player list and territories 
     playerList.clear();
@@ -139,6 +139,37 @@ void testPlayerStrategies()
     game->deck->draw(cheater_Player->getHand());
 
     // Start game loop
+    game->mainGameLoop(5);
+
+    playerList.clear();
+    usa->setNumberOfArmies(0);
+    mexico->setNumberOfArmies(0);
+    colombia->setNumberOfArmies(0);
+    brazil->setNumberOfArmies(0);
+
+    //  -----------------------  Game 3   -----------------------  // 
+
+    playerList.push_back(neutral_Player);
+    playerList.push_back(aggressive_Player);
+    game->players = playerList;
+
+    neutral_Player->addTerritory(usa);
+    neutral_Player->addTerritory(mexico);
+    aggressive_Player->addTerritory(colombia);
+    aggressive_Player->addTerritory(brazil);
+
+    // Manually setting reinforcement pool to 50 for each player
+    neutral_Player->setReinforcementPool(50);
+    aggressive_Player->setReinforcementPool(50);
+
+    // Manually drawing 2 cards for each player
+    game->deck = new Deck();
+    game->deck->draw(neutral_Player->getHand());
+    game->deck->draw(neutral_Player->getHand());
+    game->deck->draw(aggressive_Player->getHand());
+    game->deck->draw(aggressive_Player->getHand());
+
+    // Start game loop
     game->mainGameLoop(2);
 
     playerList.clear();
@@ -148,10 +179,10 @@ void testPlayerStrategies()
     brazil->setNumberOfArmies(0);
 }
 
-//int main()
-//{
-//    //    testGameStates();
-//    //    testStartupPhase();
-//    testPlayerStrategies();
-//    return 0;
-//};
+int main()
+{
+    //    testGameStates();
+    //    testStartupPhase();
+    testPlayerStrategies();
+    return 0;
+};

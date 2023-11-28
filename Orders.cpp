@@ -351,9 +351,20 @@ void Advance::execute()
 		// Move units
 		if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
 		{
-			m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
-			m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 			std::cout << "-- Move Advance order --" << std::endl;
+			if (*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies())
+			{
+				std::cout << " Reuqest move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
+				m_sourceTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies());
+				m_targetTerritory->setNumberOfArmies(0);
+			}
+			else
+			{
+				m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
+				m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+			}
+
+			
 			this->print();
             Notify(this);
 		}
