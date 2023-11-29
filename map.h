@@ -22,6 +22,9 @@ public:
     
     //Setter: adds adajacent territories of the territory
     void addAdjacentTerritory(Territory* territory);
+
+    // Check if territory adjacent to another
+    bool isAdjacent(Territory* other);
     
     //Basic Getters
     std::string getName() const;
