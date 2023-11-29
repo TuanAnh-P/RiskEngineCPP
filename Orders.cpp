@@ -360,6 +360,7 @@ void Advance::execute()
 	if (this->validate())
 	{
 		std::cout << "Executing " << this->type << " order..." << std::endl;
+		this->print();
 
 		// Move units
 		if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
@@ -369,9 +370,18 @@ void Advance::execute()
 			// Check if the requested move amount is greater then the source territory army amount
 			if (*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies())
 			{
-				std::cout << " Reuqest move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
-				m_sourceTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies());
-				m_targetTerritory->setNumberOfArmies(0);
+				std::cout << " Request move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName() << " to " << m_targetTerritory->getName() << std::endl;
+				m_targetTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies());
+				m_sourceTerritory->setNumberOfArmies(0);
+
+				std::string target = m_targetTerritory->getName();
+				std::string source = m_sourceTerritory->getName();
+
+				std::cout << "Source Territory: " << source << " ----> ";
+				std::cout << " Target Territory: " << target;
+				std::cout << " - Number of armies: " << m_targetTerritory->getNumberOfArmies() << std::endl;
+				std::cout << std::endl;
+
 			}
 			else
 			{
@@ -379,15 +389,13 @@ void Advance::execute()
 				m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
 			}
 
-			
-			this->print();
             Notify(this);
 		}
 
 		// Simulate attack
 		else
 		{
-
+			srand(time(NULL));
 			bool attackersTurn = true;
 			bool attackersWon = true;
 			Player* enemyPlayer = nullptr;
@@ -430,10 +438,14 @@ void Advance::execute()
 						// attacker's turn
 					case true:
 						roll = rand() % 10 + 1;
-						if (roll > 6) // Attacker has 60% chance of kill a unit
+
+						// Attacker won the roll
+						std::cout << "Attacker roll - " << roll << std::endl;
+						if (roll <= 6) // Attacker has 60% chance of kill a unit
 						{
-							*m_numOfArmyUnits -= 1;
-							if (*m_numOfArmyUnits == 0) { attackersWon = false; }
+							m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() - 1);
+							if (m_targetTerritory->getNumberOfArmies() == 0) { attackersWon = true; }
+
 						}
 						attackersTurn = false;
 						break;
@@ -441,18 +453,21 @@ void Advance::execute()
 						// defender's turn
 					case false:
 						roll = rand() % 10 + 1;
-						if (roll > 7) // Defender has 70% chance of kill a unit
+						std::cout << "Defender roll - " << roll << std::endl;
+
+						// Defender won the roll
+						if (roll <= 7) // Defender has 70% chance of kill a unit
 						{
-							m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() - 1);
-							if (m_targetTerritory->getNumberOfArmies() == 0) { attackersWon = true; }
-							
+							*m_numOfArmyUnits -= 1;
+							if (*m_numOfArmyUnits == 0) { attackersWon = false; }							
 						}
 						attackersTurn = true;
 						break;
 					}
-
+					
 					std::cout << m_targetTerritory->getName() << " : " << m_targetTerritory->getNumberOfArmies() << std::endl;
-					std::cout << "Attacker armies" << " : " << *m_numOfArmyUnits << std::endl;
+					std::cout << "Attacker armies" << " : " << *m_numOfArmyUnits << std::endl;\
+					std::cout << "-------------" << std::endl;
 				}
 
 				if (attackersWon == true)
@@ -492,7 +507,7 @@ void Advance::execute()
 
 				else std::cout << "-- Attacker Lost --" << std::endl;
 
-				this->print();
+
 			}
 
 			else
@@ -522,8 +537,8 @@ void Advance::print()
 	std::string target = m_targetTerritory->getName();
 	std::string source = m_sourceTerritory->getName();
 
-	std::cout << "Target Adjacent Territory: " << target << " ----> ";
-	std::cout << " Source Territory: " << source;
+	std::cout << "Source Territory: " << source << " ----> ";
+	std::cout << " Target Territory: " << target;
 	std::cout << " - Number of armies: " << *m_numOfArmyUnits << std::endl;
 	std::cout << std::endl;
 
@@ -748,16 +763,22 @@ void Airlift::execute()
 		if (*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies())
 		{
 			std::cout << " Request move amount is more then whats on the territory, moving remaining amount thats on the " << m_sourceTerritory->getName();
-			m_sourceTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies());
-			m_targetTerritory->setNumberOfArmies(0);
+			m_targetTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies());
+			m_sourceTerritory->setNumberOfArmies(0);
+
+			std::cout << "Source Territory: " << m_sourceTerritory->getName() << " ----> ";
+			std::cout << " Target Territory: " << m_targetTerritory->getName();
+			std::cout << " - Number of armies: " << m_targetTerritory->getNumberOfArmies() << std::endl;
+			std::cout << std::endl;
 		}
 		else
 		{
 			m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
 			m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
+			this->print();
 		}
 
-		this->print();
+
         Notify(this);
 	}
 
