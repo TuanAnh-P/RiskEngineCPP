@@ -461,6 +461,13 @@ void GameEngine::mainGameLoop(int turns) {
         cout << "<--------------------Start of round #" << round<< "-------------------->" << endl;
         setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         reinforcementPhase();
+        for(Player* player: getPlayers()){
+            if (player->getOwnedTerritories().size() == 0) {
+                cout << player->getPlayerID() << " is be kicked out of the game because he doesn't own territories" << endl;
+                players.erase(std::remove(players.begin(), players.end(), player), players.end());
+                numPlayersLeft--;
+            }
+        }
         setCurrentGameState(GameStateType::ISSUE_ORDERS);
         issueOrdersPhase("Deploy");
         setCurrentGameState(GameStateType::EXECUTE_ORDERS);
