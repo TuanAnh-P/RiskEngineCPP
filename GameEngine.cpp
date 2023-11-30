@@ -215,9 +215,9 @@ void GameEngine::startupPhase() {
                 }
 
             }
-            delete &command;
-            delete &mapFiles;
-            delete &playerStrategies;
+            //delete &command;
+            //delete &mapFiles;
+            //delete &playerStrategies;
             return;
 
         }
@@ -452,6 +452,7 @@ void GameEngine::executeOrdersPhase(string orderType) {
     }
 }
 
+
 void GameEngine::mainGameLoop(int turns) {
     int round = 1;
     int numPlayersLeft = players.size();
@@ -536,7 +537,7 @@ GameEngine::~GameEngine() {
 
     _gameStates.clear();
 
-    delete _currentGameState;
+    //delete _currentGameState;
 
     delete _commandProcessor;
 

@@ -132,10 +132,10 @@ void testMainGameLoop(){
     game->mainGameLoop(3);
 }
 
-int main()
-{
-//    testGameStates();
-//    testStartupPhase();
-    testMainGameLoop();
-    return 0;
-};
+//int main()
+//{
+////    testGameStates();
+////    testStartupPhase();
+//    testMainGameLoop();
+//    return 0;
+//};

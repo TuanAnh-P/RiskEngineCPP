@@ -167,9 +167,9 @@ Player::~Player() {
     }
 
     // Delete owned territories to prevent memory leaks
-    for (Territory* territory : ownedTerritories) {
-        delete territory;
-    }
+    //for (Territory* territory : ownedTerritories) {
+    //    delete territory;
+    //}
     ownedTerritories.clear(); // Handle dangling pointers
 }
 
