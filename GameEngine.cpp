@@ -479,7 +479,7 @@ void GameEngine::mainGameLoop(int turns) {
         }
         std::cout << "Press Enter to continue...";
         std::string dummy;
-        std::getline(std::cin, dummy);  // Wait for the user to press Enter
+//        std::getline(std::cin, dummy);  // Wait for the user to press Enter
     }
     if(numPlayersLeft>1){
         setCurrentGameState(GameStateType::END);
@@ -549,7 +549,7 @@ GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&c
 
 // Copy constructor
 GameEngine::GameEngine(GameEngine &engine) :
-    _currentGameState(engine._currentGameState), _gameStates(engine._gameStates) {};
+        _currentGameState(engine._currentGameState), _gameStates(engine._gameStates) {};
 
 // overriding the stream insertion operator
 ostream & operator << (ostream &out, GameEngine &engine)
