@@ -99,7 +99,7 @@ void HumanPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, string&
             string order;
             cout << this->m_player->getPlayerID() << " enters order: ";
             cin >> order;
-            if (order == "Deploy"){
+            if (order == "Deploy" || order == "deploy"){
                 // Get territories that can deploy to (territories from toDefend())
                 std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
                 for (Territory* territory : this->m_player->toDefend()) {
