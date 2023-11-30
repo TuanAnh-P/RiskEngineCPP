@@ -179,10 +179,10 @@ void testPlayerStrategies()
     brazil->setNumberOfArmies(0);
 }
 
-int main()
-{
-    //    testGameStates();
-    //    testStartupPhase();
-    testPlayerStrategies();
-    return 0;
-};
+//int main()
+//{
+//    //    testGameStates();
+//    //    testStartupPhase();
+//    testPlayerStrategies();
+//    return 0;
+//};
