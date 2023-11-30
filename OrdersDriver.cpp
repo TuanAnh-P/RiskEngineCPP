@@ -68,12 +68,12 @@ void testOrdersLists()
 	p3->addTerritory(c_territories[6]);
 
 	// Issue orders
-	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
-	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
-	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
-	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
-	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
-	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
+//	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
+//	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
+//	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
+//	p1->issueOrder("Bomb", nullptr, c_territories[3], nullptr, p2, nullptr, nullptr);
+//	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
+//	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
 
 
 	LOG("\n Start Test ---- Order COPY Constructors---- \n");
@@ -196,8 +196,8 @@ void testOrderExecution()
 
 
 //	// Issue orders
-	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
-	p2->issueOrder("Deploy", nullptr, p2->getOwnedTerritories()[0], armies2, nullptr, nullptr, nullptr);
+//	p1->issueOrder("Deploy", nullptr, p1->getOwnedTerritories()[0], armies, nullptr, nullptr, nullptr);
+//	p2->issueOrder("Deploy", nullptr, p2->getOwnedTerritories()[0], armies2, nullptr, nullptr, nullptr);
 
 	// Execute orders
 	std::cout << std::endl;
@@ -213,11 +213,11 @@ void testOrderExecution()
 		p2->getOrdersList().orders[i]->execute();
 	}
 
-	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
-	p1->issueOrder("Bomb", nullptr, p2->getOwnedTerritories()[0], nullptr, p2, nullptr, nullptr);
-	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
-	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
-	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
+//	p1->issueOrder("Airlift", p1->getOwnedTerritories()[0], p1->getOwnedTerritories()[1], new int(10), nullptr, nullptr, nullptr);
+//	p1->issueOrder("Bomb", nullptr, p2->getOwnedTerritories()[0], nullptr, p2, nullptr, nullptr);
+//	p1->issueOrder("Blockade", nullptr, p1->getOwnedTerritories()[0], nullptr, nullptr, nullptr, gameEngine);
+//	p1->issueOrder("Negotiate", nullptr, nullptr, nullptr, p2, nullptr, nullptr);
+//	p1->issueOrder("Advance", p1->getOwnedTerritories()[1], p2->getOwnedTerritories()[0], new int(10), nullptr, deck1, gameEngine);
 
 	// Execute orders
 	std::cout << std::endl;

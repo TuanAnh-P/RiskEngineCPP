@@ -43,6 +43,19 @@ void Territory::addAdjacentTerritory(Territory* territory){
     adjacentTerritories.push_back(territory);
 }
 
+// Check this territory is adjacent to another given territory
+bool Territory::isAdjacent(Territory* other)
+{
+    if (other == nullptr) return false;
+
+    for (Territory* territory : this->getAdjacentTerritories())
+    {
+        if (territory == other) return true;
+    }
+
+    return false;
+}
+
 //Basic getters
 std::string Territory::getName() const{
     return *name;

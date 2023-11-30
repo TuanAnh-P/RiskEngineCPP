@@ -6,7 +6,7 @@
 
 #include <algorithm>
 #include <random>
-#include <chrono> 
+#include <chrono>
 
 using std::cin;
 using std::cout;
@@ -48,10 +48,10 @@ void printInvalidCommandError()
 
 // Implementation of the GameEngine class methods / constructors
 GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string *name):
-    _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
+        _name(name), _gameStateID(gameStateId), _gameEngine(gameEngine) {};
 
 GameState::GameState(GameState &gameState):
-    _name(gameState._name), _gameStateID(gameState._gameStateID), _gameEngine(gameState._gameEngine) {};
+        _name(gameState._name), _gameStateID(gameState._gameStateID), _gameEngine(gameState._gameEngine) {};
 
 GameState::~GameState(){
     delete _name;
@@ -61,7 +61,7 @@ void GameState::operator= (const GameState &gameState){
     _gameEngine = gameState._gameEngine;
     _gameStateID = gameState._gameStateID;
     _name = gameState._name;
-} 
+}
 
 ostream & operator << (ostream &out, GameState &state)
 {
@@ -97,14 +97,137 @@ void GameEngine::startupPhase() {
         bool stateValidated = commandProcessor.validate(command, gameState);
 
         //do the appropriate sequence
-        if (commandStr.rfind("tournament", 0) == 0 && stateValidated){
+        if (commandStr.rfind("tournament", 0) == 0 && stateValidated) { //TODO wrong tournament format, and valids
+            // Find the positions of various parameters in the command
+            size_t posM = commandStr.find("-M");
+            if (posM == std::string::npos) continue;
+            size_t posP = commandStr.find("-P");
+            if (posP == std::string::npos) continue;
+            size_t posG = commandStr.find("-G");
+            if (posG == std::string::npos) continue;
+            size_t posD = commandStr.find("-D");
+            if (posD == std::string::npos) continue;
+
+            // Extract the lists of map files and player strategies
+            std::string mapFilesStr = commandStr.substr(posM + 3, posP - posM - 4);
+            std::string playerStrategiesStr = commandStr.substr(posP + 3, posG - posP - 4);
+
+            // Extract the numerical values
+            int numberOfGames = std::stoi(commandStr.substr(posG + 2, posD - posG - 2));
+            int maxNumberOfTurns = std::stoi(commandStr.substr(posD + 2));
+
+            // Create vectors to store map files and player strategies
+            std::vector<std::string> mapFiles;
+            std::vector<std::string> playerStrategies;
+
+            // Use stringstream to split comma-separated values into vectors
+            std::stringstream mapFilesStream(mapFilesStr);
+            std::stringstream playerStrategiesStream(playerStrategiesStr);
+            std::string mapFile;
+            std::string playerStrategy;
+
+            // Extract map files
+            while (std::getline(mapFilesStream, mapFile, ',')) {
+                mapFiles.push_back(mapFile);
+            }
+
+            // Extract player strategies
+            while (std::getline(playerStrategiesStream, playerStrategy, ',')) {
+                playerStrategies.push_back(playerStrategy);
+            }
+
+            // Now you have the extracted information in vectors
+            // Loop through and print the values
+//            std::cout << "Map Files: ";
+//            for (const auto& mapFile : mapFiles) {
+//                std::cout << mapFile << " ";
+//            }
+//            std::cout << "\nPlayer Strategies: ";
+//            for (const auto& strategy : playerStrategies) {
+//                std::cout << strategy << " ";
+//            }
+//            std::cout << "\nNumber of Games: " << numberOfGames << "\nMax Number of Turns: " << maxNumberOfTurns << std::endl;
+
+            if(numberOfGames < 1 || numberOfGames > 5){
+                cout << "Please enter 1-5 Games";
+                continue;
+            }
+
+            if(maxNumberOfTurns < 10 || maxNumberOfTurns > 50){
+                cout << "Please enter 10-50 Turns";
+                continue;
+            }
+
+            if(mapFiles.size() < 1 || mapFiles.size() > 5){
+                cout << "Please enter 1-5 Maps";
+                continue;
+            }
+
+            if(playerStrategies.size() < 1 || playerStrategies.size() > 4){
+                cout << "Please enter 1-4 Players";
+                continue;
+            }
+
+            for(int k = 0; k < mapFiles.size(); k++){
+                for(int i = 0; i < numberOfGames; i++){
+                    setCurrentGameState(GameStateType::START);
+                    //loadmap Phase
+                    string filename = "./maps/" + mapFiles[k];
+                    bool mapLoaded = loadMap(filename);
+                    if(mapLoaded){
+                        _currentGameState->update(command);
+                        Notify(this);
+                    }
+
+                    //validatemap Phase
+                    bool mapValidated = validateMap();
+                    if (mapValidated){
+                        _currentGameState->update(command);
+                        Notify(this);
+                    }
+
+                    //add player Phase
+                    players.clear();
+                    for(int j = 0; j < playerStrategies.size(); j++){
+                        string player = "player" + std::to_string(j);
+                        std::string strategy = playerStrategies[j];
+
+                        if(strategy == "Aggressive") {
+                            addPlayer(player, StrategyType::AggressivePlayer);
+                        }
+                        else if(strategy == "Benevolent") {
+                            addPlayer(player, StrategyType::BenevolentPlayer);
+                        }
+                        else if(strategy == "Neutral") {
+                            addPlayer(player, StrategyType::NeutralPlayer);
+                        }
+                        else if(strategy == "Cheater") {
+                            addPlayer(player, StrategyType::CheaterPlayer);
+                        }
+                        _currentGameState->update(command);
+                        Notify(this);
+                    }
+
+                    //start game Phase
+                    gameStart();
+                    play(maxNumberOfTurns);
+
+                }
+
+            }
+            //delete &command;
+            //delete &mapFiles;
+            //delete &playerStrategies;
+            return;
+
         }
-        if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
+        else if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
             //load  map
             string filename = "./maps/" + commandStr.substr(8);
             bool mapLoaded = loadMap(filename);
             if(mapLoaded){
-                _currentGameState->update(command);
+                //_currentGameState->update(command);
+                setCurrentGameState(GameStateType::MAP_LOADED);
                 Notify(this);
             }
         } else if (commandStr == "validatemap" && stateValidated) {
@@ -117,7 +240,7 @@ void GameEngine::startupPhase() {
         } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
             // Add a player
             string player = commandStr.substr(9);
-            addPlayer(player);
+            addPlayer(player, StrategyType::HumanPlayer);
             _currentGameState->update(command);
             Notify(this);
         } else if (commandStr == "gamestart" && stateValidated) {
@@ -135,7 +258,7 @@ void GameEngine::startupPhase() {
 
         delete &command;
     }
-    play();
+    play(-10);
 }
 
 //loads map
@@ -171,11 +294,11 @@ bool GameEngine::validateMap() {
 }
 
 //just addsplayers
-void GameEngine::addPlayer(const std::string& playerName) {
+void GameEngine::addPlayer(const std::string& playerName, StrategyType strat) {
     if (players.size() >= 6) {
         std::cout << "Maximum number of players reached." << std::endl;
     } else {
-        players.push_back(new Player(playerName));
+        players.push_back(new Player(playerName, strat));
         std::cout << "Player " << playerName << " added." << std::endl;
     }
 }
@@ -246,10 +369,10 @@ void GameEngine::gameStart(){
     drawInitialCards();
 }
 
-void GameEngine::play(){
+void GameEngine::play(int turns){
     // tuan you need to encapsulate everything inside here I believe
     cout<< "Playing now" << endl;
-    mainGameLoop();
+    mainGameLoop(turns);
 }
 
 void GameEngine::reinforcementPhase() {
@@ -267,185 +390,85 @@ void GameEngine::reinforcementPhase() {
         player->addReinforcementPool(finalNumReinforcement);
         cout << player->getPlayerID() << " owns " << player->getOwnedTerritories().size() << " territories and " << continentOwned << " continents" << endl;
         cout << player->getPlayerID() << " receives " << finalNumReinforcement << " army units and now has " << player->getReinforcementPool() << " army units" << endl;
+        cout << endl;
     }
 }
 
-void GameEngine::issueOrdersPhase() {
-    cout << "<----------The orders issuing phase begins---------->" << endl;
-    for(Player* player: players) {
+void GameEngine::issueOrdersPhase(string orderType) {
+    if (orderType == "Deploy"){
+        cout << "<----------The Deploy orders issuing phase begins---------->" << endl;
+        for(Player* player: players) {
+            player->issueOrder(deck, this, orderType);
+        }
+    }
 
-        // Player must deploy all his reinforcement pool to proceed with Advance order
-        while (player->getReinforcementPool() > 0) {
-            string order;
-            cout << player->getPlayerID() << " enters order: ";
-            cin >> order;
-            if (order == "Deploy"){
-                // Get territories that can deploy to (territories from toDefend())
-                std::cout << "Territories " << player->getPlayerID() << " can deploy army units:" << std::endl;
-                for (Territory* territory : player->toDefend()) {
-                    std::cout << territory->getName() << std::endl;
+    if (orderType == "Else"){
+        cout << "<----------The Non-deploy orders issuing phase begins---------->" << endl;
+        for(Player* player: players) {
+            player->issueOrder(deck, this, orderType);
+        }
+    }
+}
+
+
+void GameEngine::executeOrdersPhase(string orderType) {
+
+    if (orderType == "Deploy"){
+        cout << "<----------The Deploy orders executing phase begins---------->" << endl;
+        for(Player* player: players) {
+            cout << player->getPlayerID() << " is executing orders from his order list" << endl;
+            // Display the player's orders list
+            std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
+            player->getOrdersList().print();
+
+            cout << "The orders will be executed one by one: " << endl;
+            for (Order* order : player->getOrdersList().orders){
+                if (order->type == "Deploy") {
+                    order->execute();
+                    player->getOrdersList().orders.erase(std::remove(player->getOrdersList().orders.begin(), player->getOrdersList().orders.end(), order), player->getOrdersList().orders.end());
                 }
-                string deployTarget;
-                int numDeploy;
-                cout << player->getPlayerID() << " enters target territory to deploy army units: ";
-                cin >> deployTarget;
-                cout << player->getPlayerID() << " enters number of army units to deploy: ";
-                cin >> numDeploy;
-                Territory* deployTerritory = this->getTerritoryByName(deployTarget);
-                if (deployTerritory == nullptr) cout << "Invalid territory" << endl;
-                else if(numDeploy > player->getReinforcementPool()) cout << "Invalid number of army units to deploy" << endl;
-                else{
-                    player->issueOrder("Deploy", nullptr, deployTerritory, new int(numDeploy), nullptr, nullptr, nullptr);
-                    player->removeReinforcementPool(numDeploy);
+            }
+            cout << endl;
+        }
+    }
+
+    if (orderType == "Else"){
+        cout << "<----------The Non-Deploy orders executing phase begins---------->" << endl;
+        for(Player* player: players) {
+            cout << player->getPlayerID() << " is executing orders from his order list" << endl;
+            // Display the player's orders list
+            std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
+            player->getOrdersList().print();
+
+            cout << "The orders will be executed one by one: " << endl;
+            for (Order* order : player->getOrdersList().orders){
+                if (order->type != "Deploy") {
+                    order->execute();
+                    player->getOrdersList().orders.erase(std::remove(player->getOrdersList().orders.begin(), player->getOrdersList().orders.end(), order), player->getOrdersList().orders.end());
                 }
-                cout << player->getPlayerID() << " has " << player->getReinforcementPool() << " army units left to deploy" << endl;
             }
-            else cout << "You can only issue 'Deploy' orders when your reinforcement pool is not empty." << endl;
-        }
-
-        // Advance order
-        cout << player->getPlayerID() << " can make Advance Order" << endl;
-        char continueAdvancing;
-        do {
-
-            // Get territories to defend
-            std::cout << "Territories " << player->getPlayerID() << " can Defend:" << std::endl;
-            for (Territory* territory : player->toDefend()) {
-                std::cout << territory->getName() << std::endl;
-            }
-            
-            // Get territories to attack
-            std::cout << "Territories " << player->getPlayerID() << " can Attack:" << std::endl;
-            for (Territory* territory : player->toAttack()) {
-                std::cout << territory->getName() << std::endl;
-            }
-
-            // Ask the player to make an Advance Order
-            string userSource;
-            string userTarget;
-            int numUnits;
-            cout << player->getPlayerID() << " enters source territory: ";
             cout << endl;
-            cin >> userSource;
-            cout << player->getPlayerID() << " enters target territory: ";
-            cin >> userTarget;
-            cout << endl;
-            cout << player->getPlayerID() << " enters number of army units to advance: ";
-            cin >> numUnits;
-            cout << endl;
-
-            // Retrieving source and target territories
-            Territory* sourceTerritory = this->getTerritoryByName(userSource);
-            Territory* targetTerritory = this->getTerritoryByName(userTarget);
-
-            if (sourceTerritory == nullptr) cout << "Invalid source territory" << endl;
-            else if (targetTerritory == nullptr) cout << "Invalid target territory" << endl;
-            else player->issueOrder("Advance", sourceTerritory, targetTerritory, new int(numUnits), nullptr, deck, this);
-
-            // Ask if the player wants to make another Advance Order
-            cout << "Do you want to make another Advance Order? (y/n): ";
-            cin >> continueAdvancing;
-        } while (continueAdvancing == 'y' || continueAdvancing == 'Y');
-
-        // Player plays a card from their hand
-        cout << player->getPlayerID() << " plays a card from their hand contents below" << endl;
-        cout << player->getHand() << endl;
-        int cardSelection;
-        cout << "Enter the card's index you wish to use (1st card has an index of 0): ";
-        cin >> cardSelection;
-        if (cardSelection>player->getHand().cards.size()-1 || cardSelection<0){
-            cout << "Invalid index ";
         }
-        else if (player->getHand().cards[cardSelection]->getType() == CardType::Airlift){
-            string source;
-            string target;
-            int num;
-            cout << "Airlift - Enter the source territory: ";
-            cin >> source;
-            cout << "Airlift - Enter the target territory: ";
-            cin >> target;
-            cout << "Airlift - Enter the number of army units: ";
-            cin >> num;
-            Territory* sourceTerritory = this->getTerritoryByName(source);
-            Territory* targetTerritory = this->getTerritoryByName(target);
-            if (sourceTerritory == nullptr) cout << "Source territory is invalid" << endl;
-            else if (targetTerritory == nullptr) cout << "Source territory is invalid" << endl;
-            else player->issueOrder("Airlift", sourceTerritory, targetTerritory, new int(num), nullptr, nullptr, nullptr);
-        }
-        else if (player->getHand().cards[cardSelection]->getType() == CardType::Bomb){
-            string targetPlayer;
-            string target;
-            cout << "Bomb - Enter the target player: ";
-            cin >> targetPlayer;
-            cout << "Bomb - Enter the target territory: ";
-            cin >> target;
-            Territory* targetTerritory = this->getTerritoryByName(target);
-            Player* p = this->getPlayerByID(targetPlayer);
-            if (p == nullptr) cout << "Player is invalid" << endl;
-            else if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
-            else player->issueOrder("Bomb", nullptr, targetTerritory, nullptr, p, nullptr, nullptr);
-        }
-        else if (player->getHand().cards[cardSelection]->getType() == CardType::Blockade){
-            string target;
-            cout << "Blockade - Enter the target territory: ";
-            cin >> target;
-            Territory* targetTerritory = this->getTerritoryByName(target);
-            if (targetTerritory == nullptr) cout << "Target territory is invalid" << endl;
-            else player->issueOrder("Blockade", nullptr, targetTerritory, nullptr, nullptr, nullptr, this);
-        }
-        else if (player->getHand().cards[cardSelection]->getType() == CardType::Diplomacy){
-            string targetPlayer;
-            cout << "Diplomacy/Negotiate - Enter the target player: ";
-            cin >> targetPlayer;
-            Player* p = this->getPlayerByID(targetPlayer);
-            if (p == nullptr) cout << "Player is invalid" << endl;
-            else player->issueOrder("Negotiate", nullptr, nullptr, nullptr, p, nullptr, nullptr);
-        }
-
     }
 }
 
 
-void GameEngine::executeOrdersPhase() {
-    cout << "<----------The orders executing phase begins---------->" << endl;
-    cout << "<----------Deploy orders are executing first---------->" << endl;
-    for(Player* player: players) {
-        cout << player->getPlayerID() << " is executing orders from his order list" << endl;
-        // Display the player's orders list
-        std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
-        player->getOrdersList().print();
-
-        cout << "The orders will be executed one by one: " << endl;
-        for (Order* order : player->getOrdersList().orders){
-            if (order->type == "Deploy") order->execute();
-        }
-    }
-
-    cout << "<----------Non-deployed orders are executing now---------->" << endl;
-    for(Player* player: players) {
-        cout << player->getPlayerID() << " is executing orders from his order list" << endl;
-        // Display the player's orders list
-        std::cout << "Displaying " << player->getPlayerID() << " orders list" << std::endl;
-        player->getOrdersList().print();
-
-        cout << "The orders will be executed one by one: " << endl;
-        for (Order* order : player->getOrdersList().orders){
-            if (order->type != "Deploy")order->execute();
-        }
-    }
-}
-
-void GameEngine::mainGameLoop() {
+void GameEngine::mainGameLoop(int turns) {
     int round = 1;
     int numPlayersLeft = players.size();
-    while(numPlayersLeft>1){
+
+    while(numPlayersLeft>1 && (round <= turns || turns == -10)){
         cout << "<--------------------Start of round #" << round<< "-------------------->" << endl;
         setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         reinforcementPhase();
         setCurrentGameState(GameStateType::ISSUE_ORDERS);
-        issueOrdersPhase();
+        issueOrdersPhase("Deploy");
         setCurrentGameState(GameStateType::EXECUTE_ORDERS);
-        executeOrdersPhase();
+        executeOrdersPhase("Deploy");
+        setCurrentGameState(GameStateType::ISSUE_ORDERS);
+        issueOrdersPhase("Else");
+        setCurrentGameState(GameStateType::EXECUTE_ORDERS);
+        executeOrdersPhase("Else");
         round++;
         for(Player* player: getPlayers()){
             if (player->getOwnedTerritories().size() == 0) {
@@ -454,10 +477,19 @@ void GameEngine::mainGameLoop() {
                 numPlayersLeft--;
             }
         }
+        std::cout << "Press Enter to continue...";
+        std::string dummy;
+        std::getline(std::cin, dummy);  // Wait for the user to press Enter
     }
-    setCurrentGameState(GameStateType::WIN);
-    Player* winner = players.at(0);
-    cout << "Congratulation! " << winner->getPlayerID() << " is the winner";
+    if(numPlayersLeft>1){
+        setCurrentGameState(GameStateType::END);
+        cout << "Game is a DRAW!";
+    }
+    else{
+        setCurrentGameState(GameStateType::WIN);
+        Player* winner = players.at(0);
+        cout << "Congratulation! " << winner->getPlayerID() << " is the winner";
+    }
 }
 
 Player* GameEngine::getPlayerByID(const string& playerID) {
@@ -503,9 +535,9 @@ GameEngine::~GameEngine() {
     }
     delete deck;
 
-    _gameStates.clear(); 
+    _gameStates.clear();
 
-    delete _currentGameState;
+    //delete _currentGameState;
 
     delete _commandProcessor;
 
@@ -516,7 +548,7 @@ GameEngine::~GameEngine() {
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
 
 // Copy constructor
-GameEngine::GameEngine(GameEngine &engine) : 
+GameEngine::GameEngine(GameEngine &engine) :
     _currentGameState(engine._currentGameState), _gameStates(engine._gameStates) {};
 
 // overriding the stream insertion operator
@@ -529,7 +561,7 @@ ostream & operator << (ostream &out, GameEngine &engine)
 void GameEngine::operator= (const GameEngine &gameEngine){
     _gameStates = gameEngine._gameStates;
     _currentGameState = gameEngine._currentGameState;
-}   
+}
 
 CommandProcessor& GameEngine::getCommandProcessor() {
     return *_commandProcessor;
@@ -600,7 +632,7 @@ void StartState::update(Command& command){
 
 // Map Loaded state class implementation
 MapLoadedState::MapLoadedState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::MAP_LOADED), new string("Map Loaded")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::MAP_LOADED), new string("Map Loaded")){};
 
 void MapLoadedState::update(Command& command){
 
@@ -617,7 +649,7 @@ void MapLoadedState::update(Command& command){
 
 // Map Validated state class implementation
 MapValidatedState::MapValidatedState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::MAP_VALIDATED), new string("Map Validated")) {};
+        : GameState(gameEngine, new GameStateType(GameStateType::MAP_VALIDATED), new string("Map Validated")) {};
 
 void MapValidatedState::update(Command& command){
     command.saveEffect("* transitioning to Players Added state");
@@ -626,7 +658,7 @@ void MapValidatedState::update(Command& command){
 
 // Players Added state class implementation
 PlayersAddedState::PlayersAddedState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::PLAYERS_ADDED), new string("Players Added")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::PLAYERS_ADDED), new string("Players Added")){};
 
 void PlayersAddedState::update(Command& command){
     if (command.getCommand() == "gamestart")
@@ -642,15 +674,15 @@ void PlayersAddedState::update(Command& command){
 
 // Assign Reinforcement state class implementation
 AssignReinforcementState::AssignReinforcementState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::ASSIGN_REINFORCEMENT), new string("Assign Reinforcement")){};
 
 void AssignReinforcementState::update(Command& command){
-   _gameEngine.setCurrentGameState(GameStateType::ISSUE_ORDERS);
+    _gameEngine.setCurrentGameState(GameStateType::ISSUE_ORDERS);
 }
 
 // Issue Orders state class implementation
 IssueOrdersState::IssueOrdersState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::ISSUE_ORDERS), new string("Issue Orders")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::ISSUE_ORDERS), new string("Issue Orders")){};
 
 void IssueOrdersState::update(Command& command){
     _gameEngine.setCurrentGameState(GameStateType::EXECUTE_ORDERS);
@@ -658,7 +690,7 @@ void IssueOrdersState::update(Command& command){
 
 // Execute Orders state class implementation
 ExecuteOrdersState::ExecuteOrdersState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::EXECUTE_ORDERS), new string("Execute Orders")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::EXECUTE_ORDERS), new string("Execute Orders")){};
 
 void ExecuteOrdersState::update(Command &command){
     _gameEngine.setCurrentGameState(GameStateType::WIN);
@@ -666,7 +698,7 @@ void ExecuteOrdersState::update(Command &command){
 
 // Win state class implementation
 WinState::WinState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::WIN), new string("Win")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::WIN), new string("Win")){};
 
 void WinState::update(Command& command){
     if (command.getCommand() == "replay")
@@ -682,7 +714,7 @@ void WinState::update(Command& command){
 
 // End state class implementation
 EndState::EndState(GameEngine &gameEngine)
-    : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){};
 
 void EndState::update(Command& command){};
 

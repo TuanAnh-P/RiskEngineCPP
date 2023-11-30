@@ -333,36 +333,37 @@ bool CommandProcessor::validate(Command& command, GameStateType gameState) {
        gameState == GameStateType::EXECUTE_ORDERS) return true;
 
     // determining if the command is valid based on the game state
-    switch (gameState)
-    {
-        case GameStateType::START:
-            if(commandValue == "loadmap" || commandValue == "tournament") {
-                return true;
-            } 
-            return false;
-        case GameStateType::MAP_LOADED:
-            if(commandValue == "loadmap" || commandValue == "validatemap") {
-                return true;
-            }
-            return false;
-        case GameStateType::MAP_VALIDATED:
-            if(commandValue == "addplayer") {
-                return true;
-            }
-            return false;
-        case GameStateType::PLAYERS_ADDED:
-            if(commandValue == "addplayer" || commandValue == "gamestart") {
-                return true;
-            }
-            return false;
-        case GameStateType::WIN:
-            if(commandValue == "replay" || commandValue == "quit") {
-                return true;
-            }
-            return false;
-        default:
-            return false;
+    if(gameState == GameStateType::START){
+        if(commandValue == "loadmap" || commandValue == "tournament") {
+            return true;
         }
+        return false;
+    }
+    else if(gameState == GameStateType::MAP_LOADED){
+        if(commandValue == "loadmap" || commandValue == "validatemap") {
+            return true;
+        }
+        return false;
+    }
+    else if(gameState == GameStateType::MAP_VALIDATED){
+        if(commandValue == "addplayer") {
+            return true;
+        }
+        return false;
+    }
+    else if(gameState == GameStateType::PLAYERS_ADDED){
+        if(commandValue == "addplayer" || commandValue == "gamestart") {
+            return true;
+        }
+        return false;
+    }
+    else if(gameState == GameStateType::WIN){
+        if(commandValue == "replay" || commandValue == "quit") {
+            return true;
+        }
+        return false;
+    }
+    return false;
 }
 
 // Method that returns a formatted string representing the last command saved in the command processor (used for logging purposes)

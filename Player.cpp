@@ -14,19 +14,19 @@ Player::Player(const std::string& playerID, StrategyType strategy)
     switch (strategy)
     {
     case StrategyType::HumanPlayer:
-        m_strategy = new HumanPlayerStrategy();
+        m_strategy = new HumanPlayerStrategy(this);
         break;
     case StrategyType::AggressivePlayer:
-        m_strategy = new AggressivePlayerStrategy();
+        m_strategy = new AggressivePlayerStrategy(this);
         break;
     case StrategyType::BenevolentPlayer:
-        m_strategy = new BenevolentPlayerStrategy();
+        m_strategy = new BenevolentPlayerStrategy(this);
         break;
     case StrategyType::NeutralPlayer:
-        m_strategy = new NeutralPlayerStrategy();
+        m_strategy = new NeutralPlayerStrategy(this);
         break;
     case StrategyType::CheaterPlayer:
-        m_strategy = new CheaterPlayerStrategy();
+        m_strategy = new CheaterPlayerStrategy(this);
         break;
     default:
         break;
@@ -56,19 +56,19 @@ Player::Player(const Player& other)
     switch (strategyType)
     {
     case StrategyType::HumanPlayer:
-        m_strategy = new HumanPlayerStrategy();
+        m_strategy = new HumanPlayerStrategy(this);
         break;
     case StrategyType::AggressivePlayer:
-        m_strategy = new AggressivePlayerStrategy();
+        m_strategy = new AggressivePlayerStrategy(this);
         break;
     case StrategyType::BenevolentPlayer:
-        m_strategy = new BenevolentPlayerStrategy();
+        m_strategy = new BenevolentPlayerStrategy(this);
         break;
     case StrategyType::NeutralPlayer:
-        m_strategy = new NeutralPlayerStrategy();
+        m_strategy = new NeutralPlayerStrategy(this);
         break;
     case StrategyType::CheaterPlayer:
-        m_strategy = new CheaterPlayerStrategy();
+        m_strategy = new CheaterPlayerStrategy(this);
         break;
     default:
         break;
@@ -103,19 +103,19 @@ Player& Player::operator=(const Player& other) {
         switch (strategyType)
         {
         case StrategyType::HumanPlayer:
-            m_strategy = new HumanPlayerStrategy();
+            m_strategy = new HumanPlayerStrategy(this);
             break;
         case StrategyType::AggressivePlayer:
-            m_strategy = new AggressivePlayerStrategy();
+            m_strategy = new AggressivePlayerStrategy(this);
             break;
         case StrategyType::BenevolentPlayer:
-            m_strategy = new BenevolentPlayerStrategy();
+            m_strategy = new BenevolentPlayerStrategy(this);
             break;
         case StrategyType::NeutralPlayer:
-            m_strategy = new NeutralPlayerStrategy();
+            m_strategy = new NeutralPlayerStrategy(this);
             break;
         case StrategyType::CheaterPlayer:
-            m_strategy = new CheaterPlayerStrategy();
+            m_strategy = new CheaterPlayerStrategy(this);
             break;
         default:
             break;
@@ -167,9 +167,9 @@ Player::~Player() {
     }
 
     // Delete owned territories to prevent memory leaks
-    for (Territory* territory : ownedTerritories) {
-        delete territory;
-    }
+    //for (Territory* territory : ownedTerritories) {
+    //    delete territory;
+    //}
     ownedTerritories.clear(); // Handle dangling pointers
 }
 
@@ -178,7 +178,7 @@ Player::~Player() {
 void Player::addTerritory(Territory* territory) {
     if (territory) {
         ownedTerritories.push_back(territory);
-        std::cout << "Territory " << territory->getName() << " was added!" << std::endl;
+        std::cout << "Territory " << territory->getName() << " was added to " << this->getPlayerID() << std::endl;
     } else {
         std::cout << "Error: Attempted to add a null territory." << std::endl;
     }
@@ -190,7 +190,7 @@ void Player::removeTerritory(Territory* territory) {
     for (size_t i = 0; i < ownedTerritories.size(); i++) {
         if (ownedTerritories[i] == territory) {
             ownedTerritories.erase(ownedTerritories.begin() + i);
-            std::cout << "Territory " << territory->getName() << " was removed!" << std::endl;
+            std::cout << "Territory " << territory->getName() << " was removed from " << this->getPlayerID() << std::endl;
             return; // Exit the function once the territory is found and removed
         }
     }
@@ -276,22 +276,23 @@ std::vector<Territory*> Player::getOwnedTerritories()
     return this->ownedTerritories;
 }
 
-void Player::issueOrder(const std::string& orderType, Territory* source, Territory* target, int* num, Player* targetPlayer, Deck* deck, GameEngine* gameEngine) {
-    Order* newOrder = nullptr;
-
-    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
-    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
-    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
-    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
-    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
-    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
-
-    if (newOrder) {
-        // Add the created order to the player's list of orders
-        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
-        ordersList->orders.push_back(newOrder);
-    }
-    else std::cout << "Invalid order type." << std::endl;
+void Player::issueOrder(Deck* deck, GameEngine* gameEngine, string& orderType) {
+    return this->m_strategy->issueOrder(deck, gameEngine, orderType);
+//    Order* newOrder = nullptr;
+//
+//    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
+//    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
+//    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
+//    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
+//    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
+//    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
+//
+//    if (newOrder) {
+//        // Add the created order to the player's list of orders
+//        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
+//        ordersList->orders.push_back(newOrder);
+//    }
+//    else std::cout << "Invalid order type." << std::endl;
 }
 
 bool Player::isTerritoryOwned(Territory* territory)
@@ -313,6 +314,15 @@ bool Player::isContinentOwned(Continent* continent) {
         }
     }
     return true; // Player owns all territories in the continent
+}
+
+bool Player::doesHaveAdjacentTerritoriesToAttack(Territory* territory) {
+    for (Territory* territoryToAttack : territory->getAdjacentTerritories()){
+        if (!this->isTerritoryOwned(territoryToAttack)){
+            return true;
+        }
+    }
+    return false;
 }
 
 std::string Player::getPlayerID() const {
@@ -357,9 +367,14 @@ void Player::addToNegotiatedPlayers(Player* player)
 }
 
 // Get the player strategy
-const PlayerStrategy* Player::getStrategy() const
+PlayerStrategy* Player::getStrategy()
 {
     return m_strategy;
+}
+
+const StrategyType Player::getStrategyType()
+{
+    return m_strategy->getStrategyType();
 }
 
 // Set the player strategy

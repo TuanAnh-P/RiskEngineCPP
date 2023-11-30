@@ -68,14 +68,18 @@ void testMainGameLoop(){
     // Initializing North America
     Continent* northAmerica = new Continent("northAmerica" , 5);
     Territory* usa = new Territory("usa", 0, 0);
+    usa->setNumberOfArmies(0);
     Territory* mexico = new Territory("mexico", 0, 0);
+    mexico->setNumberOfArmies(0);
     northAmerica->addTerritory(usa);
     northAmerica->addTerritory(mexico);
 
     // Initializing South America
     Continent* southAmerica = new Continent("southAmerica" , 10);
     Territory* colombia = new Territory("colombia", 0, 0);
+    colombia->setNumberOfArmies(0);
     Territory* brazil = new Territory("brazil", 0, 0);
+    brazil->setNumberOfArmies(0);
     southAmerica->addTerritory(colombia);
     southAmerica->addTerritory(brazil);
 
@@ -98,8 +102,10 @@ void testMainGameLoop(){
     game->gameMap=map;
 
     // Initializing 2 players
-    Player* player1 = new Player("John");
-    Player* player2 = new Player("Jose");
+//    Player* player1 = new Player("Aggr1", StrategyType::AggressivePlayer);
+//    Player* player2 = new Player("Aggr2", StrategyType::AggressivePlayer);
+    Player* player1 = new Player("Aggr1", StrategyType::AggressivePlayer);
+    Player* player2 = new Player("Bene1", StrategyType::BenevolentPlayer);
     std::vector<Player*> playerList;
     playerList.push_back(player1);
     playerList.push_back(player2);
@@ -123,13 +129,13 @@ void testMainGameLoop(){
     game->deck->draw(player2->getHand());
 
     // Calling the mainGameLoop()
-    game->mainGameLoop();
+    game->mainGameLoop(3);
 }
 
-/*int main()
-{
-//    testGameStates();
-//    testStartupPhase();
-    testMainGameLoop();
-    return 0;
-};*/
+//int main()
+//{
+////    testGameStates();
+////    testStartupPhase();
+//    testMainGameLoop();
+//    return 0;
+//};

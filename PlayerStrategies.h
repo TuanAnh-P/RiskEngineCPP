@@ -1,6 +1,11 @@
 #pragma once
 
+#include "map.h"
 #include <ostream>
+
+class Player; // Forward declaration
+class Deck;
+class GameEngine;
 
 // Strategy enum type
 enum class StrategyType
@@ -9,7 +14,8 @@ enum class StrategyType
 	AggressivePlayer,
 	BenevolentPlayer,
 	NeutralPlayer,
-	CheaterPlayer
+	CheaterPlayer,
+	None
 };
 
 // Player Strategy abstraction base class 
@@ -20,6 +26,9 @@ public:
 	// Default Constructor
 	PlayerStrategy();
 
+	// Par Constructor
+	PlayerStrategy(Player* player);
+
 	// Copy Constructor
 	PlayerStrategy(PlayerStrategy& other);
 
@@ -27,7 +36,7 @@ public:
 	virtual ~PlayerStrategy() = default;	
 
 	// Override ostream operator
-	friend std::ostream& operator<< (std::ostream& os, const PlayerStrategy& strategy);
+	friend std::ostream& operator<< (std::ostream& os, const PlayerStrategy& strategy);	
 
 	// Assignment operator
 	PlayerStrategy& operator=(const PlayerStrategy& playerStrategy);
@@ -35,11 +44,16 @@ public:
 	// Type getter
 	const StrategyType getStrategyType();
 
+	// Pure virtual functions
+	virtual void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType) = 0;
+	virtual std::vector<Territory*> toAttack() = 0;
+	virtual std::vector<Territory*> toDefend() = 0;
+
 protected:
-	virtual void issueOrder() = 0;
-	virtual void toAttack() = 0;
-	virtual void toDefend() = 0;
-	StrategyType m_strategyType; 
+	StrategyType m_strategyType = StrategyType::None; 
+	const Player* getPlayer();
+    Player* m_player = nullptr;
+
 };
 
 
@@ -51,11 +65,11 @@ public:
 	~HumanPlayerStrategy() = default;
 
 	// Constructor
-	HumanPlayerStrategy();
+	HumanPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -68,11 +82,11 @@ public:
 	~AggressivePlayerStrategy() = default;
 
 	// Constructor
-	AggressivePlayerStrategy();
+	AggressivePlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -85,11 +99,11 @@ public:
 	~BenevolentPlayerStrategy() = default;
 
 	// Constructor
-	BenevolentPlayerStrategy();
+	BenevolentPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -102,11 +116,11 @@ public:
 	~NeutralPlayerStrategy() = default;
 
 	// Constructor
-	NeutralPlayerStrategy();
+	NeutralPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
@@ -119,11 +133,11 @@ public:
 	~CheaterPlayerStrategy() = default;
 
 	// Constructor
-	CheaterPlayerStrategy();
+	CheaterPlayerStrategy(Player* player);
 
-	void issueOrder();
-	void toAttack();
-	void toDefend();
+	void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
+    std::vector<Territory*> toAttack();
+    std::vector<Territory*> toDefend();
 
 	using PlayerStrategy::operator=;
 };
