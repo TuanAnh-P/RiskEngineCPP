@@ -1,2 +1,10 @@
-tournament -M map1, map2 -P Aggressive, Benevolent, Neutral, Cheater -G 2 -D 11
+loadmap map1
+loadmap map2
+validatemap
+addplayer
+addplayer
+addplayer
+gamestart
+replay
+tournament -M 3d, test -P Aggressive, Benevolent, Neutral, Cheater -G 2 -D 11
 quit

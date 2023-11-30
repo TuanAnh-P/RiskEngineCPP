@@ -10,84 +10,84 @@
 // --------------- PlayerStrategy class ---------------
 
 // Default Constructor
-PlayerStrategy::PlayerStrategy() 
+PlayerStrategy::PlayerStrategy()
 {
-	m_strategyType = StrategyType::None;
+    m_strategyType = StrategyType::None;
 }
 
 // Params Constructor
 PlayerStrategy::PlayerStrategy(Player* player)
-	: m_player(player)
+        : m_player(player)
 {
-	m_strategyType = StrategyType::None;
+    m_strategyType = StrategyType::None;
 }
 
 // Copy Constructor
 PlayerStrategy::PlayerStrategy(PlayerStrategy& other)
 {
-	m_strategyType = other.m_strategyType;
-	m_player = other.m_player;
+    m_strategyType = other.m_strategyType;
+    m_player = other.m_player;
 }
 
 // Assignment operator
 PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy& other)
 {
-	m_strategyType = other.m_strategyType;
-	m_player = other.m_player;
+    m_strategyType = other.m_strategyType;
+    m_player = other.m_player;
 
-	return *this;
+    return *this;
 }
 
 // Player pointer getter
 const Player* PlayerStrategy::getPlayer()
 {
-	return m_player;
+    return m_player;
 }
 
 // Strategy type getter
 const StrategyType PlayerStrategy::getStrategyType()
 {
-	return m_strategyType;
+    return m_strategyType;
 }
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const PlayerStrategy& strategy)
 {
 
-	// Switch based on the strategy enum type and print 
-	switch (strategy.m_strategyType)
-	{
-	case StrategyType::HumanPlayer:
-		os << " this is a Human Player Strategy!";
-		break;
-	case StrategyType::AggressivePlayer:
-		os << " this is a AggressivePlayer Strategy!";
-		break;
-	case StrategyType::BenevolentPlayer:
-		os << " this is a BenevolentPlayer Strategy!";
-		break;
-	case StrategyType::NeutralPlayer:
-		os << " this is a NeutralPlayer Strategy!";
-		break;
-	case StrategyType::CheaterPlayer:
-		os << " this is a CheaterPlayer Strategy!";
-		break;
+    // Switch based on the strategy enum type and print
+    switch (strategy.m_strategyType)
+    {
+        case StrategyType::HumanPlayer:
+            os << " this is a Human Player Strategy!";
+            break;
+        case StrategyType::AggressivePlayer:
+            os << " this is a AggressivePlayer Strategy!";
+            break;
+        case StrategyType::BenevolentPlayer:
+            os << " this is a BenevolentPlayer Strategy!";
+            break;
+        case StrategyType::NeutralPlayer:
+            os << " this is a NeutralPlayer Strategy!";
+            break;
+        case StrategyType::CheaterPlayer:
+            os << " this is a CheaterPlayer Strategy!";
+            break;
 
-	default:
-		os << "ERROR: Invalid strategy type!";
-		break;
-	}
+        default:
+            os << "ERROR: Invalid strategy type!";
+            break;
+    }
 
-	return os;
+    return os;
 }
 
 // --------------- HumanPlayerStrategy class ---------------
 
 // Constructor
 HumanPlayerStrategy::HumanPlayerStrategy(Player* player)
-	: PlayerStrategy(player)
+        : PlayerStrategy(player)
 {
-	m_strategyType = (StrategyType::HumanPlayer);
+    m_strategyType = (StrategyType::HumanPlayer);
     m_player = player;
 }
 
@@ -99,7 +99,7 @@ void HumanPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, string&
             string order;
             cout << this->m_player->getPlayerID() << " enters order: ";
             cin >> order;
-            if (order == "Deploy" || order == "deploy"){
+            if (order == "Deploy"){
                 // Get territories that can deploy to (territories from toDefend())
                 std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
                 for (Territory* territory : this->m_player->toDefend()) {
@@ -279,10 +279,10 @@ std::vector<Territory*> HumanPlayerStrategy::toDefend()
 // --------------- AggressivePlayerStrategy class ---------------
 
 // Constructor
-AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player) 
-	: PlayerStrategy(player)
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player)
+        : PlayerStrategy(player)
 {
-	m_strategyType = (StrategyType::AggressivePlayer);
+    m_strategyType = (StrategyType::AggressivePlayer);
     m_player = player;
 }
 
@@ -364,54 +364,54 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
 //            }
 //        }
 
-            // Aggressive Player will then attack from all the territories he owns, that source territory must have an adjacent territory to attack and number of armies greater than 0
-            // Get territories to defend
-            std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
-            for (Territory* territory : this->m_player->toDefend()) {
-                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
-            }
-            // Get territories to attack
-            std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
-            for (Territory* territory : this->m_player->toAttack()) {
-                std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
-            }
+        // Aggressive Player will then attack from all the territories he owns, that source territory must have an adjacent territory to attack and number of armies greater than 0
+        // Get territories to defend
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
+        for (Territory* territory : this->m_player->toDefend()) {
+            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
+        }
+        // Get territories to attack
+        std::cout << "Territories " << this->m_player->getPlayerID() << " can Attack:" << std::endl;
+        for (Territory* territory : this->m_player->toAttack()) {
+            std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
+        }
 
-            Territory* sourceTerritory = nullptr;
-            Territory* targetTerritory  = nullptr;
-            // For each territory he owns, checking if that territory has any territories to attack and has any troops left to advance
-            for (Territory* territory : this->m_player->toDefend()){
-                if (this->m_player->doesHaveAdjacentTerritoriesToAttack(territory) && territory->getNumberOfArmies() > 0){
-                    // Setting that territory as a source territory
-                    sourceTerritory = territory;
-                    cout << this->m_player->getPlayerID() << " enters source territory: " << sourceTerritory->getName() << endl;
-                    // Getting the adjacent territory to attack
-                    for (Territory* territoryToAttack : sourceTerritory->getAdjacentTerritories()){
-                        if (!this->m_player->isTerritoryOwned(territoryToAttack)){
-                            targetTerritory = territoryToAttack;
-                            break;
-                        }
+        Territory* sourceTerritory = nullptr;
+        Territory* targetTerritory  = nullptr;
+        // For each territory he owns, checking if that territory has any territories to attack and has any troops left to advance
+        for (Territory* territory : this->m_player->toDefend()){
+            if (this->m_player->doesHaveAdjacentTerritoriesToAttack(territory) && territory->getNumberOfArmies() > 0){
+                // Setting that territory as a source territory
+                sourceTerritory = territory;
+                cout << this->m_player->getPlayerID() << " enters source territory: " << sourceTerritory->getName() << endl;
+                // Getting the adjacent territory to attack
+                for (Territory* territoryToAttack : sourceTerritory->getAdjacentTerritories()){
+                    if (!this->m_player->isTerritoryOwned(territoryToAttack)){
+                        targetTerritory = territoryToAttack;
+                        break;
                     }
-                    cout << this->m_player->getPlayerID() << " enters target territory: " << targetTerritory->getName() << endl;
-                    // Advancing all of his source territory troops
-                    cout << this->m_player->getPlayerID() << " enters number of army units to advance: " << sourceTerritory->getNumberOfArmies() << endl;
-                    // Issuing an advance order
-                    Order* newOrder = new Advance(this->m_player, targetTerritory, sourceTerritory, new int(sourceTerritory->getNumberOfArmies()), deck, gameEngine);
-                    cout << this->m_player->getPlayerID() << " issued an Advance order" << std::endl;
-                    // Pushing that order into his orders list
-                    this->m_player->getOrdersList().orders.push_back(newOrder);
-                    // Converting Neutral Player to Aggressive Player if needed
-                    for (Player* otherPlayer : gameEngine->getPlayers()) {
-                        if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
-                            otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
-                            cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
-                        }
+                }
+                cout << this->m_player->getPlayerID() << " enters target territory: " << targetTerritory->getName() << endl;
+                // Advancing all of his source territory troops
+                cout << this->m_player->getPlayerID() << " enters number of army units to advance: " << sourceTerritory->getNumberOfArmies() << endl;
+                // Issuing an advance order
+                Order* newOrder = new Advance(this->m_player, targetTerritory, sourceTerritory, new int(sourceTerritory->getNumberOfArmies()), deck, gameEngine);
+                cout << this->m_player->getPlayerID() << " issued an Advance order" << std::endl;
+                // Pushing that order into his orders list
+                this->m_player->getOrdersList().orders.push_back(newOrder);
+                // Converting Neutral Player to Aggressive Player if needed
+                for (Player* otherPlayer : gameEngine->getPlayers()) {
+                    if (otherPlayer->isTerritoryOwned(targetTerritory) && otherPlayer->getStrategyType() == StrategyType::NeutralPlayer) {
+                        otherPlayer->setPlayerStrategy(new AggressivePlayerStrategy(otherPlayer));
+                        cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
                     }
                 }
             }
+        }
 
-            if (sourceTerritory == nullptr){
-                cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
-            }
+        if (sourceTerritory == nullptr){
+            cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
+        }
 
         // Aggressive Player will play any cards with an aggressive intent (doing the most damage possible)
         cout << this->m_player->getPlayerID() << " plays a card from their hand contents below" << endl;
@@ -445,7 +445,7 @@ void AggressivePlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
                             cout << otherPlayer->getPlayerID() << " becomes an Aggressive Player" << endl;
                         }
                     }
-                }                
+                }
             }
             else if (this->m_player->getHand().cards.at(0)->getType() == CardType::Bomb) {
                 // Get the target territory that has the most number of armies as source territory
@@ -496,7 +496,7 @@ std::vector<Territory*> AggressivePlayerStrategy::toDefend()
 // Constructor
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player)
 {
-	m_strategyType = (StrategyType::BenevolentPlayer);
+    m_strategyType = (StrategyType::BenevolentPlayer);
     m_player = player;
 }
 
@@ -504,11 +504,11 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
 {
     if (orderType == "Deploy"){
         // Benevolent Player will deploy all of his armies on its weakest territory
-        while (this->m_player->getReinforcementPool() > 0) 
+        while (this->m_player->getReinforcementPool() > 0)
         {
             // Get territories that he can deploy to (territories from toDefend())
             std::cout << "Territories " << this->m_player->getPlayerID() << " can deploy army units:" << std::endl;
-            for (Territory* territory : this->m_player->toDefend()) 
+            for (Territory* territory : this->m_player->toDefend())
             {
                 std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
@@ -540,7 +540,7 @@ void BenevolentPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, st
         else{
             // Get territories to defend
             std::cout << "Territories " << this->m_player->getPlayerID() << " can Defend:" << std::endl;
-            for (Territory* territory : this->m_player->toDefend()) 
+            for (Territory* territory : this->m_player->toDefend())
             {
                 std::cout << territory->getName() << " has " << territory->getNumberOfArmies() << " army" << std::endl;
             }
@@ -632,7 +632,7 @@ std::vector<Territory*> BenevolentPlayerStrategy::toDefend()
 // Constructor
 NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player)
 {
-	m_strategyType = (StrategyType::NeutralPlayer);
+    m_strategyType = (StrategyType::NeutralPlayer);
     m_player = player;
 }
 
@@ -671,7 +671,7 @@ std::vector<Territory*> NeutralPlayerStrategy::toDefend()
 // Constructor
 CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player)
 {
-	m_strategyType = (StrategyType::CheaterPlayer);
+    m_strategyType = (StrategyType::CheaterPlayer);
     m_player = player;
 }
 
@@ -693,7 +693,7 @@ void CheaterPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, strin
         cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
 
         // Cheating algorithm - Cheater player will automatically conquer all the territories he can attack
-        for (Territory* territory : this->m_player->toAttack()) 
+        for (Territory* territory : this->m_player->toAttack())
         {
             // Adding that territory to the list of territories that he owns
             this->m_player->addTerritory(territory);
@@ -729,5 +729,3 @@ std::vector<Territory*> CheaterPlayerStrategy::toDefend()
 {
     return m_player->toDefend();
 }
-
-

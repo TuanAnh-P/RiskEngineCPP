@@ -34,7 +34,7 @@ Map* MapLoader::loadMap() {
 
     // Check if the file is opened successfully. If not, return nullptr
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
+        std::cout << "Failed to open file: " << filename << std::endl;
         return nullptr;
     }
 

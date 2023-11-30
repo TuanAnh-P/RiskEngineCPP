@@ -15,36 +15,36 @@ class GameEngine;
 class Order : public ILoggable, public Subject
 {
 public:
-	// Constructor
-	Order();
+    // Constructor
+    Order();
 
-	Order(std::string type, Player* player);
-	
-	// Override ostream operator
-	friend std::ostream& operator<< (std::ostream& os, Order& order);
+    Order(std::string type, Player* player);
 
-	// Assignment operator
-	void operator=(const Order& order);
+    // Override ostream operator
+    friend std::ostream& operator<< (std::ostream& os, Order& order);
 
-	// Class member attributes
-	std::string type;
+    // Assignment operator
+    void operator=(const Order& order);
 
-	// Destructor
-	virtual ~Order();
+    // Class member attributes
+    std::string type;
 
-	virtual void execute() = 0;
-	virtual void print() = 0;
+    // Destructor
+    virtual ~Order();
+
+    virtual void execute() = 0;
+    virtual void print() = 0;
 
 protected:
 
-	// Derived class methods
-	virtual bool validate();
+    // Derived class methods
+    virtual bool validate();
 
-	Player* getIssuingPlayer();
-	void setIssuingPlayer(Player* player);
+    Player* getIssuingPlayer();
+    void setIssuingPlayer(Player* player);
 
 private:
-	Player* m_playerIssuer;
+    Player* m_playerIssuer;
 
 };
 
@@ -52,22 +52,22 @@ private:
 class OrdersList : public ILoggable, public Subject
 {
 public:
-	// Constructor
-	OrdersList();
+    // Constructor
+    OrdersList();
 
-	OrdersList(OrdersList& other);
+    OrdersList(OrdersList& other);
 
-	void remove(Order& order);
-	void move(Order& order, const int target_index);
+    void remove(Order& order);
+    void move(Order& order, const int target_index);
 
-	// Debug methods
-	void print();
+    // Debug methods
+    void print();
 
-	// Class attributes
-	std::vector<Order*> orders;
+    // Class attributes
+    std::vector<Order*> orders;
 
-	// Destructor
-	~OrdersList();
+    // Destructor
+    ~OrdersList();
 
     string stringToLog() override;
 
@@ -78,35 +78,35 @@ public:
 class Deploy : public Order
 {
 public:
-	// Constructor
-	Deploy();
-	
-	// Parameter constuctor
-	Deploy(Player* player, Territory* target, int* value);
+    // Constructor
+    Deploy();
 
-	// Copy Constructor
-	Deploy(Deploy& other);
-	
-	// Class methods
-	void execute();
+    // Parameter constuctor
+    Deploy(Player* player, Territory* target, int* value);
 
-	// Helper methods 
-	void print();
+    // Copy Constructor
+    Deploy(Deploy& other);
 
-	// Destructor
-	~Deploy();
+    // Class methods
+    void execute();
+
+    // Helper methods
+    void print();
+
+    // Destructor
+    ~Deploy();
 
     string stringToLog() override;
 
-private: 
+private:
 
-	// Members
-	Territory* m_targetTerritory;
-	int* m_numOfArmyUnits;
+    // Members
+    Territory* m_targetTerritory;
+    int* m_numOfArmyUnits;
 
-	// Methods
-	bool validate();
-	
+    // Methods
+    bool validate();
+
 
 };
 
@@ -114,35 +114,35 @@ private:
 class Advance : public Order
 {
 public:
-	// Constructor
-	Advance();
+    // Constructor
+    Advance();
 
-	//Copy Constructor
-	Advance(Advance& other);
+    //Copy Constructor
+    Advance(Advance& other);
 
-	// Parameter Constructor
-	Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck, GameEngine* gameEngine);
+    // Parameter Constructor
+    Advance(Player* player, Territory* targetTerritory, Territory* sourceTerritory, int* value, Deck* deck, GameEngine* gameEngine);
 
-	// Class methods
-	void execute();
-	void print();
+    // Class methods
+    void execute();
+    void print();
 
-	~Advance();
+    ~Advance();
 
     string stringToLog() override;
 
 private:
 
-	// Members
-	int* m_numOfArmyUnits;
-	Territory* m_sourceTerritory;
-	Territory* m_targetTerritory;
-	Deck* m_deckRef;
-	GameEngine* m_gameEngineRef;
+    // Members
+    int* m_numOfArmyUnits;
+    Territory* m_sourceTerritory;
+    Territory* m_targetTerritory;
+    Deck* m_deckRef;
+    GameEngine* m_gameEngineRef;
 
-	//Methods
-	bool validate();
-	
+    //Methods
+    bool validate();
+
 
 
 };
@@ -151,27 +151,27 @@ private:
 class Bomb : public Order
 {
 public:
-	// Constructor 
-	Bomb();
+    // Constructor
+    Bomb();
 
-	// Parameter constructor 
-	Bomb(Player* player, Territory* targetTerritory);
+    // Parameter constructor
+    Bomb(Player* player, Territory* targetTerritory);
 
-	//Copy Constructor
-	Bomb(Bomb& other);
+    //Copy Constructor
+    Bomb(Bomb& other);
 
-	// Class methods
-	void execute();
-	void print();
+    // Class methods
+    void execute();
+    void print();
 
-	~Bomb();
+    ~Bomb();
 
     string stringToLog() override;
 
 private:
 
-	Territory* m_targetTerritory;
-	bool validate();
+    Territory* m_targetTerritory;
+    bool validate();
 
 };
 
@@ -179,26 +179,26 @@ private:
 class Blockade : public Order
 {
 public:
-	// Constructor
-	Blockade();
+    // Constructor
+    Blockade();
 
-	Blockade(Player* player, Territory* tagretTerritory, GameEngine* gameEngineRef);
+    Blockade(Player* player, Territory* tagretTerritory, GameEngine* gameEngineRef);
 
-	//Copy Constructor
-	Blockade(Blockade& other);
+    //Copy Constructor
+    Blockade(Blockade& other);
 
-	// Class methods
-	void execute();
-	void print();
+    // Class methods
+    void execute();
+    void print();
 
-	~Blockade();
+    ~Blockade();
 
     string stringToLog() override;
 
-private: 
-	Territory* m_targetTerritory;
-	GameEngine* m_gameEngineRef;
-	bool validate();
+private:
+    Territory* m_targetTerritory;
+    GameEngine* m_gameEngineRef;
+    bool validate();
 
 };
 
@@ -206,29 +206,29 @@ private:
 class Airlift : public Order
 {
 public:
-	// Constructor
-	Airlift();
+    // Constructor
+    Airlift();
 
-	// Parameter constructor 
-	Airlift(Player* player, Territory* sourceTerritory, Territory* targetTerritory, int* value);
+    // Parameter constructor
+    Airlift(Player* player, Territory* sourceTerritory, Territory* targetTerritory, int* value);
 
-	//Copy Constructor
-	Airlift(Airlift& other);
+    //Copy Constructor
+    Airlift(Airlift& other);
 
-	// Class methods
-	void execute();
-	void print();
+    // Class methods
+    void execute();
+    void print();
 
-	~Airlift();
+    ~Airlift();
 
     string stringToLog() override;
 
 private:
 
-	int* m_numOfArmyUnits;
-	Territory* m_targetTerritory;
-	Territory* m_sourceTerritory;
-	bool validate();
+    int* m_numOfArmyUnits;
+    Territory* m_targetTerritory;
+    Territory* m_sourceTerritory;
+    bool validate();
 
 };
 
@@ -236,30 +236,24 @@ private:
 class Negotiate : public Order
 {
 public:
-	// Constructor 
-	Negotiate();
+    // Constructor
+    Negotiate();
 
-	Negotiate(Player* player, Player* targetPlayer);
+    Negotiate(Player* player, Player* targetPlayer);
 
-	//Copy Constructor
-	Negotiate(Negotiate& other);
+    //Copy Constructor
+    Negotiate(Negotiate& other);
 
-	// Class methods
-	void execute();
-	void print();
+    // Class methods
+    void execute();
+    void print();
 
-	~Negotiate();
+    ~Negotiate();
 
     string stringToLog() override;
 
-private: 
+private:
 
-	Player* m_targetPlayer;
-	bool validate();
+    Player* m_targetPlayer;
+    bool validate();
 };
-
-
-
-
-
-

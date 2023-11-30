@@ -27,7 +27,7 @@ void testGameStates(){
     while ((game->getCurrentGameState()).getGameStateId() != GameStateType::END)
     {
         cout << "status is " << ((game->getCurrentGameState()).getGameStateId() != GameStateType::END) ;
-        
+
         Command& command = game->getCommandProcessor().getCommand();
 
         cout << "reach 1";

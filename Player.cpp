@@ -3,33 +3,33 @@
 
 // Constructor
 Player::Player(const std::string& playerID)
-        : playerID(new std::string(playerID)),hand(new Hand()),ordersList(new OrdersList()),negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0))          
+        : playerID(new std::string(playerID)),hand(new Hand()),ordersList(new OrdersList()),negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0))
 {
 //    std::cout << "Player " << *this->playerID << " has arrived!" << std::endl;
 }
 
 Player::Player(const std::string& playerID, StrategyType strategy)
-    : playerID(new std::string(playerID)),hand(new Hand()),ordersList(new OrdersList()),negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0))
+        : playerID(new std::string(playerID)),hand(new Hand()),ordersList(new OrdersList()),negotiatedPlayers(new std::vector<Player*>()), reinforcementPool(new int(0))
 {
     switch (strategy)
     {
-    case StrategyType::HumanPlayer:
-        m_strategy = new HumanPlayerStrategy(this);
-        break;
-    case StrategyType::AggressivePlayer:
-        m_strategy = new AggressivePlayerStrategy(this);
-        break;
-    case StrategyType::BenevolentPlayer:
-        m_strategy = new BenevolentPlayerStrategy(this);
-        break;
-    case StrategyType::NeutralPlayer:
-        m_strategy = new NeutralPlayerStrategy(this);
-        break;
-    case StrategyType::CheaterPlayer:
-        m_strategy = new CheaterPlayerStrategy(this);
-        break;
-    default:
-        break;
+        case StrategyType::HumanPlayer:
+            m_strategy = new HumanPlayerStrategy(this);
+            break;
+        case StrategyType::AggressivePlayer:
+            m_strategy = new AggressivePlayerStrategy(this);
+            break;
+        case StrategyType::BenevolentPlayer:
+            m_strategy = new BenevolentPlayerStrategy(this);
+            break;
+        case StrategyType::NeutralPlayer:
+            m_strategy = new NeutralPlayerStrategy(this);
+            break;
+        case StrategyType::CheaterPlayer:
+            m_strategy = new CheaterPlayerStrategy(this);
+            break;
+        default:
+            break;
     }
 }
 
@@ -48,30 +48,30 @@ Player::Player(const Player& other)
         negotiatedPlayers->push_back(new Player(*player));
     }
 
-    // Deep copy strategy 
+    // Deep copy strategy
     if (m_strategy != nullptr)
         delete m_strategy;
     StrategyType strategyType = other.m_strategy->getStrategyType();
 
     switch (strategyType)
     {
-    case StrategyType::HumanPlayer:
-        m_strategy = new HumanPlayerStrategy(this);
-        break;
-    case StrategyType::AggressivePlayer:
-        m_strategy = new AggressivePlayerStrategy(this);
-        break;
-    case StrategyType::BenevolentPlayer:
-        m_strategy = new BenevolentPlayerStrategy(this);
-        break;
-    case StrategyType::NeutralPlayer:
-        m_strategy = new NeutralPlayerStrategy(this);
-        break;
-    case StrategyType::CheaterPlayer:
-        m_strategy = new CheaterPlayerStrategy(this);
-        break;
-    default:
-        break;
+        case StrategyType::HumanPlayer:
+            m_strategy = new HumanPlayerStrategy(this);
+            break;
+        case StrategyType::AggressivePlayer:
+            m_strategy = new AggressivePlayerStrategy(this);
+            break;
+        case StrategyType::BenevolentPlayer:
+            m_strategy = new BenevolentPlayerStrategy(this);
+            break;
+        case StrategyType::NeutralPlayer:
+            m_strategy = new NeutralPlayerStrategy(this);
+            break;
+        case StrategyType::CheaterPlayer:
+            m_strategy = new CheaterPlayerStrategy(this);
+            break;
+        default:
+            break;
     }
 }
 
@@ -90,37 +90,37 @@ Player& Player::operator=(const Player& other) {
         }
 
 
-         // Deep copy hand and orders list
+        // Deep copy hand and orders list
         delete hand;
         delete ordersList;
         delete negotiatedPlayers;
 
-        // Deep copy strategy 
+        // Deep copy strategy
         if(m_strategy != nullptr)
             delete m_strategy;
         StrategyType strategyType = other.m_strategy->getStrategyType();
 
         switch (strategyType)
         {
-        case StrategyType::HumanPlayer:
-            m_strategy = new HumanPlayerStrategy(this);
-            break;
-        case StrategyType::AggressivePlayer:
-            m_strategy = new AggressivePlayerStrategy(this);
-            break;
-        case StrategyType::BenevolentPlayer:
-            m_strategy = new BenevolentPlayerStrategy(this);
-            break;
-        case StrategyType::NeutralPlayer:
-            m_strategy = new NeutralPlayerStrategy(this);
-            break;
-        case StrategyType::CheaterPlayer:
-            m_strategy = new CheaterPlayerStrategy(this);
-            break;
-        default:
-            break;
+            case StrategyType::HumanPlayer:
+                m_strategy = new HumanPlayerStrategy(this);
+                break;
+            case StrategyType::AggressivePlayer:
+                m_strategy = new AggressivePlayerStrategy(this);
+                break;
+            case StrategyType::BenevolentPlayer:
+                m_strategy = new BenevolentPlayerStrategy(this);
+                break;
+            case StrategyType::NeutralPlayer:
+                m_strategy = new NeutralPlayerStrategy(this);
+                break;
+            case StrategyType::CheaterPlayer:
+                m_strategy = new CheaterPlayerStrategy(this);
+                break;
+            default:
+                break;
         }
-       
+
         hand = new Hand(*other.hand);
         ordersList = new OrdersList(*other.ordersList);
         negotiatedPlayers = new std::vector<Player*>(*other.negotiatedPlayers);
@@ -151,7 +151,7 @@ Player::~Player() {
 
     // Delete strategy
     if (m_strategy != nullptr)
-    delete m_strategy;
+        delete m_strategy;
 
     // Set the pointers to nullptr after deletion
     playerID = nullptr;
@@ -251,12 +251,12 @@ std::vector<Territory*> Player::toAttack() {
         }
 
         for (Territory* adjacentTerritory : adjacentTerritories) {
-                // Check if the territory is not owned and is not already in toAttack
-                if (!isTerritoryOwned(adjacentTerritory) && std::find(toAttack.begin(), toAttack.end(), adjacentTerritory) == toAttack.end()) {
-                    toAttack.push_back(adjacentTerritory);
-                }
+            // Check if the territory is not owned and is not already in toAttack
+            if (!isTerritoryOwned(adjacentTerritory) && std::find(toAttack.begin(), toAttack.end(), adjacentTerritory) == toAttack.end()) {
+                toAttack.push_back(adjacentTerritory);
             }
         }
+    }
     return toAttack;
 }
 
@@ -298,7 +298,7 @@ void Player::issueOrder(Deck* deck, GameEngine* gameEngine, string& orderType) {
 bool Player::isTerritoryOwned(Territory* territory)
 {
     if (this->ownedTerritories.empty()) return false;
-  
+
     for (Territory* var : this->ownedTerritories)
     {
         if (var == territory) return true;
@@ -394,6 +394,3 @@ std::ostream& operator<<(std::ostream& os, const Player& player) {
     os << "Reinforcement Pool: " << *player.reinforcementPool << std::endl;
     return os;
 }
-
-
-

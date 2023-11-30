@@ -1,4 +1,4 @@
-#include "CommandProcessing.h" 
+#include "CommandProcessing.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -56,7 +56,7 @@ Command::~Command() {
     delete _effect;
 }
 
-// getter for the command field 
+// getter for the command field
 string& Command::getCommand(){
     return *_command;
 }
@@ -127,7 +127,7 @@ TournamentConfiguration::~TournamentConfiguration() {
     delete _maxTurns;
 }
 
-// Overriding the stream ingestion operator for the 
+// Overriding the stream ingestion operator for the
 ostream& operator<<(std::ostream& out, const TournamentConfiguration& tc) {
     out << "Tournament Configuration Parameters: \n" << endl;
     out << "\tNumber of Games: " << *tc._numberOfGames << endl;
@@ -155,12 +155,12 @@ TournamentConfiguration& TournamentConfiguration::validateAndParseCommand(Comman
     int maxTurns;
 
     // Valid map files and player strategies
-    vector<string> validMaps = { "map1", "map2" };
+//    vector<string> validMaps = { "3d.map", "test.map" };
     vector<string> validStrategies = { "Aggressive", "Benevolent", "Neutral", "Random", "Cheater" };
 
     // Skip the first word "tournament"
     commandStream >> parameter;
-    
+
     try {
         commandStream >> parameter;
         while (true) {
@@ -170,17 +170,17 @@ TournamentConfiguration& TournamentConfiguration::validateAndParseCommand(Comman
                     // remove the comma from the parameter
                     parameter.erase(std::remove(parameter.begin(), parameter.end(), ','), parameter.end());
 
-                    // ensure that the map file is valid
-                    if(std::find(validMaps.begin(), validMaps.end(), parameter) == validMaps.end()) {
-                        string validMapsString = "";
+//                    // ensure that the map file is valid
+//                    if(std::find(validMaps.begin(), validMaps.end(), parameter) == validMaps.end()) {
+//                        string validMapsString = "";
+//
+//                        for (const auto& map : validMaps) {
+//                            validMapsString += map + " ";
+//                        }
+//                        throw InvalidTournamentArgumentException("Invalid argument for map file, valid maps are: " + validMapsString );
+//                    }
 
-                        for (const auto& map : validMaps) {
-                            validMapsString += map + " ";
-                        }
-                        throw InvalidTournamentArgumentException("Invalid argument for map file, valid maps are: " + validMapsString );
-                    }
-
-                    // add the map file to the vector of map files 
+                    // add the map file to the vector of map files
                     mapFiles.push_back(parameter);
                 }
 
@@ -208,10 +208,10 @@ TournamentConfiguration& TournamentConfiguration::validateAndParseCommand(Comman
                     playerStrategies.push_back(parameter);
                 }
 
-                // validating that player strategies are between 2 and 4 
+                // validating that player strategies are between 2 and 4
                 if (playerStrategies.size() < 2 || playerStrategies.size() > 4) {
                     throw InvalidTournamentArgumentException("Invalid number of player strategies");
-                } 
+                }
 
             } else if (parameter == "-G") { // Validating and parsing the number of games
                 commandStream >> numberOfGames;
@@ -237,12 +237,12 @@ TournamentConfiguration& TournamentConfiguration::validateAndParseCommand(Comman
                 throw InvalidTournamentArgumentException("Invalid argument flag \"" + parameter + "\"");
             }
         }
-    } catch (InvalidTournamentArgumentException& e) { // Catch the exception, print the error message and rethrow it 
+    } catch (InvalidTournamentArgumentException& e) { // Catch the exception, print the error message and rethrow it
         cout << "\n" << e.what() << endl;
-        throw e; 
+        throw e;
     }
 
-    // return the tournament configuration 
+    // return the tournament configuration
     return *(new TournamentConfiguration(numberOfGames, maxTurns, mapFiles, playerStrategies));
 }
 
@@ -298,7 +298,7 @@ CommandProcessor::~CommandProcessor() {
 // Method that reads the next console input from the user
 string& CommandProcessor::readCommand(){
     std::cout << "\n* Please enter a command: ";
-    string command; 
+    string command;
     std::getline(std::cin, command);
 
     return *(new string(command));
@@ -327,8 +327,8 @@ Command& CommandProcessor::getCommand() {
 bool CommandProcessor::validate(Command& command, GameStateType gameState) {
     string commandValue = getFirstSubstring(command.getCommand());
 
-    // if the game state is one of the game triggered events, consider the command valid 
-    if(gameState == GameStateType::ASSIGN_REINFORCEMENT ||  
+    // if the game state is one of the game triggered events, consider the command valid
+    if(gameState == GameStateType::ASSIGN_REINFORCEMENT ||
        gameState == GameStateType::ISSUE_ORDERS ||
        gameState == GameStateType::EXECUTE_ORDERS) return true;
 

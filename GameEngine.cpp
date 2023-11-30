@@ -95,7 +95,7 @@ void GameEngine::startupPhase() {
         //Retrive the game state
         GameStateType gameState = getCurrentGameState().getGameStateId();
         bool stateValidated = commandProcessor.validate(command, gameState);
-
+        //tournament -M hhh.map,jjjj.map -P Aggressive,Neutral,Benevolent,Cheater -G 5 -D 50
         //do the appropriate sequence
         if (commandStr.rfind("tournament", 0) == 0 && stateValidated) { //TODO wrong tournament format, and valids
             // Find the positions of various parameters in the command
@@ -185,6 +185,9 @@ void GameEngine::startupPhase() {
                         _currentGameState->update(command);
                         Notify(this);
                     }
+                    else{
+                        break;
+                    }
 
                     //add player Phase
                     players.clear();
@@ -226,7 +229,7 @@ void GameEngine::startupPhase() {
             string filename = "./maps/" + commandStr.substr(8);
             bool mapLoaded = loadMap(filename);
             if(mapLoaded){
-                //_currentGameState->update(command);
+                _currentGameState->update(command);
                 setCurrentGameState(GameStateType::MAP_LOADED);
                 Notify(this);
             }
@@ -269,6 +272,7 @@ bool GameEngine::loadMap(const std::string& filename) {
     cout << "opening map: " << filename << endl;
     if (!newMap) {
         std::cout << "Failed to load the map." << std::endl;
+        gameMap = nullptr;
         return false;
     } else {
         delete gameMap;

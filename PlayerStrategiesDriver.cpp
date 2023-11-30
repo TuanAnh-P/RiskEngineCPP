@@ -6,33 +6,33 @@
 // Test Player Strategies free test function
 void testPlayerStrategies()
 {
-	// Create instance of strategy
-	/*NeutralPlayerStrategy* neutralStrat = new NeutralPlayerStrategy();
-	HumanPlayerStrategy* humanStrat = new HumanPlayerStrategy();
-	AggressivePlayerStrategy* aggroStrat = new AggressivePlayerStrategy();*/
+    // Create instance of strategy
+    /*NeutralPlayerStrategy* neutralStrat = new NeutralPlayerStrategy();
+    HumanPlayerStrategy* humanStrat = new HumanPlayerStrategy();
+    AggressivePlayerStrategy* aggroStrat = new AggressivePlayerStrategy();*/
 
-	// Assignment operator test
-	//*aggroStrat = *humanStrat;
+    // Assignment operator test
+    //*aggroStrat = *humanStrat;
 
 
-	//delete(neutralStrat);
-	//delete(humanStrat);
-	//delete(aggroStrat);
+    //delete(neutralStrat);
+    //delete(humanStrat);
+    //delete(aggroStrat);
 
-	//Player* player = new Player("John", StrategyType::AggressivePlayer);
-	//Player* player2 = new Player("Sue", StrategyType::NeutralPlayer);
-	//
-	//Player player3(*player2);
+    //Player* player = new Player("John", StrategyType::AggressivePlayer);
+    //Player* player2 = new Player("Sue", StrategyType::NeutralPlayer);
+    //
+    //Player player3(*player2);
 
-	//player2 = player;
+    //player2 = player;
 
-	//// Test switch strategy
-	//std::cout << player->getStrategy() << std::endl;
-	//player->setPlayerStrategy(new HumanPlayerStrategy(player));
-	//std::cout << *player->getStrategy() << std::endl;	
+    //// Test switch strategy
+    //std::cout << player->getStrategy() << std::endl;
+    //player->setPlayerStrategy(new HumanPlayerStrategy(player));
+    //std::cout << *player->getStrategy() << std::endl;
 
-	//std::cout << *player2->getStrategy() << std::endl;
-	//std::cout << *player3.getStrategy() << std::endl;
+    //std::cout << *player2->getStrategy() << std::endl;
+    //std::cout << *player3.getStrategy() << std::endl;
 
 
     // Create the game engine
@@ -81,7 +81,7 @@ void testPlayerStrategies()
     Player* cheater_Player = new Player("CHEAT_PLAYER", StrategyType::CheaterPlayer);
     Player* human_Player = new Player("HUMAN_PLAYER", StrategyType::HumanPlayer);
 
-    //  -----------------------  Game 1   -----------------------  // 
+    //  -----------------------  Game 1   -----------------------  //
 
     std::vector<Player*> playerList;
     playerList.push_back(aggressive_Player);
@@ -108,7 +108,7 @@ void testPlayerStrategies()
     // Start game loop
     game->mainGameLoop(5);
 
-    // Reset the player list and territories 
+    // Reset the player list and territories
     playerList.clear();
     usa->setNumberOfArmies(0);
     mexico->setNumberOfArmies(0);
@@ -116,7 +116,7 @@ void testPlayerStrategies()
     brazil->setNumberOfArmies(0);
 
 
-    //  -----------------------  Game 2   -----------------------  // 
+    //  -----------------------  Game 2   -----------------------  //
 
     playerList.push_back(neutral_Player);
     playerList.push_back(cheater_Player);
@@ -147,7 +147,7 @@ void testPlayerStrategies()
     colombia->setNumberOfArmies(0);
     brazil->setNumberOfArmies(0);
 
-    //  -----------------------  Game 3   -----------------------  // 
+    //  -----------------------  Game 3   -----------------------  //
 
     playerList.push_back(neutral_Player);
     playerList.push_back(aggressive_Player);

@@ -57,7 +57,7 @@ void testTournament(){
     // cout << endl << game->getCommandProcessor();
 }
 
-int main(){
-   testTournament();
-   return 0;
-}
+//int main(){
+//   testTournament();
+//   return 0;
+//}
