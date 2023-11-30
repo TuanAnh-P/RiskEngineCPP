@@ -5,6 +5,8 @@
 #include <string> 
 #include <ostream> 
 #include <fstream>
+#include <exception>
+
 #include "LoggingObserver.h"
 
 using std::string;
@@ -79,11 +81,18 @@ public:
     vector<string>& getMapsFiles();
     vector<string>& getPlayerStrategies();
 
-    // method that validates the parameters of the tournament command
-    static bool validateCommand(Command& command);
+    // method that validates and parses the parameters of the tournament command
+    static TournamentConfiguration& validateAndParseCommand(Command& command);
+};
 
-    // method that parses the parameters of the tournament command
-    static TournamentConfiguration& parseCommand(Command& command);
+class InvalidTournamentArgumentException : public std::exception {
+private:
+    string _message;
+
+public:
+    InvalidTournamentArgumentException(const std::string& message);
+
+    const char* what() const noexcept override;
 };
 
 class CommandProcessor : public ILoggable, public Subject {

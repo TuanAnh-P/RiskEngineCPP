@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 using std::string;
 using std::ifstream;
@@ -142,40 +143,115 @@ ostream& operator<<(std::ostream& out, const TournamentConfiguration& tc) {
     return out << "\n";
 }
 
-bool TournamentConfiguration::validateCommand(Command& command) {
-}
-
-TournamentConfiguration& TournamentConfiguration::parseCommand(Command& command) {
+// Method that validates and parses the configuration from the tournament command
+TournamentConfiguration& TournamentConfiguration::validateAndParseCommand(Command& command) {
     istringstream commandStream(command.getCommand());
     string parameter;
 
-    vector<std::string> mapFiles;
-    vector<std::string> playerStrategies;
+    // Configuration parameters to parse
+    vector<string> mapFiles;
+    vector<string> playerStrategies;
     int numberOfGames;
     int maxTurns;
 
+    // Valid map files and player strategies
+    vector<string> validMaps = { "map1", "map2" };
+    vector<string> validStrategies = { "Aggressive", "Benevolent", "Neutral", "Random", "Cheater" };
+
     // Skip the first word "tournament"
     commandStream >> parameter;
+    
+    try {
+        commandStream >> parameter;
+        while (true) {
+            // Validating and parsing the map files
+            if (parameter == "-M") {
+                while (commandStream >> parameter && parameter != "-P") {
+                    // remove the comma from the parameter
+                    parameter.erase(std::remove(parameter.begin(), parameter.end(), ','), parameter.end());
 
-    while (commandStream >> parameter) {
-        if (parameter == "-M") {
-            while (commandStream >> parameter && parameter != "-P") {
-                mapFiles.push_back(parameter);
+                    // ensure that the map file is valid
+                    if(std::find(validMaps.begin(), validMaps.end(), parameter) == validMaps.end()) {
+                        string validMapsString = "";
+
+                        for (const auto& map : validMaps) {
+                            validMapsString += map + " ";
+                        }
+                        throw InvalidTournamentArgumentException("Invalid argument for map file, valid maps are: " + validMapsString );
+                    }
+
+                    // add the map file to the vector of map files 
+                    mapFiles.push_back(parameter);
+                }
+
+                // validating that map files are between 1 and 5
+                if (mapFiles.size() < 1 || mapFiles.size() > 5) {
+                    throw InvalidTournamentArgumentException("Invalid number of map files");
+                }
+            } else if (parameter == "-P") {  // Validating and parsing the player strategies
+                // Validating the player strategies
+                while (commandStream >> parameter && parameter != "-G") {
+                    // remove the comma from the parameter
+                    parameter.erase(std::remove(parameter.begin(), parameter.end(), ','), parameter.end());
+
+                    // ensure that the player strategy is valid
+                    if(std::find(validStrategies.begin(), validStrategies.end(), parameter) == validStrategies.end()) {
+                        string validStrategiesString = "";
+
+                        for (const auto& strategy : validStrategies) {
+                            validStrategiesString += strategy + " ";
+                        }
+                        throw InvalidTournamentArgumentException("Invalid argument for player strategy \"" + parameter + "\" , valid strategies are: " + validStrategiesString);
+                    }
+
+                    // add the player strategy to the vector of player strategies
+                    playerStrategies.push_back(parameter);
+                }
+
+                // validating that player strategies are between 2 and 4 
+                if (playerStrategies.size() < 2 || playerStrategies.size() > 4) {
+                    throw InvalidTournamentArgumentException("Invalid number of player strategies");
+                } 
+
+            } else if (parameter == "-G") { // Validating and parsing the number of games
+                commandStream >> numberOfGames;
+
+                // validating that the number of games is between 1 and 5
+                if(numberOfGames < 1 || numberOfGames > 5) {
+                    throw InvalidTournamentArgumentException("Invalid number of games \"" + std::to_string(numberOfGames) + "\"");
+                }
+
+                // reading the next flag
+                commandStream >> parameter;
+            } else if (parameter == "-D") { // Validating and parsing the max number of turns
+                commandStream >> maxTurns;
+
+                // validating that the number of max turns is between 10 and 50
+                if(maxTurns < 10 || maxTurns > 50) {
+                    throw InvalidTournamentArgumentException("Invalid number of max turns \"" + std::to_string(maxTurns) + "\"");
+                }
+
+                // breaking out of loop
+                break;
+            } else { // In case of invalid flag, throw an exception
+                throw InvalidTournamentArgumentException("Invalid argument flag \"" + parameter + "\"");
             }
-        } else if (parameter == "-P") {
-            while (commandStream >> parameter && parameter != "-G") {
-                playerStrategies.push_back(parameter);
-            }
-        } else if (parameter == "-G") {
-            commandStream >> numberOfGames;
-        } else if (parameter == "-D") {
-            commandStream >> maxTurns;
         }
+    } catch (InvalidTournamentArgumentException& e) { // Catch the exception, print the error message and rethrow it 
+        cout << "\n" << e.what() << endl;
+        throw e; 
     }
 
+    // return the tournament configuration 
     return *(new TournamentConfiguration(numberOfGames, maxTurns, mapFiles, playerStrategies));
 }
 
+// Implementation of InvalidTournamentArgumentException members
+InvalidTournamentArgumentException::InvalidTournamentArgumentException(const std::string& message) : _message(message) {}
+
+const char* InvalidTournamentArgumentException::what() const noexcept {
+    return _message.c_str();
+}
 
 // Implementation of CommandProcessor members
 

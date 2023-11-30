@@ -14,6 +14,7 @@ using std::endl;
 using std::string;
 using std::ostream;
 
+// Method for getting string value of the input game state
 string gameStateTypeToString(GameStateType state) {
     switch (state) {
         case GameStateType::START:
@@ -39,12 +40,11 @@ string gameStateTypeToString(GameStateType state) {
     }
 }
 
+// Method that print the invalid command error
 void printInvalidCommandError()
 {
     cout << "\nInvalid Command entered..." << endl;
 };
-
-
 
 // Implementation of the GameEngine class methods / constructors
 GameState::GameState(GameEngine &gameEngine, GameStateType *gameStateId, string *name):
@@ -98,7 +98,6 @@ void GameEngine::startupPhase() {
 
         //do the appropriate sequence
         if (commandStr.rfind("tournament", 0) == 0 && stateValidated){
-
         }
         if (commandStr.rfind("loadmap ", 0) == 0 && stateValidated) {
             //load  map
@@ -496,7 +495,7 @@ const std::vector<Territory*>& GameEngine::getAllTerritories() const {
 //New constructor
 GameEngine::GameEngine() : gameMap(nullptr), _currentGameState(nullptr), neutralPlayer(new Player("Neutral Player")) {};
 
-//Need destructor
+// destructor
 GameEngine::~GameEngine() {
     delete gameMap;
     for (auto player : players) {
@@ -513,11 +512,14 @@ GameEngine::~GameEngine() {
     delete neutralPlayer;
 }
 
+// non default constructor
 GameEngine::GameEngine(CommandProcessor& commandProcessor): _commandProcessor(&commandProcessor) {};
 
+// Copy constructor
 GameEngine::GameEngine(GameEngine &engine) : 
     _currentGameState(engine._currentGameState), _gameStates(engine._gameStates) {};
 
+// overriding the stream insertion operator
 ostream & operator << (ostream &out, GameEngine &engine)
 {
     out << "current state" << gameStateTypeToString(engine._currentGameState->getGameStateId())<< endl;
@@ -533,20 +535,24 @@ CommandProcessor& GameEngine::getCommandProcessor() {
     return *_commandProcessor;
 }
 
+// Method for getting a game state instance based on the input ID
 GameState& GameEngine::getGameState(GameStateType gameStateID){
     return *_gameStates[gameStateID];
 }
 
+// getter for the current game state of the game engine
 GameState& GameEngine::getCurrentGameState(){
     return *_currentGameState;
 }
 
+// Method for setting the current game state of the game based on the game state ID
 void GameEngine::setCurrentGameState(GameStateType gameStateID)
 {
     GameState *gameState = &getGameState(gameStateID);
     setCurrentGameState(gameState);
 }
 
+// Method for updating the game state based on input command
 void GameEngine::update(Command& command){
     if (_currentGameState != nullptr)
     {
@@ -555,6 +561,7 @@ void GameEngine::update(Command& command){
     }
 }
 
+// Method for setting the current game state of the game
 void GameEngine::setCurrentGameState(GameState *gameState)
 {
     if (_currentGameState == gameState)
@@ -574,13 +581,20 @@ StartState::StartState(GameEngine &gameEngine)
         : GameState(gameEngine, new GameStateType(GameStateType::START), new string("Start")){};
 
 void StartState::update(Command& command){
+    cout << command.getCommand() << endl;
+
     if(command.getCommand() == "loadmap")
     {
         command.saveEffect("* transitioning to Map Loaded state");
         _gameEngine.setCurrentGameState(GameStateType::MAP_LOADED);
     }
-    if(command.getCommand() == "tournament") {
-
+    if(command.getCommand().rfind("tournament", 0) == 0) {
+        try {
+            TournamentConfiguration tournamentConfig = TournamentConfiguration::validateAndParseCommand(command);
+            cout << tournamentConfig;
+        } catch (InvalidTournamentArgumentException& e) {
+            _gameEngine.setCurrentGameState(GameStateType::END);
+        }
     }
 }
 
