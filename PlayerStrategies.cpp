@@ -676,22 +676,29 @@ void CheaterPlayerStrategy::issueOrder(Deck* deck, GameEngine* gameEngine, strin
         cout << this->m_player->getPlayerID() << " won't make any Deploy orders" << endl;
     }
 
-    if (orderType == "Else"){
+    if (orderType == "Else")
+    {
         // Cheater Player won't make any advance orders
         cout << this->m_player->getPlayerID() << " can make Advance Order" << endl;
         cout << this->m_player->getPlayerID() << " won't make Advance Order" << endl;
+
         // Cheating algorithm - Cheater player will automatically conquer all the territories he can attack
-        for (Territory* territory : this->m_player->toAttack()) {
+        for (Territory* territory : this->m_player->toAttack()) 
+        {
             // Adding that territory to the list of territories that he owns
             this->m_player->addTerritory(territory);
+
             // Finding the player who owned that territory and removing it from the territories that he possesses
             Player* playerThatOwnedThatTerritory = nullptr;
-            for (Player* otherPlayer : gameEngine->getPlayers()){
-                if (otherPlayer->isTerritoryOwned(territory)) playerThatOwnedThatTerritory=otherPlayer;
+            for (Player* otherPlayer : gameEngine->getPlayers())
+            {
+                if (otherPlayer->isTerritoryOwned(territory) && otherPlayer != m_player) playerThatOwnedThatTerritory = otherPlayer;
             }
             playerThatOwnedThatTerritory->removeTerritory(territory);
+
             // Setting Neutral Player to Aggressive Player if needed
-            if (playerThatOwnedThatTerritory->getStrategyType() == StrategyType::NeutralPlayer){
+            if (playerThatOwnedThatTerritory->getStrategyType() == StrategyType::NeutralPlayer)
+            {
                 playerThatOwnedThatTerritory->setPlayerStrategy(new AggressivePlayerStrategy(playerThatOwnedThatTerritory));
                 cout << playerThatOwnedThatTerritory->getPlayerID() << " becomes an Aggressive Player" << endl;
             }

@@ -745,7 +745,7 @@ bool Airlift::validate()
 	}
 	else
 	{
-		std::cout << "Invalid Airlift - Issuing player is does not own Source Territory" << std::endl;
+		std::cout << "Invalid Airlift - Issuing player does not own Source Territory" << std::endl;
 	}
 
 
