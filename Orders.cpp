@@ -423,10 +423,10 @@ void Advance::execute()
 
             if (canAttack)
             {
-                m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
-                if(m_sourceTerritory->getNumberOfArmies() < 0){
-                    m_sourceTerritory->setNumberOfArmies(0);
+                if(*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies()){
+                    *m_numOfArmyUnits = m_sourceTerritory->getNumberOfArmies();
                 }
+                m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
 
                 std::cout << "-- Attack Advance order --" << std::endl;
 
