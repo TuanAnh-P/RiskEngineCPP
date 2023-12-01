@@ -49,6 +49,7 @@ public:
     virtual std::vector<Territory*> toAttack() = 0;
     virtual std::vector<Territory*> toDefend() = 0;
 
+    //  Protected class memebers
 protected:
     StrategyType m_strategyType = StrategyType::None;
     const Player* getPlayer();
@@ -67,10 +68,12 @@ public:
     // Constructor
     HumanPlayerStrategy(Player* player);
 
+    // define abstract methods
     void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
+    // Using base class assignment 
     using PlayerStrategy::operator=;
 };
 
@@ -84,10 +87,12 @@ public:
     // Constructor
     AggressivePlayerStrategy(Player* player);
 
+    // define abstract methods
     void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
+    // Using base class assignment 
     using PlayerStrategy::operator=;
 };
 
@@ -101,10 +106,12 @@ public:
     // Constructor
     BenevolentPlayerStrategy(Player* player);
 
+    // define abstract methods
     void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
+    // Using base class assignment 
     using PlayerStrategy::operator=;
 };
 
@@ -118,10 +125,12 @@ public:
     // Constructor
     NeutralPlayerStrategy(Player* player);
 
+    // define abstract methods
     void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
+    // Using base class assignment 
     using PlayerStrategy::operator=;
 };
 
@@ -135,9 +144,11 @@ public:
     // Constructor
     CheaterPlayerStrategy(Player* player);
 
+    // define abstract methods
     void issueOrder(Deck* deck, GameEngine* gameEngine, std::string& orderType);
     std::vector<Territory*> toAttack();
     std::vector<Territory*> toDefend();
 
+    // Using base class assignment 
     using PlayerStrategy::operator=;
 };
