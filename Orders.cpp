@@ -423,6 +423,7 @@ void Advance::execute()
 
             if (canAttack)
             {
+                Notify(this);
                 if(*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies()){
                     *m_numOfArmyUnits = m_sourceTerritory->getNumberOfArmies();
                 }
