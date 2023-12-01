@@ -82,17 +82,7 @@ public:
     vector<string>& getPlayerStrategies();
 
     // method that validates and parses the parameters of the tournament command
-    static TournamentConfiguration& validateAndParseCommand(Command& command);
-};
-
-class InvalidTournamentArgumentException : public std::exception {
-private:
-    string _message;
-
-public:
-    InvalidTournamentArgumentException(const std::string& message);
-
-    const char* what() const noexcept override;
+    static TournamentConfiguration* validateAndParseCommand(string command);
 };
 
 class CommandProcessor : public ILoggable, public Subject {
