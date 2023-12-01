@@ -50,6 +50,8 @@ public:
     string& getCommandEffect();
 
     string stringToLog() override;
+
+    string stringToTourLog(int game) override;
 };
 
 class TournamentConfiguration {
@@ -114,6 +116,8 @@ public:
     bool validate(Command& command, GameStateType gameState);
 
     string stringToLog() override;
+
+    string stringToTourLog(int game) override;
 };
 
 class FileLineReader {

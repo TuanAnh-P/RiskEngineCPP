@@ -71,6 +71,8 @@ public:
 
     string stringToLog() override;
 
+    string stringToTourLog(int game) override;
+
     void addOrder(Order& order);
 };
 
@@ -97,6 +99,8 @@ public:
     ~Deploy();
 
     string stringToLog() override;
+
+    string stringToTourLog(int game) override;
 
 private:
 
@@ -130,6 +134,8 @@ public:
     ~Advance();
 
     string stringToLog() override;
+
+    string stringToTourLog(int game) override;
 
 private:
 
@@ -168,6 +174,8 @@ public:
 
     string stringToLog() override;
 
+    string stringToTourLog(int game) override;
+
 private:
 
     Territory* m_targetTerritory;
@@ -194,6 +202,8 @@ public:
     ~Blockade();
 
     string stringToLog() override;
+
+    string stringToTourLog(int game) override;
 
 private:
     Territory* m_targetTerritory;
@@ -223,6 +233,8 @@ public:
 
     string stringToLog() override;
 
+    string stringToTourLog(int game) override;
+
 private:
 
     int* m_numOfArmyUnits;
@@ -251,6 +263,8 @@ public:
     ~Negotiate();
 
     string stringToLog() override;
+
+    string stringToTourLog(int game) override;
 
 private:
 

@@ -166,7 +166,10 @@ public:
     // Call the update method on the current game state instance
     void update(Command& command);
 
+    string stringToTourLog(int game) override;
+
     string stringToLog() override;
+
 };
 
 // Class representing the State state

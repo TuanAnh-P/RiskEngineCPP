@@ -153,7 +153,7 @@ void GameEngine::startupPhase() {
                     //start game Phase
                     gameStart();
                     play(data->getMaxTurns());
-
+                    NotifyTournament(this, i);
                 }
 
             }
@@ -661,7 +661,7 @@ void WinState::update(Command& command){
 
 // End state class implementation
 EndState::EndState(GameEngine &gameEngine)
-        : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){};
+        : GameState(gameEngine, new GameStateType(GameStateType::END), new string("End")){}
 
 void EndState::update(Command& command){};
 
@@ -669,7 +669,19 @@ void EndState::update(Command& command){};
 string GameEngine::stringToLog(){
     string currentState = (this->getCurrentGameState()).getGameStateName();
     return "Game Engine New State: " + currentState;
-};
+}
+
+string GameEngine::stringToTourLog(int game){
+    string log;
+    if(players.size() > 1){
+        log = "Map: " + gameMap->getName() + " | Game: " + to_string(game) + " | Winner: Draw";
+    }
+    else{
+        log = "Map: " + gameMap->getName() + " | Game: " + to_string(game) + " | Winner: " + players[0]->getPlayerID();
+    }
+
+    return log;
+}
 
 string GameState::getGameStateName(){
     return *_name;

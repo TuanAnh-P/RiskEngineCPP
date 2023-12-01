@@ -74,6 +74,10 @@ string Command::stringToLog(){
     return "Command's Effect: " + newCommandEffect;
 };
 
+string Command::stringToTourLog(int game){
+    return "";
+};
+
 // Method that returns the command effect
 string& Command::getCommandEffect(){
     return *_effect;
@@ -348,6 +352,10 @@ bool CommandProcessor::validate(Command& command, GameStateType gameState) {
 string CommandProcessor::stringToLog(){
     string newCommand = (_commands->back())->getCommand();
     return "Command: " + newCommand;
+};
+
+string CommandProcessor::stringToTourLog(int game){
+    return "";
 };
 
 // Overriding the stream ingestion operator for CommandProcessor class

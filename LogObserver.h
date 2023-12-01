@@ -4,7 +4,7 @@
 
 class LogObserver : public Observer{
     void Update(ILoggable* loggable) override;
+    void UpdateTournament(ILoggable* loggable, int game) override;
 };
-
 
 #endif

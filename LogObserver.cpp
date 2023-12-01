@@ -8,3 +8,10 @@ void LogObserver::Update(ILoggable* loggable) {
     gamelog << line << std::endl;
     gamelog.close();
 };
+
+void LogObserver::UpdateTournament(ILoggable* loggable, int game) {
+    string line = loggable->stringToTourLog(game);
+    std::fstream gamelog("tournament.txt", std::ios::app);
+    gamelog << line << std::endl;
+    gamelog.close();
+};

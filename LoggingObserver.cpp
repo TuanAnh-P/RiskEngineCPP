@@ -22,6 +22,12 @@ void Subject::Notify(ILoggable* loggable){
         (*i)->Update(loggable);
 };
 
+void Subject::NotifyTournament(ILoggable* loggable, int game){
+    list<Observer *>::iterator i = _observers->begin();
+    for (; i != _observers->end(); ++i)
+        (*i)->UpdateTournament(loggable, game);
+};
+
 //--------------------------------------------
 
 Observer::Observer(){

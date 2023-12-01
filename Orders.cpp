@@ -886,28 +886,56 @@ string OrdersList::stringToLog(){
     return "Order Issued: " + std::string(className);
 };
 
+string OrdersList::stringToTourLog(int game){
+    return "";
+};
+
 string Deploy::stringToLog(){
     return "Order Executed: Deploy";
+};
+
+string Deploy::stringToTourLog(int game){
+    return "";
 };
 
 string Advance::stringToLog(){
     return "Order Executed: Advance";
 };
 
+string Advance::stringToTourLog(int game){
+    return "";
+};
+
 string Bomb::stringToLog(){
     return "Order Executed: Bomb";
+};
+
+string Bomb::stringToTourLog(int game){
+    return "";
 };
 
 string Blockade::stringToLog(){
     return "Order Executed: Blockade";
 };
 
+string Blockade::stringToTourLog(int game){
+    return "";
+};
+
 string Airlift::stringToLog(){
     return "Order Executed: Airlift";
 };
 
+string Airlift::stringToTourLog(int game){
+    return "";
+};
+
 string Negotiate::stringToLog(){
     return "Order Executed: Negotiate";
+};
+
+string Negotiate::stringToTourLog(int ame){
+    return "";
 };
 
 void OrdersList::addOrder(Order& order)
