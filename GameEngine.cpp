@@ -157,7 +157,7 @@ void GameEngine::startupPhase() {
                 }
 
             }
-            delete &command;
+            //delete &command;
             return;
 
         }
