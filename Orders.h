@@ -76,6 +76,7 @@ public:
 
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
     void addOrder(Order& order);
@@ -105,6 +106,7 @@ public:
 
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
 private:
@@ -141,6 +143,7 @@ public:
 
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
 private:
@@ -179,6 +182,7 @@ public:
 
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
 private:
@@ -212,6 +216,7 @@ public:
 
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
 private:
@@ -247,6 +252,7 @@ public:
 
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
 private:
@@ -283,6 +289,7 @@ public:
     
     // Print to log methods
     string stringToLog() override;
+    // print for tournament log
     string stringToTourLog(int game) override;
 
 private:

@@ -101,11 +101,12 @@ void GameEngine::startupPhase() {
             // Validate and parse the tournament params
             TournamentConfiguration* data = TournamentConfiguration::validateAndParseCommand(commandStr);
 
+            // not validated
             if(data == nullptr){
                 continue;
             }
 
-
+            // loop games
             for(int k = 0; k < data->getMapsFiles().size(); k++){
                 for(int i = 0; i < data->getNumberOfGames(); i++){
                     setCurrentGameState(GameStateType::START);
@@ -153,7 +154,7 @@ void GameEngine::startupPhase() {
                     //start game Phase
                     gameStart();
                     play(data->getMaxTurns());
-                    NotifyTournament(this, i);
+                    NotifyTournament(this, i);// log tournament
                 }
 
             }
@@ -168,21 +169,21 @@ void GameEngine::startupPhase() {
             if(mapLoaded){
                 _currentGameState->update(command);
                 setCurrentGameState(GameStateType::MAP_LOADED);
-                Notify(this);
+                Notify(this); //log game
             }
         } else if (commandStr == "validatemap" && stateValidated) {
             // Validate the map
             bool mapValidated = validateMap();
             if (mapValidated){
                 _currentGameState->update(command);
-                Notify(this);
+                Notify(this); //log game
             }
         } else if (commandStr.rfind("addplayer ", 0) == 0 && stateValidated) {
             // Add a player
             string player = commandStr.substr(9);
             addPlayer(player, StrategyType::HumanPlayer);
             _currentGameState->update(command);
-            Notify(this);
+            Notify(this);//log game
         } else if (commandStr == "gamestart" && stateValidated) {
             //starts game
             if (players.size() >= 2){
@@ -405,7 +406,7 @@ void GameEngine::mainGameLoop(int turns) {
     while(numPlayersLeft>1 && (round <= turns || turns == -10)){
         cout << "<--------------------Start of round #" << round<< "-------------------->" << endl;
         setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
-        Notify(this);
+        Notify(this);//log game
         reinforcementPhase();
         // Checking if a player has 0 territory to kick him out of the game
         for(Player* player: getPlayers()){
@@ -416,16 +417,16 @@ void GameEngine::mainGameLoop(int turns) {
             }
         }
         setCurrentGameState(GameStateType::ISSUE_ORDERS);
-        Notify(this);
+        Notify(this);//log game
         issueOrdersPhase("Deploy");
         setCurrentGameState(GameStateType::EXECUTE_ORDERS);
-        Notify(this);
+        Notify(this);//log game
         executeOrdersPhase("Deploy");
         setCurrentGameState(GameStateType::ISSUE_ORDERS);
-        Notify(this);
+        Notify(this);//log game
         issueOrdersPhase("Else");
         setCurrentGameState(GameStateType::EXECUTE_ORDERS);
-        Notify(this);
+        Notify(this);//log game
         executeOrdersPhase("Else");
         round++;
         // Checking if a player has 0 territory to kick him out of the game
@@ -443,13 +444,13 @@ void GameEngine::mainGameLoop(int turns) {
     // Draw if there is more than 1 player remaining at the end of a specific round
     if(numPlayersLeft>1){
         setCurrentGameState(GameStateType::END);
-        Notify(this);
+        Notify(this);//log game
         cout << "Game is a DRAW!";
     }
     // Else the win state is reached
     else{
         setCurrentGameState(GameStateType::WIN);
-        Notify(this);
+        Notify(this);//log game
         Player* winner = players.at(0);
         cout << "Congratulation! " << winner->getPlayerID() << " is the winner";
     }
@@ -556,7 +557,7 @@ void GameEngine::update(Command& command){
     if (_currentGameState != nullptr)
     {
         _currentGameState->update(command);
-        Notify(this);
+        Notify(this);//log game
     }
 }
 
@@ -677,12 +678,13 @@ EndState::EndState(GameEngine &gameEngine)
 
 void EndState::update(Command& command){};
 
-//A2 P5
+//method for game logs
 string GameEngine::stringToLog(){
     string currentState = (this->getCurrentGameState()).getGameStateName();
     return "Game Engine New State: " + currentState;
 }
 
+//method for tournament logs
 string GameEngine::stringToTourLog(int game){
     string log;
     if(players.size() > 1){

@@ -289,7 +289,7 @@ void Deploy::execute()
         std::cout << "Executing Deploy Order.." << std::endl;
         m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
         this->print();
-        Notify(this);
+        Notify(this);//observer game log
     }
     else
     {
@@ -387,7 +387,7 @@ void Advance::execute()
                 m_targetTerritory->setNumberOfArmies(m_targetTerritory->getNumberOfArmies() + *m_numOfArmyUnits);
             }
 
-            Notify(this);
+            Notify(this);//observer game log
         }
 
         // Simulate attack
@@ -423,8 +423,8 @@ void Advance::execute()
 
             if (canAttack)
             {
-                Notify(this);
-                if(*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies()){
+                Notify(this);//observer game log
+                if(*m_numOfArmyUnits > m_sourceTerritory->getNumberOfArmies()){//in case territory gets attacked before this advance
                     *m_numOfArmyUnits = m_sourceTerritory->getNumberOfArmies();
                 }
                 m_sourceTerritory->setNumberOfArmies(m_sourceTerritory->getNumberOfArmies() - *m_numOfArmyUnits);
@@ -605,7 +605,7 @@ void Bomb::execute()
 
         this->print();
 
-        Notify(this);
+        Notify(this);//observer game log
     }
     else
     {
@@ -680,7 +680,7 @@ void Blockade::execute()
 
         this->print();
 
-        Notify(this);
+        Notify(this);//observer game log
     }
     else
     {
@@ -782,7 +782,7 @@ void Airlift::execute()
         }
 
 
-        Notify(this);
+        Notify(this);//observer game log
     }
 
     else
@@ -850,7 +850,7 @@ void Negotiate::execute()
         this->print();
 
         m_targetPlayer->addToNegotiatedPlayers(this->getIssuingPlayer());
-        Notify(this);
+        Notify(this);//observer game log
     }
 
     else
@@ -887,6 +887,7 @@ string OrdersList::stringToLog(){
     return "Order Issued: " + std::string(className);
 };
 
+// prints for tournament
 string OrdersList::stringToTourLog(int game){
     return "";
 };
@@ -896,6 +897,7 @@ string Deploy::stringToLog(){
     return "Order Executed: Deploy";
 };
 
+// prints for tournament
 string Deploy::stringToTourLog(int game){
     return "";
 };
@@ -905,6 +907,7 @@ string Advance::stringToLog(){
     return "Order Executed: Advance";
 };
 
+// prints for tournament
 string Advance::stringToTourLog(int game){
     return "";
 };
@@ -914,6 +917,7 @@ string Bomb::stringToLog(){
     return "Order Executed: Bomb";
 };
 
+// prints for tournament
 string Bomb::stringToTourLog(int game){
     return "";
 };
@@ -923,6 +927,7 @@ string Blockade::stringToLog(){
     return "Order Executed: Blockade";
 };
 
+// prints for tournament
 string Blockade::stringToTourLog(int game){
     return "";
 };
@@ -932,6 +937,7 @@ string Airlift::stringToLog(){
     return "Order Executed: Airlift";
 };
 
+// prints for tournament
 string Airlift::stringToTourLog(int game){
     return "";
 };
@@ -941,6 +947,7 @@ string Negotiate::stringToLog(){
     return "Order Executed: Negotiate";
 };
 
+// prints for tournament
 string Negotiate::stringToTourLog(int ame){
     return "";
 };
@@ -949,5 +956,5 @@ void OrdersList::addOrder(Order& order)
 {
     this->orders.push_back(&order);
 
-    Notify(this);
+    Notify(this);//observer game log
 }

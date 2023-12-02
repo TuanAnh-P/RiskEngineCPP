@@ -166,8 +166,10 @@ public:
     // Call the update method on the current game state instance
     void update(Command& command);
 
+    // method for tournament logs
     string stringToTourLog(int game) override;
 
+    //method for game logs
     string stringToLog() override;
 
 };

@@ -65,7 +65,7 @@ string& Command::getCommand(){
 void Command::saveEffect(const string& effect){
     *_effect = effect;
 
-    Notify(this);
+    Notify(this); // log effect
 }
 
 // returns a formatted string representing the command effect (used for logging purposes)
@@ -149,7 +149,7 @@ ostream& operator<<(std::ostream& out, const TournamentConfiguration& tc) {
 
 // Method that validates and parses the configuration from the tournament command
 TournamentConfiguration* TournamentConfiguration::validateAndParseCommand(string commandStr) {
-    // Find the positions of various parameters in the command
+    // Find the positions of parameters in the command
     size_t posM = commandStr.find("-M ");
     if (posM == std::string::npos) return nullptr;
     size_t posP = commandStr.find("-P ");
@@ -159,54 +159,59 @@ TournamentConfiguration* TournamentConfiguration::validateAndParseCommand(string
     size_t posD = commandStr.find("-D ");
     if (posD == std::string::npos) return nullptr;
 
-    // Extract the lists of map files and player strategies
+    // Get the lists of map files and player strategies
     std::string mapFilesStr = commandStr.substr(posM + 3, posP - posM - 4);
     std::string playerStrategiesStr = commandStr.substr(posP + 3, posG - posP - 4);
 
-    // Extract the numerical values
+    // Get the num of turns and games
     int numberOfGames = std::stoi(commandStr.substr(posG + 2, posD - posG - 2));
     int maxNumberOfTurns = std::stoi(commandStr.substr(posD + 2));
 
-    // Create vectors to store map files and player strategies
+    // Vectors to store map files and player strategies
     std::vector<std::string> mapFiles;
     std::vector<std::string> playerStrategies;
 
-    // Use stringstream to split comma-separated values into vectors
+    // split ,
     std::stringstream mapFilesStream(mapFilesStr);
     std::stringstream playerStrategiesStream(playerStrategiesStr);
     std::string mapFile;
     std::string playerStrategy;
 
-    // Extract map files
+    // Get map files
     while (std::getline(mapFilesStream, mapFile, ',')) {
         mapFiles.push_back(mapFile);
     }
 
-    // Extract player strategies
+    // Get player strategies
     while (std::getline(playerStrategiesStream, playerStrategy, ',')) {
         playerStrategies.push_back(playerStrategy);
     }
 
+    // validate num of games
     if(numberOfGames < 1 || numberOfGames > 5){
         cout << "Please enter 1-5 Games";
         return nullptr;
     }
 
+    // validate num of turns
     if(maxNumberOfTurns < 10 || maxNumberOfTurns > 50){
         cout << "Please enter 10-50 Turns";
         return nullptr;
     }
 
+    // validate num of maps
     if(mapFiles.size() < 1 || mapFiles.size() > 5){
         cout << "Please enter 1-5 Maps";
         return nullptr;
     }
 
-    if(playerStrategies.size() < 1 || playerStrategies.size() > 4){
-        cout << "Please enter 1-4 Players";
+    // validate num of players
+    if(playerStrategies.size() < 2 || playerStrategies.size() > 4){
+        cout << "Please enter 2-4 Players";
         return nullptr;
     }
 
+    // validate strategies
     for(int i = 0; i < playerStrategies.size(); i++){
         string player = "player" + std::to_string(i);
         std::string strategy = playerStrategies[i];
@@ -216,6 +221,7 @@ TournamentConfiguration* TournamentConfiguration::validateAndParseCommand(string
         }
     }
 
+    // return params for game
     return new TournamentConfiguration(numberOfGames, maxNumberOfTurns, mapFiles, playerStrategies);
 }
 
@@ -354,6 +360,7 @@ string CommandProcessor::stringToLog(){
     return "Command: " + newCommand;
 };
 
+// method for tournament logs
 string CommandProcessor::stringToTourLog(int game){
     return "";
 };

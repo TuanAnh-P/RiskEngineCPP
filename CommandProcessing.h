@@ -49,8 +49,10 @@ public:
 
     string& getCommandEffect();
 
+    // method for game logs
     string stringToLog() override;
 
+    // method for tournament logs
     string stringToTourLog(int game) override;
 };
 

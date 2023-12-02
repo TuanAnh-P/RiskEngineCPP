@@ -8,9 +8,9 @@ using std::cout;
 using std::endl;
 
 void testTournament(){
-    LogObserver* logObserver = new LogObserver();
+    LogObserver* logObserver = new LogObserver();//observer for logs
     std::unique_ptr<GameEngine> game(new GameEngine());
-    game->Attach(logObserver);
+    game->Attach(logObserver);//attach observer for logs
 
     // Register valid game states
     game->registerGameState<StartState>(GameStateType::START);

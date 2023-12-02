@@ -16,20 +16,20 @@ class ILoggable;
 
 class ILoggable{
 public:
-    virtual string stringToLog() = 0;
-    virtual std::string stringToTourLog(int game) = 0;
+    virtual string stringToLog() = 0;//method for game logs
+    virtual std::string stringToTourLog(int game) = 0;//method for tournament log
 };
 
 //------------------------------------------------------------------------
 
 class Subject {
 public:
-    virtual void Attach(Observer* o);
-    virtual void Detach(Observer* o);
-    virtual void Notify(ILoggable* loggable);
-    virtual void NotifyTournament(ILoggable* loggable, int game);
-    Subject();
-    ~Subject();
+    virtual void Attach(Observer* o);//attach observer
+    virtual void Detach(Observer* o);//detach observer
+    virtual void Notify(ILoggable* loggable);//notify for game log
+    virtual void NotifyTournament(ILoggable* loggable, int game);//notify for tournament log
+    Subject();//constructor
+    ~Subject()//destructor
 private:
     list<Observer*> *_observers;
 };
@@ -38,13 +38,13 @@ private:
 
 class Observer {
 public:
-    ~Observer();
+    ~Observer();//destructor
 
-    virtual void Update(ILoggable* loggable) = 0;
-    virtual void UpdateTournament(ILoggable* loggable,int game) = 0;
+    virtual void Update(ILoggable* loggable) = 0;//update for game log
+    virtual void UpdateTournament(ILoggable* loggable,int game) = 0;//update for tournament log
 
 protected:
-    Observer();
+    Observer();//constructor
 };
 
 //------------------------------------------------------------------------
