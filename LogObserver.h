@@ -3,8 +3,8 @@
 #include "LoggingObserver.h"
 
 class LogObserver : public Observer{
-    void Update(ILoggable* loggable) override;
-    void UpdateTournament(ILoggable* loggable, int game) override;
+    void Update(ILoggable* loggable) override; //method for logging game
+    void UpdateTournament(ILoggable* loggable, int game) override; //method for logging tournament games
 };
 
 #endif
