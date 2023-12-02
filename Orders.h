@@ -18,6 +18,7 @@ public:
     // Constructor
     Order();
 
+    // Parameter constuctor
     Order(std::string type, Player* player);
 
     // Override ostream operator
@@ -32,6 +33,7 @@ public:
     // Destructor
     virtual ~Order();
 
+    // Pure virtual functions
     virtual void execute() = 0;
     virtual void print() = 0;
 
@@ -39,11 +41,12 @@ protected:
 
     // Derived class methods
     virtual bool validate();
-
     Player* getIssuingPlayer();
     void setIssuingPlayer(Player* player);
 
 private:
+
+    // Members
     Player* m_playerIssuer;
 
 };
@@ -55,8 +58,10 @@ public:
     // Constructor
     OrdersList();
 
+    // Parameter constuctor
     OrdersList(OrdersList& other);
 
+    // Override virtual methods 
     void remove(Order& order);
     void move(Order& order, const int target_index);
 
@@ -69,8 +74,8 @@ public:
     // Destructor
     ~OrdersList();
 
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
     void addOrder(Order& order);
@@ -98,8 +103,8 @@ public:
     // Destructor
     ~Deploy();
 
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
 private:
@@ -131,10 +136,11 @@ public:
     void execute();
     void print();
 
+    // Destructor
     ~Advance();
 
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
 private:
@@ -148,8 +154,6 @@ private:
 
     //Methods
     bool validate();
-
-
 
 };
 
@@ -170,15 +174,18 @@ public:
     void execute();
     void print();
 
+    //Destructor
     ~Bomb();
 
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
 private:
 
+    // Member 
     Territory* m_targetTerritory;
+
     bool validate();
 
 };
@@ -190,6 +197,7 @@ public:
     // Constructor
     Blockade();
 
+    // Parameter constructor
     Blockade(Player* player, Territory* tagretTerritory, GameEngine* gameEngineRef);
 
     //Copy Constructor
@@ -199,15 +207,20 @@ public:
     void execute();
     void print();
 
+    // Destructor
     ~Blockade();
 
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
 private:
+
+    // Member
     Territory* m_targetTerritory;
     GameEngine* m_gameEngineRef;
+
+    //Methods
     bool validate();
 
 };
@@ -229,17 +242,21 @@ public:
     void execute();
     void print();
 
+    // Destructor
     ~Airlift();
 
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
 private:
 
+    // Member
     int* m_numOfArmyUnits;
     Territory* m_targetTerritory;
     Territory* m_sourceTerritory;
+
+    //Methods
     bool validate();
 
 };
@@ -251,6 +268,7 @@ public:
     // Constructor
     Negotiate();
 
+    // Parameter constructor
     Negotiate(Player* player, Player* targetPlayer);
 
     //Copy Constructor
@@ -260,14 +278,18 @@ public:
     void execute();
     void print();
 
+    // Destructor 
     ~Negotiate();
-
+    
+    // Print to log methods
     string stringToLog() override;
-
     string stringToTourLog(int game) override;
 
 private:
 
+    // Member
     Player* m_targetPlayer;
+
+    // Method
     bool validate();
 };

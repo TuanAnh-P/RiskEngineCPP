@@ -210,7 +210,6 @@ void OrdersList::move(Order& order, const int target_index)
     }
 
     // Swap target index element
-
     for (int i = 0; i < this->orders.size(); i++)
     {
         if (this->orders[i] == &order)
@@ -241,9 +240,9 @@ void OrdersList::print()
 }
 
 // Destructor
-
 OrdersList::~OrdersList()
 {
+    // delete all order pointers
     for (Order* order : orders)
     {
         delete order;
@@ -255,7 +254,6 @@ OrdersList::~OrdersList()
 // --------------- Deploy class ---------------
 
 // Constructors
-
 Deploy::Deploy()
         : Order("Deploy", nullptr), m_targetTerritory(nullptr), m_numOfArmyUnits(new int(0)) {}
 
@@ -301,6 +299,7 @@ void Deploy::execute()
 
 }
 
+// Debug print
 void Deploy::print()
 {
     if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
@@ -317,7 +316,6 @@ void Deploy::print()
 // --------------- Advance class ---------------
 
 // Constructors
-
 Advance::Advance()
         : Order("Advance", nullptr), m_targetTerritory(nullptr), m_sourceTerritory(nullptr), m_numOfArmyUnits(new int(0)), m_deckRef(nullptr), m_gameEngineRef(nullptr) {};
 
@@ -362,7 +360,7 @@ void Advance::execute()
         std::cout << "Executing " << this->type << " order..." << std::endl;
         this->print();
 
-        // Move units
+        // Move units 
         if (this->getIssuingPlayer()->isTerritoryOwned(m_sourceTerritory) && this->getIssuingPlayer()->isTerritoryOwned(m_targetTerritory))
         {
             std::cout << "-- Move Advance order --" << std::endl;
@@ -392,14 +390,16 @@ void Advance::execute()
             Notify(this);
         }
 
-            // Simulate attack
+        // Simulate attack
         else
         {
+            // Seed random roll
             srand(time(NULL));
+
+            // Init vars
             bool attackersTurn = true;
             bool attackersWon = true;
             Player* enemyPlayer = nullptr;
-
 
             std::vector<Player*> players = m_gameEngineRef->getPlayers();
             for (Player* player : players)
@@ -410,7 +410,7 @@ void Advance::execute()
                 }
             }
 
-            bool canAttack = true;
+            bool canAttack = true; // cache fight result, default to true if attacker fights a territory with 0 units
 
             // check if target enemy player is in the issuing Player's negioated players list
             for (Player* negioatedPlayer : this->getIssuingPlayer()->getNegotiatedPlayers())
@@ -431,7 +431,7 @@ void Advance::execute()
 
                 std::cout << "-- Attack Advance order --" << std::endl;
 
-                bool attackersTurn = true;
+                bool attackersTurn = true; // attacker goes first
 
                 while (*m_numOfArmyUnits != 0 && m_targetTerritory->getNumberOfArmies() != 0)
                 {
@@ -451,7 +451,7 @@ void Advance::execute()
                                 if (m_targetTerritory->getNumberOfArmies() == 0) { attackersWon = true; }
 
                             }
-                            attackersTurn = false;
+                            attackersTurn = false; // switch turn
                             break;
 
                             // defender's turn
@@ -465,15 +465,17 @@ void Advance::execute()
                                 *m_numOfArmyUnits -= 1;
                                 if (*m_numOfArmyUnits == 0) { attackersWon = false; }
                             }
-                            attackersTurn = true;
+                            attackersTurn = true; // switch turn
                             break;
                     }
 
+                    // print result of roll 
                     std::cout << m_targetTerritory->getName() << " : " << m_targetTerritory->getNumberOfArmies() << std::endl;
                     std::cout << "Attacker armies" << " : " << *m_numOfArmyUnits << std::endl;\
 					std::cout << "-------------" << std::endl;
                 }
 
+                // Attacker won
                 if (attackersWon == true)
                 {
                     std::cout << "-- Attacker Won --" << std::endl;
@@ -497,8 +499,6 @@ void Advance::execute()
 
                     }
 
-
-
                     // Check if the issuing player has drawn a card this turn after taking an territory
                     if (!this->getIssuingPlayer()->hasDrawn)
                     {
@@ -509,8 +509,8 @@ void Advance::execute()
 
                 }
 
+                // Defender won
                 else std::cout << "-- Attacker Lost --" << std::endl;
-
 
             }
 
@@ -533,6 +533,7 @@ void Advance::execute()
 
 }
 
+// Debug print
 void Advance::print()
 {
     //if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
@@ -549,7 +550,6 @@ void Advance::print()
 }
 
 // Destructor
-
 Advance::~Advance()
 {
     std::cout << this->type << " deconstructor was called!" << std::endl;
@@ -558,7 +558,6 @@ Advance::~Advance()
 // --------------- Bomb class ---------------
 
 // Constructors
-
 Bomb::Bomb()
         : Order("Bomb", nullptr), m_targetTerritory(nullptr) {}
 
@@ -618,6 +617,7 @@ void Bomb::execute()
 
 }
 
+// Debug print
 void Bomb::print()
 {
     if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
@@ -631,7 +631,6 @@ void Bomb::print()
 }
 
 // Destructor
-
 Bomb::~Bomb()
 {
     std::cout << this->type << " deconstructor was called!" << std::endl;
@@ -640,7 +639,6 @@ Bomb::~Bomb()
 // --------------- Blockade class ---------------
 
 // Constructors
-
 Blockade::Blockade()
         : Order("Blockade", nullptr), m_targetTerritory(nullptr), m_gameEngineRef(nullptr) {}
 
@@ -662,7 +660,7 @@ bool Blockade::validate()
     return false;
 }
 
-// Executes Blockade which turns target territory into a neutral territory and triple the army value
+// Executes Blockade which turns target territory into a neutral territory and double the army value
 void Blockade::execute()
 {
     if (this->validate())
@@ -691,6 +689,7 @@ void Blockade::execute()
     }
 }
 
+// Debug print
 void Blockade::print()
 {
     //if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
@@ -704,7 +703,6 @@ void Blockade::print()
 }
 
 // Destructor
-
 Blockade::~Blockade()
 {
     std::cout << this->type << " deconstructor was called!" << std::endl;
@@ -759,6 +757,7 @@ bool Airlift::validate()
 // Execute Airlift moves number of armies from source to target territory
 void Airlift::execute()
 {
+    // Validate and execute
     if (validate())
     {
         std::cout << "Executing " << this->type << " Order.." << std::endl;
@@ -795,6 +794,7 @@ void Airlift::execute()
 
 }
 
+// Debug print
 void Airlift::print()
 {
     if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
@@ -843,6 +843,7 @@ bool Negotiate::validate()
 // Execute Negotiate disables the target player's ability to attack
 void Negotiate::execute()
 {
+    // Validate and then execute
     if (this->validate())
     {
         std::cout << "Execute "<< this->type <<" order" << std::endl;
@@ -859,6 +860,7 @@ void Negotiate::execute()
     }
 }
 
+// Debug print
 void Negotiate::print()
 {
     if (!validate()) { std::cout << "Cannot print invalid << " << this->type << " Order" << std::endl;  return; }
@@ -870,13 +872,12 @@ void Negotiate::print()
 }
 
 // Destructor
-
 Negotiate::~Negotiate()
 {
     std::cout << this->type << " deconstructor was called!" << std::endl;
 }
 
-// A2 P5
+// Prints the order list  to the log
 string OrdersList::stringToLog(){
     Order* newOrder = orders.back();
     const std::type_info& type = typeid(*newOrder);
@@ -890,6 +891,7 @@ string OrdersList::stringToTourLog(int game){
     return "";
 };
 
+// Prints deploy to log
 string Deploy::stringToLog(){
     return "Order Executed: Deploy";
 };
@@ -898,6 +900,7 @@ string Deploy::stringToTourLog(int game){
     return "";
 };
 
+// Prints Advance to log
 string Advance::stringToLog(){
     return "Order Executed: Advance";
 };
@@ -906,6 +909,7 @@ string Advance::stringToTourLog(int game){
     return "";
 };
 
+// Prints Bomb to log
 string Bomb::stringToLog(){
     return "Order Executed: Bomb";
 };
@@ -914,6 +918,7 @@ string Bomb::stringToTourLog(int game){
     return "";
 };
 
+// Prints Blockade to log
 string Blockade::stringToLog(){
     return "Order Executed: Blockade";
 };
@@ -922,6 +927,7 @@ string Blockade::stringToTourLog(int game){
     return "";
 };
 
+// Prints Airlift to log
 string Airlift::stringToLog(){
     return "Order Executed: Airlift";
 };
@@ -930,6 +936,7 @@ string Airlift::stringToTourLog(int game){
     return "";
 };
 
+// Prints Negotiate to log
 string Negotiate::stringToLog(){
     return "Order Executed: Negotiate";
 };

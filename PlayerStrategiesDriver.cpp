@@ -6,35 +6,6 @@
 // Test Player Strategies free test function
 void testPlayerStrategies()
 {
-    // Create instance of strategy
-    /*NeutralPlayerStrategy* neutralStrat = new NeutralPlayerStrategy();
-    HumanPlayerStrategy* humanStrat = new HumanPlayerStrategy();
-    AggressivePlayerStrategy* aggroStrat = new AggressivePlayerStrategy();*/
-
-    // Assignment operator test
-    //*aggroStrat = *humanStrat;
-
-
-    //delete(neutralStrat);
-    //delete(humanStrat);
-    //delete(aggroStrat);
-
-    //Player* player = new Player("John", StrategyType::AggressivePlayer);
-    //Player* player2 = new Player("Sue", StrategyType::NeutralPlayer);
-    //
-    //Player player3(*player2);
-
-    //player2 = player;
-
-    //// Test switch strategy
-    //std::cout << player->getStrategy() << std::endl;
-    //player->setPlayerStrategy(new HumanPlayerStrategy(player));
-    //std::cout << *player->getStrategy() << std::endl;
-
-    //std::cout << *player2->getStrategy() << std::endl;
-    //std::cout << *player3.getStrategy() << std::endl;
-
-
     // Create the game engine
     std::unique_ptr<GameEngine> game(new GameEngine());
 
@@ -150,7 +121,7 @@ void testPlayerStrategies()
     //  -----------------------  Game 3   -----------------------  //
 
     playerList.push_back(neutral_Player);
-    playerList.push_back(aggressive_Player);
+    playerList.push_back(cheater_Player);
     game->players = playerList;
 
     neutral_Player->addTerritory(usa);
@@ -169,7 +140,7 @@ void testPlayerStrategies()
     game->deck->draw(aggressive_Player->getHand());
     game->deck->draw(aggressive_Player->getHand());
 
-    // Start game loop
+    //// Start game loop
     game->mainGameLoop(2);
 
     playerList.clear();
