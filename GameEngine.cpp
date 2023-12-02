@@ -318,6 +318,7 @@ void GameEngine::play(int turns){
 
 void GameEngine::reinforcementPhase() {
     cout << "<----------The reinforcement phase begin---------->" << endl;
+    // Each player will receive a number of army depending on the number of territories he owns
     for(Player* player: players){
         int numReinforcement = std::floor(static_cast<double>(player->getOwnedTerritories().size()) / 3);
         int continentOwned = 0;
@@ -336,6 +337,7 @@ void GameEngine::reinforcementPhase() {
 }
 
 void GameEngine::issueOrdersPhase(string orderType) {
+    // Each player issues deploy orders first
     if (orderType == "Deploy"){
         cout << "<----------The Deploy orders issuing phase begins---------->" << endl;
         for(Player* player: players) {
@@ -343,6 +345,7 @@ void GameEngine::issueOrdersPhase(string orderType) {
         }
     }
 
+    // Each player issues other types of order after
     if (orderType == "Else"){
         cout << "<----------The Non-deploy orders issuing phase begins---------->" << endl;
         for(Player* player: players) {
@@ -353,7 +356,7 @@ void GameEngine::issueOrdersPhase(string orderType) {
 
 
 void GameEngine::executeOrdersPhase(string orderType) {
-
+    // Each player executes their deploy orders first
     if (orderType == "Deploy"){
         cout << "<----------The Deploy orders executing phase begins---------->" << endl;
         for(Player* player: players) {
@@ -373,6 +376,7 @@ void GameEngine::executeOrdersPhase(string orderType) {
         }
     }
 
+    // Each player executes other types of orders after
     if (orderType == "Else"){
         cout << "<----------The Non-Deploy orders executing phase begins---------->" << endl;
         for(Player* player: players) {
@@ -403,6 +407,7 @@ void GameEngine::mainGameLoop(int turns) {
         setCurrentGameState(GameStateType::ASSIGN_REINFORCEMENT);
         Notify(this);
         reinforcementPhase();
+        // Checking if a player has 0 territory to kick him out of the game
         for(Player* player: getPlayers()){
             if (player->getOwnedTerritories().size() == 0) {
                 cout << player->getPlayerID() << " is be kicked out of the game because he doesn't own territories" << endl;
@@ -423,6 +428,7 @@ void GameEngine::mainGameLoop(int turns) {
         Notify(this);
         executeOrdersPhase("Else");
         round++;
+        // Checking if a player has 0 territory to kick him out of the game
         for(Player* player: getPlayers()){
             if (player->getOwnedTerritories().size() == 0) {
                 cout << player->getPlayerID() << " is be kicked out of the game because he doesn't own territories" << endl;
@@ -434,11 +440,13 @@ void GameEngine::mainGameLoop(int turns) {
         std::string dummy;
 //        std::getline(std::cin, dummy);  // Wait for the user to press Enter
     }
+    // Draw if there is more than 1 player remaining at the end of a specific round
     if(numPlayersLeft>1){
         setCurrentGameState(GameStateType::END);
         Notify(this);
         cout << "Game is a DRAW!";
     }
+    // Else the win state is reached
     else{
         setCurrentGameState(GameStateType::WIN);
         Notify(this);
@@ -447,6 +455,7 @@ void GameEngine::mainGameLoop(int turns) {
     }
 }
 
+// Method that return a player by their id
 Player* GameEngine::getPlayerByID(const string& playerID) {
     for (Player* player : players) {
         if (player->getPlayerID() == playerID) {
@@ -456,6 +465,7 @@ Player* GameEngine::getPlayerByID(const string& playerID) {
     return nullptr;  // Player with the specified ID not found
 }
 
+// Method that return a territory by their name
 Territory* GameEngine::getTerritoryByName(const string& territoryName){
     for (const Territory* territory : getAllTerritories()) {
         if (territory->getName() == territoryName) {
@@ -465,10 +475,12 @@ Territory* GameEngine::getTerritoryByName(const string& territoryName){
     return nullptr;  // Territory with the specified name not found
 }
 
+// Getting all players
 const std::vector<Player*>& GameEngine::getPlayers() const {
     return players;
 }
 
+// Getting all territories
 const std::vector<Territory*>& GameEngine::getAllTerritories() const {
     std::vector<Territory*>* allTerritories = new std::vector<Territory*>();
     for (const Continent* continent : gameMap->getContinents()) {

@@ -278,21 +278,6 @@ std::vector<Territory*> Player::getOwnedTerritories()
 
 void Player::issueOrder(Deck* deck, GameEngine* gameEngine, string& orderType) {
     return this->m_strategy->issueOrder(deck, gameEngine, orderType);
-//    Order* newOrder = nullptr;
-//
-//    if (orderType == "Deploy") newOrder = new Deploy(this, target, num);
-//    else if (orderType == "Advance") newOrder = new Advance(this, target, source, num, deck, gameEngine);
-//    else if (orderType == "Bomb") newOrder = new Bomb(this, target);
-//    else if (orderType == "Blockade") newOrder = new Blockade(this, target, gameEngine);
-//    else if (orderType == "Airlift") newOrder = new Airlift(this, source, target, num);
-//    else if (orderType == "Negotiate") newOrder = new Negotiate(this, targetPlayer);
-//
-//    if (newOrder) {
-//        // Add the created order to the player's list of orders
-//        std::cout << this->getPlayerID() << " issued a " << orderType << " order" << std::endl;
-//        ordersList->orders.push_back(newOrder);
-//    }
-//    else std::cout << "Invalid order type." << std::endl;
 }
 
 bool Player::isTerritoryOwned(Territory* territory)
@@ -309,18 +294,14 @@ bool Player::isTerritoryOwned(Territory* territory)
 bool Player::isContinentOwned(Continent* continent) {
     std::vector<Territory*>& continentTerritories = const_cast<std::vector<Territory *> &>(continent->getTerritories());
     for (Territory* territory : continentTerritories) {
-        if (!isTerritoryOwned(territory)) {
-            return false; // Player doesn't own all territories in the continent
-        }
+        if (!isTerritoryOwned(territory)) return false; // Player doesn't own all territories in the continent
     }
     return true; // Player owns all territories in the continent
 }
 
 bool Player::doesHaveAdjacentTerritoriesToAttack(Territory* territory) {
     for (Territory* territoryToAttack : territory->getAdjacentTerritories()){
-        if (!this->isTerritoryOwned(territoryToAttack)){
-            return true;
-        }
+        if (!this->isTerritoryOwned(territoryToAttack)) return true;
     }
     return false;
 }
@@ -338,16 +319,12 @@ int Player::getReinforcementPool() const {
 }
 
 void Player::setReinforcementPool(const int& amount) {
-    if (reinforcementPool != nullptr) {
-        delete reinforcementPool;
-    }
+    if (reinforcementPool != nullptr) delete reinforcementPool;
     reinforcementPool = new int(amount);
 }
 
 void Player::addReinforcementPool(const int &amount) {
-    if (reinforcementPool != nullptr) {
-        *reinforcementPool += amount;
-    }
+    if (reinforcementPool != nullptr) *reinforcementPool += amount;
 }
 
 void Player::removeReinforcementPool(const int &amount) {
