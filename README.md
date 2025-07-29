@@ -6,6 +6,16 @@ A comprehensive C++ implementation of a Risk-style strategy board game engine. T
 
 This game engine provides a complete framework for playing Risk-style board games with support for multiple AI strategies, map loading and validation, turn-based gameplay, and comprehensive logging. The implementation showcases several key design patterns including Strategy, Observer, State, and Adapter patterns.
 
+## Contributors
+
+| Contributor        | GitHub Profile                               |
+| ------------------ | -------------------------------------------- |
+| **Colton Leblond** | [@coltcodess](https://github.com/coltcodess) |
+| **Tuan Anh Pham**  | [@TuanAnh-P](https://github.com/TuanAnh-P)   |
+| **Khash Azad**     | [@khashazad](https://github.com/khashazad)   |
+| **Ryan Li**        | [@Ryan2Li](https://github.com/Ryan2Li)       |
+| **Abdullah Amir**  | [@AA789-ai](https://github.com/AA789-ai)     |
+
 ## Features
 
 ### Core Game Systems
